@@ -1,10 +1,8 @@
 import { serve } from "@hono/node-server";
 import tailwindcss from "@tailwindcss/vite";
-import { watch } from "chokidar";
-import { Hono, type Context } from "hono";
+import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { once } from "node:events";
-import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { createServer } from "vite";
 
@@ -27,33 +25,47 @@ const indexHtmlTemplate = `<!doctype html>
 </html>
 `;
 
-const simpleAPIRouteToHonoRoute =
-  (route: SimpleAPIRoute) => async (c: Context) => {
-    try {
-      const res = await route(c.req.raw);
-      c.res = res;
-    } catch (e) {
-      console.error(e);
-      c.res = new Response("Internal server error", { status: 500 });
-    }
-  };
-
-// TODO: Consider a way that we could proxy the API instead of defining up front.
-// This would negate the need for a file watcher because we could simply regenerate
-// the files whenever the API is called.
 const runHonoApp = async (opts: { root: string }) => {
   const app = new Hono();
 
   app.use("/*", cors());
 
-  const routes = await getRoutes({ root: opts.root });
+  app.use("/*", async (c) => {
+    const url = new URL(c.req.url);
 
-  for (const route of routes) {
-    app.get(route.path, simpleAPIRouteToHonoRoute(route.get));
-    app.post(route.path, simpleAPIRouteToHonoRoute(route.post));
-    app.put(route.path, simpleAPIRouteToHonoRoute(route.put));
-    app.delete(route.path, simpleAPIRouteToHonoRoute(route.delete));
-  }
+    try {
+      const modulePath = path.join(
+        opts.root,
+        url.pathname.slice(1) + ".ts?hash=" + Date.now()
+      );
+
+      const mod = await import(modulePath);
+
+      const handler: SimpleAPIRoute | undefined =
+        mod[c.req.method.toUpperCase()];
+
+      if (!handler) {
+        c.res = new Response("Not found", { status: 404 });
+        return;
+      }
+
+      c.res = await handler(c.req.raw);
+      return;
+    } catch (e) {
+      if (
+        e instanceof Error &&
+        "code" in e &&
+        e.code === "ERR_MODULE_NOT_FOUND"
+      ) {
+        c.res = new Response("Not found", { status: 404 });
+        return;
+      } else {
+        console.error(e);
+        c.res = new Response("Internal server error", { status: 500 });
+        return;
+      }
+    }
+  });
 
   const honoServer = serve({
     fetch: app.fetch,
@@ -63,38 +75,6 @@ const runHonoApp = async (opts: { root: string }) => {
   await once(honoServer, "listening");
 
   return honoServer;
-};
-
-const notImplemented = () => new Response("Not implemented", { status: 501 });
-
-const getRoutes = async (opts: { root: string }) => {
-  const filesInApiDir = await readdir(path.join(opts.root, "api"));
-
-  const tsFiles = filesInApiDir.filter((file) => file.endsWith(".ts"));
-
-  const routes = await Promise.all(
-    tsFiles.map(async (file) => {
-      // TODO: wrap in a try catch to catch errors that occur when importing the file
-      const mod = await import(
-        path.join(opts.root, "api", file + "?hash=" + Date.now())
-      );
-
-      const getRoute: SimpleAPIRoute = mod.GET ?? notImplemented;
-      const postRoute: SimpleAPIRoute = mod.POST ?? notImplemented;
-      const putRoute: SimpleAPIRoute = mod.PUT ?? notImplemented;
-      const deleteRoute: SimpleAPIRoute = mod.DELETE ?? notImplemented;
-
-      return {
-        path: `/api/${file.replace(".ts", "")}`,
-        get: getRoute,
-        post: postRoute,
-        put: putRoute,
-        delete: deleteRoute,
-      };
-    })
-  );
-
-  return routes;
 };
 
 /**
@@ -136,14 +116,6 @@ export const runLocalDevServer = async (opts: { root: string }) => {
   ]);
 
   viteServer.printUrls();
-
-  watch(path.join(opts.root, "api"), {
-    ignoreInitial: true,
-  }).on("change", async () => {
-    honoServer.close();
-    console.log("Reloading server...");
-    honoServer = await runHonoApp(opts);
-  });
 
   return {
     close: () => {
