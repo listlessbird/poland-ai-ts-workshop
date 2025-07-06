@@ -20,36 +20,33 @@ program.arguments("<exerciseNumber>").action(async (exerciseNumber: string) => {
   }
 
   const sections = await readdir(exercisesDir);
+  let foundExerciseDir: string | null = null;
 
-  // Find the section directory that starts with the exercise number
-  const sectionDir = sections.find((section) => {
-    return section.startsWith(exerciseNumber);
-  });
+  // Search through each section to find the exercise
+  for (const section of sections) {
+    const sectionPath = path.resolve(exercisesDir, section);
+    const exercises = await readdir(sectionPath);
 
-  if (!sectionDir) {
-    console.error(
-      `Could not find section ${exerciseNumber} in ${exercisesDir}. Does it exist?`
-    );
+    // Find the exercise that contains the exercise number
+    const exerciseDir = exercises.find((exercise) => {
+      return exercise.includes(exerciseNumber);
+    });
+
+    if (exerciseDir) {
+      foundExerciseDir = path.resolve(sectionPath, exerciseDir);
+      break;
+    }
+  }
+
+  if (!foundExerciseDir) {
+    console.error(`Could not find exercise ${exerciseNumber} in any section.`);
     process.exit(1);
   }
 
-  const sectionPath = path.resolve(exercisesDir, sectionDir);
-  const exercises = await readdir(sectionPath);
-
-  // Find the first exercise (assuming it's the main one)
-  const exerciseDir = exercises.find((exercise) => {
-    return exercise.includes("example") || exercise.includes("problem");
+  // Get all directories inside the exercise (problem/solution)
+  const exerciseContents = await readdir(foundExerciseDir, {
+    withFileTypes: true,
   });
-
-  if (!exerciseDir) {
-    console.error(`Could not find a valid exercise in ${sectionPath}.`);
-    process.exit(1);
-  }
-
-  const exercisePath = path.resolve(sectionPath, exerciseDir);
-
-  // Get all directories inside the exercise
-  const exerciseContents = await readdir(exercisePath, { withFileTypes: true });
   const directories = exerciseContents
     .filter((item) => item.isDirectory())
     .map((dir) => dir.name);
@@ -75,7 +72,10 @@ program.arguments("<exerciseNumber>").action(async (exerciseNumber: string) => {
     process.exit(0);
   }
 
-  const selectedPath = path.resolve(exercisePath, response.selectedDirectory);
+  const selectedPath = path.resolve(
+    foundExerciseDir,
+    response.selectedDirectory
+  );
   const mainFilePath = path.resolve(selectedPath, "main.ts");
 
   if (!existsSync(mainFilePath)) {

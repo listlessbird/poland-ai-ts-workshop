@@ -3,34 +3,39 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "exercise": "tsx internal/cli.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "imports": {
+    "#shared/*": "./shared/*"
+  },
   "packageManager": "pnpm@9.12.3+sha512.cce0f9de9c5a7c95bef944169cc5dfe8741abfb145078c0d508b868056848a87c81e626246cb60967cbd7fd29a6c062ef73ff840d96b3c86c40ac92cf4a813ee",
   "dependencies": {
-    "@ai-sdk/react": "^1.2.12",
+    "@ai-sdk/google": "2.0.0-beta.6",
+    "@ai-sdk/react": "2.0.0-beta.7",
     "@hono/node-server": "^1.15.0",
-    "ai": "^4.3.16",
+    "@tailwindcss/postcss": "^4.1.11",
+    "@tailwindcss/vite": "^4.1.11",
+    "@types/node": "^24.0.10",
+    "@types/prompts": "^2.4.9",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "ai": "5.0.0-beta.7",
+    "chokidar": "^4.0.3",
     "commander": "^14.0.0",
     "hono": "^4.8.4",
     "prettier": "^3.6.2",
     "prompts": "^2.4.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.11",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
     "vite": "^7.0.2",
     "vitest": "^3.2.4",
     "zod": "^3.25.74"
-  },
-  "devDependencies": {
-    "@ai-sdk/anthropic": "^1.2.12",
-    "@tailwindcss/vite": "^4.1.11",
-    "@types/node": "^24.0.10",
-    "@types/prompts": "^2.4.9",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "tailwindcss": "^4.1.11",
-    "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
   }
 }
