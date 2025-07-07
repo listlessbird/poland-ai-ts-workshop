@@ -101,7 +101,8 @@ export const runLocalDevServer = async (opts: { root: string }) => {
           name: "virtual-index-html",
           configureServer(server) {
             server.middlewares.use("/", (req, res, next) => {
-              if (req.url === "/" || req.url === "/index.html") {
+              const url = new URL(`http://localhost:3000${req.url ?? ""}`);
+              if (url.pathname === "/" || url.pathname === "/index.html") {
                 res.setHeader("Content-Type", "text/html");
                 res.end(indexHtmlTemplate);
                 return;
