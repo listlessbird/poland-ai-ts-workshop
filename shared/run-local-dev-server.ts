@@ -25,7 +25,10 @@ const indexHtmlTemplate = `<!doctype html>
 </html>
 `;
 
-const runHonoApp = async (opts: { root: string }) => {
+const runHonoApp = async (opts: {
+  root: string;
+  getModule: (url: string) => Promise<any>;
+}) => {
   const app = new Hono();
 
   app.use("/*", cors());
@@ -34,12 +37,9 @@ const runHonoApp = async (opts: { root: string }) => {
     const url = new URL(c.req.url);
 
     try {
-      const modulePath = path.join(
-        opts.root,
-        url.pathname.slice(1) + ".ts?hash=" + Date.now()
-      );
+      const modulePath = path.join(opts.root, url.pathname.slice(1) + ".ts");
 
-      const mod = await import(modulePath);
+      const mod = await opts.getModule(modulePath);
 
       const handler: SimpleAPIRoute | undefined =
         mod[c.req.method.toUpperCase()];
@@ -84,37 +84,44 @@ const runHonoApp = async (opts: { root: string }) => {
  * Server code is assumed to be at `./api` of the root directory.
  */
 export const runLocalDevServer = async (opts: { root: string }) => {
-  let [honoServer, viteServer] = await Promise.all([
-    runHonoApp(opts),
-    createServer({
-      configFile: false,
-      server: {
-        port: 3000,
-        open: true,
-        proxy: {
-          "/api": "http://localhost:3001",
+  const viteServer = await createServer({
+    configFile: false,
+    server: {
+      port: 3000,
+      open: true,
+      proxy: {
+        "/api": "http://localhost:3001",
+      },
+    },
+    plugins: [
+      tailwindcss(),
+      {
+        name: "virtual-index-html",
+        configureServer(server) {
+          server.middlewares.use("/", (req, res, next) => {
+            const url = new URL(`http://localhost:3000${req.url ?? ""}`);
+            if (url.pathname === "/" || url.pathname === "/index.html") {
+              res.setHeader("Content-Type", "text/html");
+              res.end(indexHtmlTemplate);
+              return;
+            }
+            next();
+          });
         },
       },
-      plugins: [
-        tailwindcss(),
-        {
-          name: "virtual-index-html",
-          configureServer(server) {
-            server.middlewares.use("/", (req, res, next) => {
-              const url = new URL(`http://localhost:3000${req.url ?? ""}`);
-              if (url.pathname === "/" || url.pathname === "/index.html") {
-                res.setHeader("Content-Type", "text/html");
-                res.end(indexHtmlTemplate);
-                return;
-              }
-              next();
-            });
-          },
-        },
-      ],
-      root: path.join(opts.root, "client"),
-    }).then((server) => server.listen()),
-  ]);
+    ],
+    root: path.join(opts.root, "client"),
+  });
+
+  const honoServer = await runHonoApp({
+    root: opts.root,
+    getModule: async (url) => {
+      const mod = await viteServer.ssrLoadModule(url);
+      return mod;
+    },
+  });
+
+  await viteServer.listen();
 
   viteServer.printUrls();
 
