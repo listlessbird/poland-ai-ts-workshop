@@ -35,7 +35,6 @@ export const POST = async (req: Request): Promise<Response> => {
 
   return result.toUIMessageStreamResponse({
     onFinish: async ({ responseMessage }) => {
-      console.log("onFinish", responseMessage);
       await appendToChatMessages(id, [responseMessage]);
     },
   });
