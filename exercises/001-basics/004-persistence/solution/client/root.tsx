@@ -61,11 +61,9 @@ const App = () => {
   );
 };
 
-const queryClient = new QueryClient();
-
 const root = createRoot(document.getElementById("root")!);
 root.render(
-  <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={new QueryClient()}>
     <App />
   </QueryClientProvider>
 );
