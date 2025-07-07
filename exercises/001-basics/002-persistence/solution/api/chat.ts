@@ -11,12 +11,21 @@ export const POST = async (req: Request): Promise<Response> => {
   const { messages, id } = body;
 
   let chat = await getChat(id);
+  const mostRecentMessage = messages[messages.length - 1];
+
+  if (!mostRecentMessage) {
+    return new Response("No messages provided", { status: 400 });
+  }
+
+  if (mostRecentMessage.role !== "user") {
+    return new Response("Last message must be from the user", { status: 400 });
+  }
 
   if (!chat) {
     const newChat = await createChat(id, messages);
     chat = newChat;
   } else {
-    await appendToChatMessages(id, messages);
+    await appendToChatMessages(id, [mostRecentMessage]);
   }
 
   const result = streamText({
@@ -26,6 +35,7 @@ export const POST = async (req: Request): Promise<Response> => {
 
   return result.toUIMessageStreamResponse({
     onFinish: async ({ responseMessage }) => {
+      console.log("onFinish", responseMessage);
       await appendToChatMessages(id, [responseMessage]);
     },
   });
