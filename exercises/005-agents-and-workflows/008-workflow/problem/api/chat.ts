@@ -56,7 +56,6 @@ export const POST = async (req: Request): Promise<Response> => {
     `,
   });
 
-  // Write final Slack message
   const finalSlackAttempt = streamText({
     model: google("gemini-2.0-flash-001"),
     system: WRITE_SLACK_MESSAGE_FINAL_SYSTEM,
@@ -67,7 +66,7 @@ export const POST = async (req: Request): Promise<Response> => {
       First draft:
       ${writeSlackResult.text}
 
-      Previous feedback:
+      Previous feedback (if any):
       ${evaluateSlackResult.text}
     `,
   });
