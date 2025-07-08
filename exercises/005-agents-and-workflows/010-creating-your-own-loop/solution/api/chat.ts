@@ -2,11 +2,18 @@ import { google } from "@ai-sdk/google";
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
-  generateObject,
   generateText,
+  streamText,
   type UIMessage,
 } from "ai";
-import { z } from "zod";
+
+export type MyMessage = UIMessage<
+  unknown,
+  {
+    "slack-message": string;
+    "slack-message-feedback": string;
+  }
+>;
 
 const formatMessageHistory = (messages: UIMessage[]) => {
   return messages
@@ -24,84 +31,109 @@ const formatMessageHistory = (messages: UIMessage[]) => {
     .join("\n");
 };
 
+const WRITE_SLACK_MESSAGE_FIRST_DRAFT_SYSTEM = `You are writing a Slack message for a user based on the conversation history. Only return the Slack message, no other text.`;
+const EVALUATE_SLACK_MESSAGE_SYSTEM = `You are evaluating the Slack message produced by the user.
+
+  Evaluation criteria:
+  - The Slack message should be written in a way that is easy to understand.
+  - It should be appropriate for a professional Slack conversation.
+`;
+
 export const POST = async (req: Request): Promise<Response> => {
-  const body: { messages: UIMessage[] } = await req.json();
+  const body: { messages: MyMessage[] } = await req.json();
   const { messages } = body;
 
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {
       let step = 0;
-
-      let slackMessageProduced = "";
-      let previousFeedback = "";
+      let mostRecentDraft = "";
+      let mostRecentFeedback = "";
 
       while (step < 2) {
         // Write Slack message
-        const writeSlackResult = await generateText({
+        const writeSlackResult = streamText({
           model: google("gemini-2.0-flash-001"),
-          system: `You are writing a Slack message for a user based on the conversation history. Only return the Slack message, no other text.`,
+          system: WRITE_SLACK_MESSAGE_FIRST_DRAFT_SYSTEM,
           prompt: `
-            Conversation history:
-            ${formatMessageHistory(messages)}
+          Conversation history:
+          ${formatMessageHistory(messages)}
 
-            Previous feedback (if any):
-            ${previousFeedback}
-          `,
+          Previous draft (if any):
+          ${mostRecentDraft}
+
+          Previous feedback (if any):
+          ${mostRecentFeedback}
+        `,
         });
 
-        slackMessageProduced = writeSlackResult.text;
+        const firstDraftId = crypto.randomUUID();
 
-        // Evaluate Slack message
-        const evaluateSlackResult = await generateObject({
-          model: google("gemini-2.0-flash-001"),
-          system: `You are evaluating the Slack message produced by the user.`,
-          schema: z.object({
-            shouldRegenerate: z.boolean(),
-            reasoning: z
-              .string()
-              .describe(
-                "The reasoning for the decision, including any changes to the Slack message that should be made."
-              ),
-          }),
-          prompt: `
-            Conversation history:
-            ${formatMessageHistory(messages)}
+        let firstDraft = "";
 
-            Slack message:
-            ${slackMessageProduced}
+        for await (const part of writeSlackResult.textStream) {
+          firstDraft += part;
 
-            Previous feedback (if any):
-            ${previousFeedback}
-          `,
-        });
-
-        const finalObject = evaluateSlackResult.object;
-
-        if (!finalObject.shouldRegenerate) {
-          break;
+          writer.write({
+            type: "data-slack-message",
+            data: firstDraft,
+            id: firstDraftId,
+          });
         }
 
-        previousFeedback = finalObject.reasoning;
+        mostRecentDraft = firstDraft;
+
+        // Evaluate Slack message
+        const evaluateSlackResult = streamText({
+          model: google("gemini-2.0-flash-001"),
+          system: EVALUATE_SLACK_MESSAGE_SYSTEM,
+          prompt: `
+            Conversation history:
+            ${formatMessageHistory(messages)}
+
+            Most recent draft:
+            ${mostRecentDraft}
+
+            Previous feedback (if any):
+            ${mostRecentFeedback}
+          `,
+        });
+
+        const feedbackId = crypto.randomUUID();
+
+        let feedback = "";
+
+        for await (const part of evaluateSlackResult.textStream) {
+          feedback += part;
+
+          writer.write({
+            type: "data-slack-message-feedback",
+            data: feedback,
+            id: feedbackId,
+          });
+        }
+
+        mostRecentFeedback = feedback;
 
         step++;
       }
 
-      if (slackMessageProduced) {
-        const id = crypto.randomUUID();
-        writer.write({
-          type: "text-start",
-          id,
-        });
-        writer.write({
-          type: "text-delta",
-          id,
-          delta: slackMessageProduced,
-        });
-        writer.write({
-          type: "text-end",
-          id,
-        });
-      }
+      const textPartId = crypto.randomUUID();
+
+      writer.write({
+        type: "text-start",
+        id: textPartId,
+      });
+
+      writer.write({
+        type: "text-delta",
+        delta: mostRecentDraft,
+        id: textPartId,
+      });
+
+      writer.write({
+        type: "text-end",
+        id: textPartId,
+      });
     },
   });
 

@@ -99,22 +99,20 @@ export const POST = async (req: Request): Promise<Response> => {
         sharedContext.step++;
       }
 
-      if (sharedContext.slackMessageProduced) {
-        const id = crypto.randomUUID();
-        writer.write({
-          type: "text-start",
-          id,
-        });
-        writer.write({
-          type: "text-delta",
-          id,
-          delta: sharedContext.slackMessageProduced,
-        });
-        writer.write({
-          type: "text-end",
-          id,
-        });
-      }
+      const id = crypto.randomUUID();
+      writer.write({
+        type: "text-start",
+        id,
+      });
+      writer.write({
+        type: "text-delta",
+        id,
+        delta: sharedContext.slackMessageProduced,
+      });
+      writer.write({
+        type: "text-end",
+        id,
+      });
     },
   });
 
