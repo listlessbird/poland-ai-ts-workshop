@@ -12,7 +12,7 @@ import { z } from "zod";
 
 class SharedContext {
   step = 0;
-  emailProduced = "";
+  slackMessageProduced = "";
   previousFeedback = "";
 
   shouldStop() {
@@ -51,10 +51,10 @@ export const POST = async (req: Request): Promise<Response> => {
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {
       while (!sharedContext.shouldStop()) {
-        // Write email
-        const writeEmailResult = await generateText({
+        // Write Slack message
+        const writeSlackResult = await generateText({
           model: google("gemini-2.0-flash-001"),
-          system: `You are writing an email for a user based on the conversation history. Only return the email, no other text.`,
+          system: `You are writing a Slack message for a user based on the conversation history. Only return the Slack message, no other text.`,
           prompt: `
             Conversation history:
             ${sharedContext.messageHistory()}
@@ -64,33 +64,33 @@ export const POST = async (req: Request): Promise<Response> => {
           `,
         });
 
-        sharedContext.emailProduced = writeEmailResult.text;
+        sharedContext.slackMessageProduced = writeSlackResult.text;
 
-        // Evaluate email
-        const evaluateEmailResult = await generateObject({
+        // Evaluate Slack message
+        const evaluateSlackResult = await generateObject({
           model: google("gemini-2.0-flash-001"),
-          system: `You are evaluating the email produced by the user.`,
+          system: `You are evaluating the Slack message produced by the user.`,
           schema: z.object({
             shouldRegenerate: z.boolean(),
             reasoning: z
               .string()
               .describe(
-                "The reasoning for the decision, including any changes to the email that should be made."
+                "The reasoning for the decision, including any changes to the Slack message that should be made."
               ),
           }),
           prompt: `
             Conversation history:
             ${sharedContext.messageHistory()}
 
-            Email:
-            ${sharedContext.emailProduced}
+            Slack message:
+            ${sharedContext.slackMessageProduced}
 
             Previous feedback (if any):
             ${sharedContext.previousFeedback}
           `,
         });
 
-        const finalObject = evaluateEmailResult.object;
+        const finalObject = evaluateSlackResult.object;
 
         if (!finalObject.shouldRegenerate) {
           break;
@@ -101,7 +101,7 @@ export const POST = async (req: Request): Promise<Response> => {
         sharedContext.step++;
       }
 
-      if (sharedContext.emailProduced) {
+      if (sharedContext.slackMessageProduced) {
         const id = crypto.randomUUID();
         writer.write({
           type: "text-start",
@@ -110,7 +110,7 @@ export const POST = async (req: Request): Promise<Response> => {
         writer.write({
           type: "text-delta",
           id,
-          delta: sharedContext.emailProduced,
+          delta: sharedContext.slackMessageProduced,
         });
         writer.write({
           type: "text-end",

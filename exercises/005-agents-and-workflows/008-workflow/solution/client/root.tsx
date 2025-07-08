@@ -8,7 +8,7 @@ const App = () => {
   const { messages, sendMessage } = useChat({});
 
   const [input, setInput] = useState(
-    `Write an email to your boss complaining about a colleague's hygiene.`
+    `Write a Slack message to your boss complaining about a colleague's hygiene.`
   );
 
   console.log(messages);

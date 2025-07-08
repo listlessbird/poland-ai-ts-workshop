@@ -32,14 +32,14 @@ export const POST = async (req: Request): Promise<Response> => {
     execute: async ({ writer }) => {
       let step = 0;
 
-      let emailProduced = "";
+      let slackMessageProduced = "";
       let previousFeedback = "";
 
       while (step < 2) {
-        // Write email
-        const writeEmailResult = await generateText({
+        // Write Slack message
+        const writeSlackResult = await generateText({
           model: google("gemini-2.0-flash-001"),
-          system: `You are writing an email for a user based on the conversation history. Only return the email, no other text.`,
+          system: `You are writing a Slack message for a user based on the conversation history. Only return the Slack message, no other text.`,
           prompt: `
             Conversation history:
             ${messageHistory(messages)}
@@ -49,33 +49,33 @@ export const POST = async (req: Request): Promise<Response> => {
           `,
         });
 
-        emailProduced = writeEmailResult.text;
+        slackMessageProduced = writeSlackResult.text;
 
-        // Evaluate email
-        const evaluateEmailResult = await generateObject({
+        // Evaluate Slack message
+        const evaluateSlackResult = await generateObject({
           model: google("gemini-2.0-flash-001"),
-          system: `You are evaluating the email produced by the user.`,
+          system: `You are evaluating the Slack message produced by the user.`,
           schema: z.object({
             shouldRegenerate: z.boolean(),
             reasoning: z
               .string()
               .describe(
-                "The reasoning for the decision, including any changes to the email that should be made."
+                "The reasoning for the decision, including any changes to the Slack message that should be made."
               ),
           }),
           prompt: `
             Conversation history:
             ${messageHistory(messages)}
 
-            Email:
-            ${emailProduced}
+            Slack message:
+            ${slackMessageProduced}
 
             Previous feedback (if any):
             ${previousFeedback}
           `,
         });
 
-        const finalObject = evaluateEmailResult.object;
+        const finalObject = evaluateSlackResult.object;
 
         if (!finalObject.shouldRegenerate) {
           break;
@@ -86,7 +86,7 @@ export const POST = async (req: Request): Promise<Response> => {
         step++;
       }
 
-      if (emailProduced) {
+      if (slackMessageProduced) {
         const id = crypto.randomUUID();
         writer.write({
           type: "text-start",
@@ -95,7 +95,7 @@ export const POST = async (req: Request): Promise<Response> => {
         writer.write({
           type: "text-delta",
           id,
-          delta: emailProduced,
+          delta: slackMessageProduced,
         });
         writer.write({
           type: "text-end",

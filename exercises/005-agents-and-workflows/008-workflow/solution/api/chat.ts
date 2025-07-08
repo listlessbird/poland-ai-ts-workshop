@@ -29,52 +29,53 @@ export const POST = async (req: Request): Promise<Response> => {
 
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {
-      // Write email
-      const writeEmailResult = await generateText({
+      // Write Slack message
+      const writeSlackResult = await generateText({
         model: google("gemini-2.0-flash-001"),
-        system: `You are writing an email for a user based on the conversation history. Only return the email, no other text.`,
+        system: `You are writing a Slack message for a user based on the conversation history. Only return the Slack message, no other text.`,
         prompt: `
           Conversation history:
           ${messageHistory(messages)}
         `,
       });
 
-      // Evaluate email
-      const evaluateEmailResult = await generateText({
+      // Evaluate Slack message
+      const evaluateSlackResult = await generateText({
         model: google("gemini-2.0-flash-001"),
-        system: `You are evaluating the email produced by the user.
+        system: `You are evaluating the Slack message produced by the user.
 
           Evaluation criteria:
-          - The email should be written in a way that is easy to understand.
+          - The Slack message should be written in a way that is easy to understand.
+          - It should be appropriate for a professional Slack conversation.
         `,
         prompt: `
           Conversation history:
           ${messageHistory(messages)}
 
-          Email:
-          ${writeEmailResult.text}
+          Slack message:
+          ${writeSlackResult.text}
         `,
       });
 
-      const finalEmailAttempt = streamText({
+      const finalSlackAttempt = streamText({
         model: google("gemini-2.0-flash-001"),
-        system: `You are writing an email based on the conversation history, a first draft, and some feedback given about that draft.
+        system: `You are writing a Slack message based on the conversation history, a first draft, and some feedback given about that draft.
         
-          Return only the final email, no other text.
+          Return only the final Slack message, no other text.
         `,
         prompt: `
           Conversation history:
           ${messageHistory(messages)}
 
           First draft:
-          ${writeEmailResult.text}
+          ${writeSlackResult.text}
 
           Previous feedback (if any):
-          ${evaluateEmailResult.text}
+          ${evaluateSlackResult.text}
         `,
       });
 
-      writer.merge(finalEmailAttempt.toUIMessageStream());
+      writer.merge(finalSlackAttempt.toUIMessageStream());
     },
   });
 

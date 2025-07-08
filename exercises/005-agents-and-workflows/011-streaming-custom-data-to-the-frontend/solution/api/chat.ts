@@ -11,14 +11,14 @@ import { z } from "zod";
 export type MyMessage = UIMessage<
   unknown,
   {
-    email: string;
-    "email-feedback": string;
+    slackMessage: string;
+    "slack-message-feedback": string;
   }
 >;
 
 class SharedContext {
   step = 0;
-  emailProduced = "";
+  slackMessageProduced = "";
   previousFeedback = "";
 
   shouldStop() {
@@ -57,10 +57,10 @@ export const POST = async (req: Request): Promise<Response> => {
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
       while (!sharedContext.shouldStop()) {
-        // Write email
-        const writeEmailResult = streamText({
+        // Write Slack message
+        const writeSlackResult = streamText({
           model: google("gemini-2.0-flash-001"),
-          system: `You are writing an email for a user based on the conversation history. Only return the email, no other text.`,
+          system: `You are writing a Slack message for a user based on the conversation history. Only return the Slack message, no other text.`,
           prompt: `
             Conversation history:
             ${sharedContext.messageHistory()}
@@ -72,37 +72,37 @@ export const POST = async (req: Request): Promise<Response> => {
 
         const id = crypto.randomUUID();
 
-        let email = "";
+        let slackMessage = "";
 
-        for await (const part of writeEmailResult.textStream) {
-          email += part;
+        for await (const part of writeSlackResult.textStream) {
+          slackMessage += part;
           writer.write({
-            type: "data-email",
-            data: email,
+            type: "data-slackMessage",
+            data: slackMessage,
             id,
           });
         }
 
-        sharedContext.emailProduced = await writeEmailResult.text;
+        sharedContext.slackMessageProduced = await writeSlackResult.text;
 
-        // Evaluate email
-        const evaluateEmailResult = streamObject({
+        // Evaluate Slack message
+        const evaluateSlackResult = streamObject({
           model: google("gemini-2.0-flash-001"),
-          system: `You are evaluating the email produced by the user.`,
+          system: `You are evaluating the Slack message produced by the user.`,
           schema: z.object({
             shouldRegenerate: z.boolean(),
             reasoning: z
               .string()
               .describe(
-                "The reasoning for the decision, including any changes to the email that should be made."
+                "The reasoning for the decision, including any changes to the Slack message that should be made."
               ),
           }),
           prompt: `
             Conversation history:
             ${sharedContext.messageHistory()}
 
-            Email:
-            ${sharedContext.emailProduced}
+            Slack message:
+            ${sharedContext.slackMessageProduced}
 
             Previous feedback (if any):
             ${sharedContext.previousFeedback}
@@ -111,17 +111,17 @@ export const POST = async (req: Request): Promise<Response> => {
 
         const feedbackId = crypto.randomUUID();
 
-        for await (const part of evaluateEmailResult.partialObjectStream) {
+        for await (const part of evaluateSlackResult.partialObjectStream) {
           if (part.reasoning) {
             writer.write({
-              type: "data-email-feedback",
+              type: "data-slack-message-feedback",
               data: part.reasoning,
               id: feedbackId,
             });
           }
         }
 
-        const finalObject = await evaluateEmailResult.object;
+        const finalObject = await evaluateSlackResult.object;
 
         if (!finalObject.shouldRegenerate) {
           break;
@@ -132,7 +132,7 @@ export const POST = async (req: Request): Promise<Response> => {
         sharedContext.step++;
       }
 
-      if (sharedContext.emailProduced) {
+      if (sharedContext.slackMessageProduced) {
         const id = crypto.randomUUID();
         writer.write({
           type: "text-start",
@@ -141,7 +141,7 @@ export const POST = async (req: Request): Promise<Response> => {
         writer.write({
           type: "text-delta",
           id,
-          delta: sharedContext.emailProduced,
+          delta: sharedContext.slackMessageProduced,
         });
         writer.write({
           type: "text-end",
