@@ -1,5 +1,5 @@
-import type { UIDataTypes, UIMessagePart, UITools } from "ai";
 import React, { type ReactNode } from "react";
+import type { MyMessage } from "../api/chat.ts";
 
 export const Wrapper = (props: { children: React.ReactNode }) => {
   return (
@@ -27,22 +27,46 @@ export const Message = ({
   parts,
 }: {
   role: string;
-  parts: UIMessagePart<UIDataTypes, UITools>[];
+  parts: MyMessage["parts"];
 }) => (
-  <div className="whitespace-pre-wrap my-6 leading-7">
-    <FadeIn className="font-semibold text-gray-200">
-      {role === "user" ? "User: " : "AI: "}
-    </FadeIn>
-    {parts.map((part, index) => {
-      if (part.type === "text") {
+  <div>
+    {parts.map((part) => {
+      if (part.type === "data-slack-message") {
         return (
-          <FadeIn key={index} className="text-gray-100">
-            {part.text}
-          </FadeIn>
+          <div key={part.id} className="mb-4">
+            <h2 className="text-gray-300 text-sm">First draft</h2>
+            <p className="text-gray-400 text-xs">{part.data}</p>
+          </div>
         );
       }
+
+      if (part.type === "data-slack-message-feedback") {
+        return (
+          <div key={part.id} className="mb-4">
+            <h2 className="text-gray-300 text-sm">Feedback</h2>
+            <p className="text-gray-400 text-xs">{part.data}</p>
+          </div>
+        );
+      }
+
       return null;
     })}
+
+    <div className="whitespace-pre-wrap my-6 leading-7">
+      <FadeIn className="font-semibold text-gray-200">
+        {role === "user" ? "User: " : "AI: "}
+      </FadeIn>
+      {parts.map((part, index) => {
+        if (part.type === "text") {
+          return (
+            <FadeIn key={index} className="text-gray-100">
+              {part.text}
+            </FadeIn>
+          );
+        }
+        return null;
+      })}
+    </div>
   </div>
 );
 
