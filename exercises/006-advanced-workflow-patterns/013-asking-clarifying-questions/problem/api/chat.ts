@@ -20,7 +20,7 @@ export const POST = async (req: Request): Promise<Response> => {
 
   const sharedContext = new LoopContext(messages);
 
-  const stream = createUIMessageStream({
+  const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
       while (!sharedContext.shouldStop()) {
         // Write Slack message

@@ -23,6 +23,12 @@ export const EVALUATE_SLACK_MESSAGE_SYSTEM = `You are evaluating the Slack messa
   - The Slack message should be written in a way that is easy to understand.
   - It should be appropriate for a professional Slack conversation.
 `;
+export const CHECK_FOR_CLARIFYING_QUESTIONS_SYSTEM = `You are checking to see if a Slack message draft requires any clarifying questions.
+  Specifically, ask about names, dates, and other details that are not obvious from the conversation history.
+  Do not ask for advice about the draft.
+  If we have all the basic information we need, do not ask for more information.
+  Asking for information too many times is annoying.
+`;
 
 export type MyMessage = UIMessage<
   unknown,
