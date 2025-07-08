@@ -46,7 +46,7 @@ export const POST = async (req: Request): Promise<Response> => {
             areClarifyingQuestionsNeeded: z
               .boolean()
               .describe(
-                "Whether writing the email requires any clarifying questions."
+                "Whether writing Slack message requires any clarifying questions."
               ),
           }),
         });
