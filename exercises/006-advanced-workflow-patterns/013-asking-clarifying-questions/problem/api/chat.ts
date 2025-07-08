@@ -83,26 +83,24 @@ export const POST = async (req: Request): Promise<Response> => {
 
         const feedbackId = crypto.randomUUID();
 
-        let feedback = "";
-
         for await (const part of evaluateSlackResult.partialObjectStream) {
           if (part.feedback) {
-            feedback = part.feedback;
-
             writer.write({
               type: "data-slack-message-feedback",
-              data: feedback,
+              data: part.feedback,
               id: feedbackId,
             });
           }
         }
 
+        const finalEvaluationObject = await evaluateSlackResult.object;
+
         // If the draft is good enough, break the loop
-        if ((await evaluateSlackResult.object).isGoodEnough) {
+        if (finalEvaluationObject.isGoodEnough) {
           break;
         }
 
-        sharedContext.previousFeedback = feedback;
+        sharedContext.previousFeedback = finalEvaluationObject.feedback;
 
         sharedContext.step++;
       }
