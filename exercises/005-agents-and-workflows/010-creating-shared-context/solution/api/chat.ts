@@ -23,7 +23,7 @@ class SharedContext {
     this.messages = messages;
   }
 
-  messageHistory(): string {
+  formatMessageHistory(): string {
     return this.messages
       .map((message) => {
         return `${message.role}: ${message.parts
@@ -55,7 +55,7 @@ export const POST = async (req: Request): Promise<Response> => {
           system: `You are writing a Slack message for a user based on the conversation history. Only return the Slack message, no other text.`,
           prompt: `
             Conversation history:
-            ${sharedContext.messageHistory()}
+            ${sharedContext.formatMessageHistory()}
 
             Previous feedback (if any):
             ${sharedContext.previousFeedback}
@@ -78,7 +78,7 @@ export const POST = async (req: Request): Promise<Response> => {
           }),
           prompt: `
             Conversation history:
-            ${sharedContext.messageHistory()}
+            ${sharedContext.formatMessageHistory()}
 
             Slack message:
             ${sharedContext.slackMessageProduced}

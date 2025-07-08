@@ -8,7 +8,7 @@ import {
 } from "ai";
 import { z } from "zod";
 
-const messageHistory = (messages: UIMessage[]) => {
+const formatMessageHistory = (messages: UIMessage[]) => {
   return messages
     .map((message) => {
       return `${message.role}: ${message.parts
@@ -42,7 +42,7 @@ export const POST = async (req: Request): Promise<Response> => {
           system: `You are writing a Slack message for a user based on the conversation history. Only return the Slack message, no other text.`,
           prompt: `
             Conversation history:
-            ${messageHistory(messages)}
+            ${formatMessageHistory(messages)}
 
             Previous feedback (if any):
             ${previousFeedback}
@@ -65,7 +65,7 @@ export const POST = async (req: Request): Promise<Response> => {
           }),
           prompt: `
             Conversation history:
-            ${messageHistory(messages)}
+            ${formatMessageHistory(messages)}
 
             Slack message:
             ${slackMessageProduced}
