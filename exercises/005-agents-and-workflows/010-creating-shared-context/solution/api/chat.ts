@@ -4,8 +4,6 @@ import {
   createUIMessageStreamResponse,
   generateObject,
   generateText,
-  streamObject,
-  streamText,
   type UIMessage,
 } from "ai";
 import { z } from "zod";
