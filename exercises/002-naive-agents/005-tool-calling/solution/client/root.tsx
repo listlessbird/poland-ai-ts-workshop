@@ -7,7 +7,7 @@ import "./tailwind.css";
 const App = () => {
   const { messages, sendMessage } = useChat({});
 
-  const [input, setInput] = useState("Are interfaces different from types?");
+  const [input, setInput] = useState("Tell me what todo items I have today.");
 
   return (
     <Wrapper>
