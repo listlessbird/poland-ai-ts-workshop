@@ -11,14 +11,8 @@ import { z } from "zod";
 export type MyMessage = UIMessage<
   unknown,
   {
-    "email-delta": {
-      id: string;
-      delta: string;
-    };
-    "email-feedback-delta": {
-      id: string;
-      delta: string;
-    };
+    email: string;
+    "email-feedback": string;
   }
 >;
 
@@ -81,13 +75,14 @@ export const POST = async (req: Request): Promise<Response> => {
 
         const id = crypto.randomUUID();
 
+        let email = "";
+
         for await (const part of writeEmailResult.textStream) {
+          email += part;
           writer.write({
-            type: "data-email-delta",
-            data: {
-              id,
-              delta: part,
-            },
+            type: "data-email",
+            data: email,
+            id,
           });
         }
 
@@ -122,11 +117,9 @@ export const POST = async (req: Request): Promise<Response> => {
         for await (const part of evaluateEmailResult.partialObjectStream) {
           if (part.reasoning) {
             writer.write({
-              type: "data-email-feedback-delta",
-              data: {
-                id: feedbackId,
-                delta: part.reasoning,
-              },
+              type: "data-email-feedback",
+              data: part.reasoning,
+              id: feedbackId,
             });
           }
         }
