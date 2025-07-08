@@ -56,31 +56,38 @@ program.arguments("<exerciseNumber>").action(async (exerciseNumber: string) => {
     process.exit(1);
   }
 
-  // Prompt user to choose which directory to run
-  const response = await prompts({
-    type: "autocomplete",
-    name: "selectedDirectory",
-    message: `Choose which directory to run for exercise ${exerciseNumber}:`,
-    choices: directories.map((dir) => ({
-      title: dir,
-      value: dir,
-    })),
-  });
+  let selectedDirectory: string;
 
-  if (!response.selectedDirectory) {
-    console.log("No directory selected. Exiting.");
-    process.exit(0);
+  // If there's only one directory, use it automatically
+  if (directories.length === 1) {
+    selectedDirectory = directories[0]!;
+    console.log(`Auto-selecting directory: ${selectedDirectory}`);
+  } else {
+    // Prompt user to choose which directory to run
+    const response = await prompts({
+      type: "autocomplete",
+      name: "selectedDirectory",
+      message: `Choose which directory to run for exercise ${exerciseNumber}:`,
+      choices: directories.map((dir) => ({
+        title: dir,
+        value: dir,
+      })),
+    });
+
+    if (!response.selectedDirectory) {
+      console.log("No directory selected. Exiting.");
+      process.exit(0);
+    }
+
+    selectedDirectory = response.selectedDirectory;
   }
 
-  const selectedPath = path.resolve(
-    foundExerciseDir,
-    response.selectedDirectory
-  );
+  const selectedPath = path.resolve(foundExerciseDir, selectedDirectory);
   const mainFilePath = path.resolve(selectedPath, "main.ts");
 
   if (!existsSync(mainFilePath)) {
     console.error(
-      `Could not find main.ts file in ${response.selectedDirectory} for exercise ${exerciseNumber}.`
+      `Could not find main.ts file in ${selectedDirectory} for exercise ${exerciseNumber}.`
     );
     process.exit(1);
   }
