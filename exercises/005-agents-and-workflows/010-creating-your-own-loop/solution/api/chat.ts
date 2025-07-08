@@ -43,7 +43,7 @@ export const POST = async (req: Request): Promise<Response> => {
   const body: { messages: MyMessage[] } = await req.json();
   const { messages } = body;
 
-  const stream = createUIMessageStream({
+  const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
       let step = 0;
       let mostRecentDraft = "";
