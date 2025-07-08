@@ -5,7 +5,6 @@ import {
   streamText,
   tool,
   type InferUITool,
-  type ToolCallUnion,
   type UIMessage,
 } from "ai";
 import { z } from "zod";
