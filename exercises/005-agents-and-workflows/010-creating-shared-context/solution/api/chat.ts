@@ -2,19 +2,13 @@ import { google } from "@ai-sdk/google";
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
+  generateObject,
+  generateText,
   streamObject,
   streamText,
   type UIMessage,
 } from "ai";
 import { z } from "zod";
-
-export type MyMessage = UIMessage<
-  unknown,
-  {
-    email: string;
-    "email-feedback": string;
-  }
->;
 
 class SharedContext {
   step = 0;
@@ -49,19 +43,16 @@ class SharedContext {
 }
 
 export const POST = async (req: Request): Promise<Response> => {
-  const body: { messages: MyMessage[] } = await req.json();
+  const body: { messages: UIMessage[] } = await req.json();
   const { messages } = body;
 
   const sharedContext = new SharedContext(messages);
 
-  const stream = createUIMessageStream<MyMessage>({
+  const stream = createUIMessageStream({
     execute: async ({ writer }) => {
-      writer.write({
-        type: "start",
-      });
       while (!sharedContext.shouldStop()) {
         // Write email
-        const writeEmailResult = streamText({
+        const writeEmailResult = await generateText({
           model: google("gemini-2.0-flash-001"),
           system: `You are writing an email for a user based on the conversation history. Only return the email, no other text.`,
           prompt: `
@@ -73,23 +64,10 @@ export const POST = async (req: Request): Promise<Response> => {
           `,
         });
 
-        const id = crypto.randomUUID();
-
-        let email = "";
-
-        for await (const part of writeEmailResult.textStream) {
-          email += part;
-          writer.write({
-            type: "data-email",
-            data: email,
-            id,
-          });
-        }
-
-        sharedContext.emailProduced = await writeEmailResult.text;
+        sharedContext.emailProduced = writeEmailResult.text;
 
         // Evaluate email
-        const evaluateEmailResult = streamObject({
+        const evaluateEmailResult = await generateObject({
           model: google("gemini-2.0-flash-001"),
           system: `You are evaluating the email produced by the user.`,
           schema: z.object({
@@ -112,19 +90,7 @@ export const POST = async (req: Request): Promise<Response> => {
           `,
         });
 
-        const feedbackId = crypto.randomUUID();
-
-        for await (const part of evaluateEmailResult.partialObjectStream) {
-          if (part.reasoning) {
-            writer.write({
-              type: "data-email-feedback",
-              data: part.reasoning,
-              id: feedbackId,
-            });
-          }
-        }
-
-        const finalObject = await evaluateEmailResult.object;
+        const finalObject = evaluateEmailResult.object;
 
         if (!finalObject.shouldRegenerate) {
           break;
@@ -151,10 +117,6 @@ export const POST = async (req: Request): Promise<Response> => {
           id,
         });
       }
-
-      writer.write({
-        type: "finish",
-      });
     },
   });
 
