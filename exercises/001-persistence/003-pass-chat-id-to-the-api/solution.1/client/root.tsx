@@ -1,4 +1,4 @@
-import { Chat, useChat, type UIMessage } from "@ai-sdk/react";
+import { useChat, type UIMessage } from "@ai-sdk/react";
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { ChatInput, Message, Wrapper } from "./components.tsx";
