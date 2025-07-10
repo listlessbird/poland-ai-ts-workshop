@@ -20,6 +20,7 @@
     "@tailwindcss/postcss": "^4.1.11",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-query": "^5.81.5",
+    "@tavily/core": "^0.5.9",
     "@types/node": "^24.0.10",
     "@types/prompts": "^2.4.9",
     "@types/react": "^19.1.8",
