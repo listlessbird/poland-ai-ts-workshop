@@ -1,16 +1,12 @@
 import { google } from "@ai-sdk/google";
+import { tavily } from "@tavily/core";
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
   streamObject,
   streamText,
-  type UIDataTypes,
   type UIMessage,
-  type UIMessagePart,
-  type UIMessageStreamPart,
-  type UIMessageStreamWriter,
 } from "ai";
-import { tavily } from "@tavily/core";
 import z from "zod";
 
 export type MyMessage = UIMessage<
@@ -46,40 +42,7 @@ export const POST = async (req: Request): Promise<Response> => {
 
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
-      const plan = streamText({
-        model: google("gemini-2.0-flash-001"),
-        system: `You are a helpful assistant that plans out a strategy to answer the question.
-          You should generate a plan that is relevant to the conversation history.
-          Think step by step.
-          Identify if the query requires a depth-first or breadth-first search.
-          Use plain text formatting.
-          `,
-        prompt: `
-          Conversation history:
-          ${formatMessageHistory(messages)}`,
-      });
-
-      const reasoningId = crypto.randomUUID();
-
-      writer.write({
-        type: "reasoning-start",
-        id: reasoningId,
-      });
-
-      for await (const delta of plan.textStream) {
-        writer.write({
-          type: "reasoning-delta",
-          id: reasoningId,
-          delta: delta,
-        });
-      }
-
-      writer.write({
-        type: "reasoning-end",
-        id: reasoningId,
-      });
-
-      const planText = await plan.text;
+      const planText = "NOT IMPLEMENTED YET";
 
       const queries = streamObject({
         model: google("gemini-2.0-flash-001"),
