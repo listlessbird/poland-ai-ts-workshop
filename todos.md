@@ -7,3 +7,7 @@ Add an ESLint config which errors with unused imports.
 ---
 
 Use react-markdown to render ALL the text.
+
+---
+
+Add `TODO` comments to each exercise.
