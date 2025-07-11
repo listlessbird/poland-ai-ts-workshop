@@ -1,12 +1,16 @@
-import { google } from "@ai-sdk/google";
-import { convertToModelMessages, streamText, type UIMessage } from "ai";
+import { google } from '@ai-sdk/google';
+import {
+  convertToModelMessages,
+  streamText,
+  type UIMessage,
+} from 'ai';
 
 export const POST = async (req: Request): Promise<Response> => {
   const body: { messages: UIMessage[] } = await req.json();
   const { messages } = body;
 
   const result = streamText({
-    model: google("gemini-2.5-flash"),
+    model: google('gemini-2.5-flash'),
     messages: convertToModelMessages(messages),
     system: `
       You are a helpful assistant that can use a sandboxed file system to create, edit and delete files.

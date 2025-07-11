@@ -1,12 +1,14 @@
-import { serve } from "@hono/node-server";
-import tailwindcss from "@tailwindcss/vite";
-import { Hono } from "hono";
-import { cors } from "hono/cors";
-import { once } from "node:events";
-import path from "node:path";
-import { createServer } from "vite";
+import { serve } from '@hono/node-server';
+import tailwindcss from '@tailwindcss/vite';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { once } from 'node:events';
+import path from 'node:path';
+import { createServer } from 'vite';
 
-type SimpleAPIRoute = (req: Request) => Promise<Response> | Response;
+type SimpleAPIRoute = (
+  req: Request,
+) => Promise<Response> | Response;
 
 const indexHtmlTemplate = `<!doctype html>
 <html lang="en">
@@ -31,13 +33,16 @@ const runHonoApp = async (opts: {
 }) => {
   const app = new Hono();
 
-  app.use("/*", cors());
+  app.use('/*', cors());
 
-  app.use("/*", async (c) => {
+  app.use('/*', async (c) => {
     const url = new URL(c.req.url);
 
     try {
-      const modulePath = path.join(opts.root, url.pathname.slice(1) + ".ts");
+      const modulePath = path.join(
+        opts.root,
+        url.pathname.slice(1) + '.ts',
+      );
 
       const mod = await opts.getModule(modulePath);
 
@@ -45,7 +50,7 @@ const runHonoApp = async (opts: {
         mod[c.req.method.toUpperCase()];
 
       if (!handler) {
-        c.res = new Response("Not found", { status: 404 });
+        c.res = new Response('Not found', { status: 404 });
         return;
       }
 
@@ -54,14 +59,16 @@ const runHonoApp = async (opts: {
     } catch (e) {
       if (
         e instanceof Error &&
-        "code" in e &&
-        e.code === "ERR_MODULE_NOT_FOUND"
+        'code' in e &&
+        e.code === 'ERR_MODULE_NOT_FOUND'
       ) {
-        c.res = new Response("Not found", { status: 404 });
+        c.res = new Response('Not found', { status: 404 });
         return;
       } else {
         console.error(e);
-        c.res = new Response("Internal server error", { status: 500 });
+        c.res = new Response('Internal server error', {
+          status: 500,
+        });
         return;
       }
     }
@@ -72,7 +79,7 @@ const runHonoApp = async (opts: {
     port: 3001,
   });
 
-  await once(honoServer, "listening");
+  await once(honoServer, 'listening');
 
   return honoServer;
 };
@@ -83,25 +90,32 @@ const runHonoApp = async (opts: {
  * Client code is assumed to be at `./client` of the root directory.
  * Server code is assumed to be at `./api` of the root directory.
  */
-export const runLocalDevServer = async (opts: { root: string }) => {
+export const runLocalDevServer = async (opts: {
+  root: string;
+}) => {
   const viteServer = await createServer({
     configFile: false,
     server: {
       port: 3000,
       open: true,
       proxy: {
-        "/api": "http://localhost:3001",
+        '/api': 'http://localhost:3001',
       },
     },
     plugins: [
       tailwindcss(),
       {
-        name: "virtual-index-html",
+        name: 'virtual-index-html',
         configureServer(server) {
-          server.middlewares.use("/", (req, res, next) => {
-            const url = new URL(`http://localhost:3000${req.url ?? ""}`);
-            if (url.pathname === "/" || url.pathname === "/index.html") {
-              res.setHeader("Content-Type", "text/html");
+          server.middlewares.use('/', (req, res, next) => {
+            const url = new URL(
+              `http://localhost:3000${req.url ?? ''}`,
+            );
+            if (
+              url.pathname === '/' ||
+              url.pathname === '/index.html'
+            ) {
+              res.setHeader('Content-Type', 'text/html');
               res.end(indexHtmlTemplate);
               return;
             }
@@ -110,7 +124,7 @@ export const runLocalDevServer = async (opts: { root: string }) => {
         },
       },
     ],
-    root: path.join(opts.root, "client"),
+    root: path.join(opts.root, 'client'),
   });
 
   const honoServer = await runHonoApp({

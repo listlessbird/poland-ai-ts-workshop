@@ -1,13 +1,13 @@
-import { google } from "@ai-sdk/google";
+import { google } from '@ai-sdk/google';
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
   streamObject,
   streamText,
   type UIMessage,
-} from "ai";
-import { tavily } from "@tavily/core";
-import z from "zod";
+} from 'ai';
+import { tavily } from '@tavily/core';
+import z from 'zod';
 
 export type MyMessage = UIMessage<
   unknown,
@@ -21,15 +21,15 @@ const formatMessageHistory = (messages: UIMessage[]) => {
     .map((message) => {
       return `${message.role}: ${message.parts
         .map((part) => {
-          if (part.type === "text") {
+          if (part.type === 'text') {
             return part.text;
           }
 
-          return "";
+          return '';
         })
-        .join("")}`;
+        .join('')}`;
     })
-    .join("\n");
+    .join('\n');
 };
 
 export const POST = async (req: Request): Promise<Response> => {
@@ -43,7 +43,7 @@ export const POST = async (req: Request): Promise<Response> => {
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
       const queries = streamObject({
-        model: google("gemini-2.0-flash-001"),
+        model: google('gemini-2.0-flash-001'),
         system: `You are a helpful assistant that generates queries to search the web for information.
           You should generate 3-5 queries that are relevant to the conversation history.`,
         schema: z.object({
@@ -60,10 +60,12 @@ export const POST = async (req: Request): Promise<Response> => {
       for await (const part of queries.partialObjectStream) {
         if (
           part.queries &&
-          part.queries.every((query) => typeof query === "string")
+          part.queries.every(
+            (query) => typeof query === 'string',
+          )
         ) {
           writer.write({
-            type: "data-queries",
+            type: 'data-queries',
             data: part.queries,
             id: queriesPartId,
           });
@@ -82,11 +84,11 @@ export const POST = async (req: Request): Promise<Response> => {
             query,
             results: searchResult,
           };
-        })
+        }),
       );
 
       const answer = streamText({
-        model: google("gemini-2.0-flash-001"),
+        model: google('gemini-2.0-flash-001'),
         system: `You are a helpful assistant that answers questions based on the search results.
           You should use the search results to answer the question.
           ALWAYS cite sources as markdown links.
@@ -103,12 +105,12 @@ export const POST = async (req: Request): Promise<Response> => {
               const resultsList = result.results.results
                 .map(
                   (res, j) =>
-                    `**${j + 1}. [${res.title}](${res.url ?? "#"})**\n\n${res.content ?? ""}`
+                    `**${j + 1}. [${res.title}](${res.url ?? '#'})**\n\n${res.content ?? ''}`,
                 )
-                .join("\n\n---\n\n");
+                .join('\n\n---\n\n');
               return `${queryHeader}\n${resultsList}`;
             })
-            .join("\n\n")}
+            .join('\n\n')}
         `,
       });
 

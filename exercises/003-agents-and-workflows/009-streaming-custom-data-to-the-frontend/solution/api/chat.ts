@@ -1,17 +1,17 @@
-import { google } from "@ai-sdk/google";
+import { google } from '@ai-sdk/google';
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
   generateText,
   streamText,
   type UIMessage,
-} from "ai";
+} from 'ai';
 
 export type MyMessage = UIMessage<
   unknown,
   {
-    "slack-message": string;
-    "slack-message-feedback": string;
+    'slack-message': string;
+    'slack-message-feedback': string;
   }
 >;
 
@@ -20,15 +20,15 @@ const formatMessageHistory = (messages: UIMessage[]) => {
     .map((message) => {
       return `${message.role}: ${message.parts
         .map((part) => {
-          if (part.type === "text") {
+          if (part.type === 'text') {
             return part.text;
           }
 
-          return "";
+          return '';
         })
-        .join("")}`;
+        .join('')}`;
     })
-    .join("\n");
+    .join('\n');
 };
 
 const WRITE_SLACK_MESSAGE_FIRST_DRAFT_SYSTEM = `You are writing a Slack message for a user based on the conversation history. Only return the Slack message, no other text.`;
@@ -51,7 +51,7 @@ export const POST = async (req: Request): Promise<Response> => {
     execute: async ({ writer }) => {
       // Write Slack message
       const writeSlackResult = streamText({
-        model: google("gemini-2.0-flash-001"),
+        model: google('gemini-2.0-flash-001'),
         system: WRITE_SLACK_MESSAGE_FIRST_DRAFT_SYSTEM,
         prompt: `
           Conversation history:
@@ -61,13 +61,13 @@ export const POST = async (req: Request): Promise<Response> => {
 
       const firstDraftId = crypto.randomUUID();
 
-      let firstDraft = "";
+      let firstDraft = '';
 
       for await (const part of writeSlackResult.textStream) {
         firstDraft += part;
 
         writer.write({
-          type: "data-slack-message",
+          type: 'data-slack-message',
           data: firstDraft,
           id: firstDraftId,
         });
@@ -75,7 +75,7 @@ export const POST = async (req: Request): Promise<Response> => {
 
       // Evaluate Slack message
       const evaluateSlackResult = streamText({
-        model: google("gemini-2.0-flash-001"),
+        model: google('gemini-2.0-flash-001'),
         system: EVALUATE_SLACK_MESSAGE_SYSTEM,
         prompt: `
           Conversation history:
@@ -88,13 +88,13 @@ export const POST = async (req: Request): Promise<Response> => {
 
       const feedbackId = crypto.randomUUID();
 
-      let feedback = "";
+      let feedback = '';
 
       for await (const part of evaluateSlackResult.textStream) {
         feedback += part;
 
         writer.write({
-          type: "data-slack-message-feedback",
+          type: 'data-slack-message-feedback',
           data: feedback,
           id: feedbackId,
         });
@@ -102,7 +102,7 @@ export const POST = async (req: Request): Promise<Response> => {
 
       // Write final Slack message
       const finalSlackAttempt = streamText({
-        model: google("gemini-2.0-flash-001"),
+        model: google('gemini-2.0-flash-001'),
         system: WRITE_SLACK_MESSAGE_FINAL_SYSTEM,
         prompt: `
           Conversation history:

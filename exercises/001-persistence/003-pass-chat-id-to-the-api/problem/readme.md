@@ -7,13 +7,14 @@ That means we're going to need to pass an `id` to `/api/chat` with every request
 I've added a console log to our API chat endpoint.
 
 ```ts
-import { type UIMessage } from "ai";
+import { type UIMessage } from 'ai';
 
 export const POST = async (req: Request): Promise<Response> => {
-  const body: { messages: UIMessage[]; id: string } = await req.json();
+  const body: { messages: UIMessage[]; id: string } =
+    await req.json();
   const { messages, id } = body;
 
-  console.log("id", id);
+  console.log('id', id);
 
   // ...
 };

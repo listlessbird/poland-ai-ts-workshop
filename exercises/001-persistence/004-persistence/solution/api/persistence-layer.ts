@@ -1,6 +1,6 @@
-import { promises as fs } from "fs";
-import { join } from "path";
-import type { UIMessage } from "ai";
+import { promises as fs } from 'fs';
+import { join } from 'path';
+import type { UIMessage } from 'ai';
 
 export namespace DB {
   // Types for our persistence layer
@@ -17,13 +17,17 @@ export namespace DB {
 }
 
 // File path for storing the data
-const DATA_FILE_PATH = join(process.cwd(), "data", "chats.local.json");
+const DATA_FILE_PATH = join(
+  process.cwd(),
+  'data',
+  'chats.local.json',
+);
 
 /**
  * Ensure the data directory exists
  */
 async function ensureDataDirectory(): Promise<void> {
-  const dataDir = join(process.cwd(), "data");
+  const dataDir = join(process.cwd(), 'data');
   try {
     await fs.access(dataDir);
   } catch {
@@ -37,7 +41,7 @@ async function ensureDataDirectory(): Promise<void> {
 export async function loadChats(): Promise<DB.Chat[]> {
   try {
     await ensureDataDirectory();
-    const data = await fs.readFile(DATA_FILE_PATH, "utf-8");
+    const data = await fs.readFile(DATA_FILE_PATH, 'utf-8');
     const parsed: DB.PersistenceData = JSON.parse(data);
     return parsed.chats || [];
   } catch (error) {
@@ -49,10 +53,16 @@ export async function loadChats(): Promise<DB.Chat[]> {
 /**
  * Save all chats to the JSON file
  */
-export async function saveChats(chats: DB.Chat[]): Promise<void> {
+export async function saveChats(
+  chats: DB.Chat[],
+): Promise<void> {
   await ensureDataDirectory();
   const data: DB.PersistenceData = { chats };
-  await fs.writeFile(DATA_FILE_PATH, JSON.stringify(data, null, 2), "utf-8");
+  await fs.writeFile(
+    DATA_FILE_PATH,
+    JSON.stringify(data, null, 2),
+    'utf-8',
+  );
 }
 
 /**
@@ -60,7 +70,7 @@ export async function saveChats(chats: DB.Chat[]): Promise<void> {
  */
 export async function createChat(
   id: string,
-  initialMessages: UIMessage[] = []
+  initialMessages: UIMessage[] = [],
 ): Promise<DB.Chat> {
   const chats = await loadChats();
   const now = new Date().toISOString();
@@ -81,7 +91,9 @@ export async function createChat(
 /**
  * Get a chat by ID
  */
-export async function getChat(chatId: string): Promise<DB.Chat | null> {
+export async function getChat(
+  chatId: string,
+): Promise<DB.Chat | null> {
   const chats = await loadChats();
   return chats.find((chat) => chat.id === chatId) || null;
 }
@@ -91,16 +103,21 @@ export async function getChat(chatId: string): Promise<DB.Chat | null> {
  */
 export async function appendToChatMessages(
   chatId: string,
-  messages: UIMessage[]
+  messages: UIMessage[],
 ): Promise<DB.Chat | null> {
   const chats = await loadChats();
-  const chatIndex = chats.findIndex((chat) => chat.id === chatId);
+  const chatIndex = chats.findIndex(
+    (chat) => chat.id === chatId,
+  );
 
   if (chatIndex === -1) {
     return null;
   }
 
-  chats[chatIndex]!.messages = [...chats[chatIndex]!.messages, ...messages];
+  chats[chatIndex]!.messages = [
+    ...chats[chatIndex]!.messages,
+    ...messages,
+  ];
   chats[chatIndex]!.updatedAt = new Date().toISOString();
 
   await saveChats(chats);
@@ -112,10 +129,12 @@ export async function appendToChatMessages(
  */
 export async function addMessageToChat(
   chatId: string,
-  message: UIMessage
+  message: UIMessage,
 ): Promise<DB.Chat | null> {
   const chats = await loadChats();
-  const chatIndex = chats.findIndex((chat) => chat.id === chatId);
+  const chatIndex = chats.findIndex(
+    (chat) => chat.id === chatId,
+  );
 
   if (chatIndex === -1) {
     return null;
@@ -131,10 +150,14 @@ export async function addMessageToChat(
 /**
  * Delete a chat
  */
-export async function deleteChat(chatId: string): Promise<boolean> {
+export async function deleteChat(
+  chatId: string,
+): Promise<boolean> {
   const chats = await loadChats();
   const initialLength = chats.length;
-  const filteredChats = chats.filter((chat) => chat.id !== chatId);
+  const filteredChats = chats.filter(
+    (chat) => chat.id !== chatId,
+  );
 
   if (filteredChats.length === initialLength) {
     return false; // Chat not found

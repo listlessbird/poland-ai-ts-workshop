@@ -22,10 +22,13 @@ export const getSearchParams = () => {
  * navigate(`?chatId=${chat.id}`, "replace");
  * ```
  */
-export const navigate = (url: string, method: "push" | "replace" = "push") => {
-  if (method === "push") {
-    window.history.pushState({}, "", url);
+export const navigate = (
+  url: string,
+  method: 'push' | 'replace' = 'push',
+) => {
+  if (method === 'push') {
+    window.history.pushState({}, '', url);
   } else {
-    window.history.replaceState({}, "", url);
+    window.history.replaceState({}, '', url);
   }
 };

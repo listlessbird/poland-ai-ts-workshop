@@ -1,13 +1,13 @@
-import { google } from "@ai-sdk/google";
+import { google } from '@ai-sdk/google';
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
   streamObject,
   streamText,
   type UIMessage,
-} from "ai";
-import z from "zod";
-import { searchTypeScriptDocs } from "./bm25.ts";
+} from 'ai';
+import z from 'zod';
+import { searchTypeScriptDocs } from './bm25.ts';
 
 export type MyMessage = UIMessage<
   unknown,
@@ -21,15 +21,15 @@ const formatMessageHistory = (messages: UIMessage[]) => {
     .map((message) => {
       return `${message.role}: ${message.parts
         .map((part) => {
-          if (part.type === "text") {
+          if (part.type === 'text') {
             return part.text;
           }
 
-          return "";
+          return '';
         })
-        .join("")}`;
+        .join('')}`;
     })
-    .join("\n");
+    .join('\n');
 };
 
 export const POST = async (req: Request): Promise<Response> => {
@@ -39,7 +39,7 @@ export const POST = async (req: Request): Promise<Response> => {
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
       const keywords = streamObject({
-        model: google("gemini-2.0-flash-001"),
+        model: google('gemini-2.0-flash-001'),
         system: `You are a helpful TypeScript developer, able to search the TypeScript docs for information.
           Your job is to generate a list of keywords which will be used to search the TypeScript docs.
         `,
@@ -57,10 +57,12 @@ export const POST = async (req: Request): Promise<Response> => {
       for await (const part of keywords.partialObjectStream) {
         if (
           part.keywords &&
-          part.keywords.every((keyword) => typeof keyword === "string")
+          part.keywords.every(
+            (keyword) => typeof keyword === 'string',
+          )
         ) {
           writer.write({
-            type: "data-queries",
+            type: 'data-queries',
             data: part.keywords,
             id: keywordsPartId,
           });
@@ -69,37 +71,39 @@ export const POST = async (req: Request): Promise<Response> => {
 
       const allKeywords = (await keywords.object).keywords;
 
-      const searchResults = await searchTypeScriptDocs(allKeywords);
+      const searchResults =
+        await searchTypeScriptDocs(allKeywords);
 
       const topResults = searchResults.slice(0, 10);
 
       const answer = streamText({
-        model: google("gemini-2.0-flash-001"),
+        model: google('gemini-2.0-flash-001'),
         system: `You are a helpful TypeScript documentation assistant that answers questions based on the TypeScript documentation.
           You should use the provided documentation snippets to answer questions accurately.
           ALWAYS cite sources using markdown formatting with the filename as the source.
           Be concise but thorough in your explanations.
         `,
         prompt: [
-          "## Conversation History",
+          '## Conversation History',
           formatMessageHistory(messages),
-          "## TypeScript Documentation Snippets",
+          '## TypeScript Documentation Snippets',
           ...topResults.map((result, i) => {
-            const filename = result.doc?.filename || `document-${i + 1}`;
+            const filename =
+              result.doc?.filename || `document-${i + 1}`;
 
-            const content = result.doc?.content || "";
+            const content = result.doc?.content || '';
             const score = result.score;
 
             return [
-              `### 📄 Source ${i + 1}: [${filename}](#${filename.replace(/[^a-zA-Z0-9]/g, "-")})`,
+              `### 📄 Source ${i + 1}: [${filename}](#${filename.replace(/[^a-zA-Z0-9]/g, '-')})`,
               `**Relevance Score:** ${score.toFixed(3)}`,
               content,
-              "---",
-            ].join("\n\n");
+              '---',
+            ].join('\n\n');
           }),
-          "## Instructions",
+          '## Instructions',
           "Based on the TypeScript documentation above, please answer the user's question. Always cite your sources using the filename in markdown format.",
-        ].join("\n\n"),
+        ].join('\n\n'),
       });
 
       writer.merge(answer.toUIMessageStream());

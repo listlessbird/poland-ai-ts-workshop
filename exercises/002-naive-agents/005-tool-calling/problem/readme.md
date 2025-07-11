@@ -15,7 +15,7 @@ I've also given you a brief system prompt inside `chat.ts`.
 
 ```ts
 const result = streamText({
-  model: google("gemini-2.5-flash"),
+  model: google('gemini-2.5-flash'),
   messages: convertToModelMessages(messages),
   system: `
     You are a helpful assistant that can use a sandboxed file system to create, edit and delete files.

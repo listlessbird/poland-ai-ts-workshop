@@ -3,7 +3,7 @@ You'll notice here we can add an `onFinish` callback to the `toUIMessageStreamRe
 ```ts
 return result.toUIMessageStreamResponse({
   onFinish: async ({ responseMessage }) => {
-    console.log("onFinish", responseMessage);
+    console.log('onFinish', responseMessage);
   },
 });
 ```

@@ -1,13 +1,13 @@
-import path from "path";
-import { readdir, readFile, writeFile } from "fs/promises";
-import { cosineSimilarity, embed, embedMany } from "ai";
-import { google } from "@ai-sdk/google";
-import { existsSync } from "fs";
+import path from 'path';
+import { readdir, readFile, writeFile } from 'fs/promises';
+import { cosineSimilarity, embed, embedMany } from 'ai';
+import { google } from '@ai-sdk/google';
+import { existsSync } from 'fs';
 
 export const loadTsDocs = async () => {
   const TS_DOCS_LOCATION = path.resolve(
     import.meta.dirname,
-    "../../../../../datasets/ts-docs"
+    '../../../../../datasets/ts-docs',
   );
 
   const files = await readdir(TS_DOCS_LOCATION);
@@ -15,12 +15,12 @@ export const loadTsDocs = async () => {
   const docs = await Promise.all(
     files.map(async (file) => {
       const filePath = path.join(TS_DOCS_LOCATION, file);
-      const content = await readFile(filePath, "utf8");
+      const content = await readFile(filePath, 'utf8');
       return {
         filename: file,
         content,
       };
-    })
+    }),
   );
 
   return new Map(docs.map((doc) => [doc.filename, doc]));
@@ -29,41 +29,54 @@ export const loadTsDocs = async () => {
 export type Embeddings = Record<string, number[]>;
 
 const getExistingEmbeddingsPath = (cacheKey: string) => {
-  return path.resolve(process.cwd(), "data", `${cacheKey}.json`);
+  return path.resolve(process.cwd(), 'data', `${cacheKey}.json`);
 };
 
 const saveEmbeddings = async (
   cacheKey: string,
-  embeddingsResult: Embeddings
+  embeddingsResult: Embeddings,
 ) => {
-  const existingEmbeddingsPath = getExistingEmbeddingsPath(cacheKey);
+  const existingEmbeddingsPath =
+    getExistingEmbeddingsPath(cacheKey);
 
-  await writeFile(existingEmbeddingsPath, JSON.stringify(embeddingsResult));
+  await writeFile(
+    existingEmbeddingsPath,
+    JSON.stringify(embeddingsResult),
+  );
 };
 
 export const getExistingEmbeddings = async (
-  cacheKey: string
+  cacheKey: string,
 ): Promise<Embeddings | undefined> => {
-  const existingEmbeddingsPath = getExistingEmbeddingsPath(cacheKey);
+  const existingEmbeddingsPath =
+    getExistingEmbeddingsPath(cacheKey);
 
   if (!existsSync(existingEmbeddingsPath)) {
     return;
   }
 
   try {
-    const existingEmbeddings = await readFile(existingEmbeddingsPath, "utf8");
+    const existingEmbeddings = await readFile(
+      existingEmbeddingsPath,
+      'utf8',
+    );
     return JSON.parse(existingEmbeddings);
   } catch (error) {
     return;
   }
 };
 
-const myEmbeddingModel = google.textEmbeddingModel("text-embedding-004");
+const myEmbeddingModel = google.textEmbeddingModel(
+  'text-embedding-004',
+);
 
-export const embedTsDocs = async (cacheKey: string): Promise<Embeddings> => {
+export const embedTsDocs = async (
+  cacheKey: string,
+): Promise<Embeddings> => {
   const docs = await loadTsDocs();
 
-  const existingEmbeddings = await getExistingEmbeddings(cacheKey);
+  const existingEmbeddings =
+    await getExistingEmbeddings(cacheKey);
 
   if (existingEmbeddings) {
     return existingEmbeddings;
@@ -103,11 +116,12 @@ export const embedTsDocs = async (cacheKey: string): Promise<Embeddings> => {
 };
 
 export const searchTypeScriptDocs = async (query: string) => {
-  const embeddings = await getExistingEmbeddings(EMBED_CACHE_KEY);
+  const embeddings =
+    await getExistingEmbeddings(EMBED_CACHE_KEY);
 
   if (!embeddings) {
     throw new Error(
-      `Embeddings not yet created under this cache key: ${EMBED_CACHE_KEY}`
+      `Embeddings not yet created under this cache key: ${EMBED_CACHE_KEY}`,
     );
   }
   const docs = await loadTsDocs();
@@ -117,15 +131,17 @@ export const searchTypeScriptDocs = async (query: string) => {
     value: query,
   });
 
-  const scores = Object.entries(embeddings).map(([key, value]) => {
-    return {
-      score: cosineSimilarity(queryEmbedding.embedding, value),
-      filename: key,
-      content: docs.get(key)!.content,
-    };
-  });
+  const scores = Object.entries(embeddings).map(
+    ([key, value]) => {
+      return {
+        score: cosineSimilarity(queryEmbedding.embedding, value),
+        filename: key,
+        content: docs.get(key)!.content,
+      };
+    },
+  );
 
   return scores.sort((a, b) => b.score - a.score);
 };
 
-export const EMBED_CACHE_KEY = "ts-docs-google";
+export const EMBED_CACHE_KEY = 'ts-docs-google';

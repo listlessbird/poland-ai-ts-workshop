@@ -1,19 +1,19 @@
-import { google } from "@ai-sdk/google";
-import { tavily } from "@tavily/core";
+import { google } from '@ai-sdk/google';
+import { tavily } from '@tavily/core';
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
   streamObject,
   streamText,
   type UIMessage,
-} from "ai";
-import z from "zod";
+} from 'ai';
+import z from 'zod';
 
 export type MyMessage = UIMessage<
   unknown,
   {
     queries: string[];
-    "plan-acceptance": {
+    'plan-acceptance': {
       accepted: boolean;
       feedback?: string;
     };
@@ -21,48 +21,48 @@ export type MyMessage = UIMessage<
 >;
 
 type PlanStatus =
-  | { status: "no-plan-generated" }
-  | { status: "plan-rejected"; feedback: string }
-  | { status: "plan-accepted"; plan: string }
-  | { status: "empty-messages" }
-  | { status: "invalid-message-history" }
-  | { status: "no-feedback-provided" };
+  | { status: 'no-plan-generated' }
+  | { status: 'plan-rejected'; feedback: string }
+  | { status: 'plan-accepted'; plan: string }
+  | { status: 'empty-messages' }
+  | { status: 'invalid-message-history' }
+  | { status: 'no-feedback-provided' };
 
 const getPlanStatus = (messages: MyMessage[]): PlanStatus => {
   const mostRecentMessage = messages[messages.length - 1];
 
   if (!mostRecentMessage) {
-    return { status: "empty-messages" };
+    return { status: 'empty-messages' };
   }
 
   const plan = messages
     .findLast((message) =>
-      message.parts.some((part) => part.type === "reasoning")
+      message.parts.some((part) => part.type === 'reasoning'),
     )
-    ?.parts.find((part) => part.type === "reasoning")?.text;
+    ?.parts.find((part) => part.type === 'reasoning')?.text;
 
   if (!plan) {
-    return { status: "no-plan-generated" };
+    return { status: 'no-plan-generated' };
   }
 
   const messageAcceptancePart = mostRecentMessage?.parts.find(
-    (part) => part.type === "data-plan-acceptance"
+    (part) => part.type === 'data-plan-acceptance',
   );
 
   if (!messageAcceptancePart) {
-    return { status: "invalid-message-history" };
+    return { status: 'invalid-message-history' };
   }
 
   if (messageAcceptancePart.data.accepted) {
-    return { status: "plan-accepted", plan };
+    return { status: 'plan-accepted', plan };
   }
 
   if (!messageAcceptancePart.data.feedback) {
-    return { status: "no-feedback-provided" };
+    return { status: 'no-feedback-provided' };
   }
 
   return {
-    status: "plan-rejected",
+    status: 'plan-rejected',
     feedback: messageAcceptancePart.data.feedback,
   };
 };
@@ -72,15 +72,15 @@ const formatMessageHistory = (messages: UIMessage[]) => {
     .map((message) => {
       return `${message.role}: ${message.parts
         .map((part) => {
-          if (part.type === "text") {
+          if (part.type === 'text') {
             return part.text;
           }
 
-          return "";
+          return '';
         })
-        .join("")}`;
+        .join('')}`;
     })
-    .join("\n");
+    .join('\n');
 };
 
 export const POST = async (req: Request): Promise<Response> => {
@@ -93,27 +93,31 @@ export const POST = async (req: Request): Promise<Response> => {
 
   const planStatus = getPlanStatus(messages);
 
-  if (planStatus.status === "empty-messages") {
-    return new Response("Invalid message history", { status: 400 });
+  if (planStatus.status === 'empty-messages') {
+    return new Response('Invalid message history', {
+      status: 400,
+    });
   }
 
-  if (planStatus.status === "invalid-message-history") {
-    return new Response("Invalid message history", { status: 400 });
+  if (planStatus.status === 'invalid-message-history') {
+    return new Response('Invalid message history', {
+      status: 400,
+    });
   }
 
-  if (planStatus.status === "no-feedback-provided") {
-    return new Response("No feedback provided", { status: 400 });
+  if (planStatus.status === 'no-feedback-provided') {
+    return new Response('No feedback provided', { status: 400 });
   }
 
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
       let planText: string;
 
-      if (planStatus.status === "plan-accepted") {
+      if (planStatus.status === 'plan-accepted') {
         planText = planStatus.plan;
       } else {
         const plan = streamText({
-          model: google("gemini-2.0-flash-001"),
+          model: google('gemini-2.0-flash-001'),
           system: `You are a helpful assistant that plans out a strategy to answer the question.
             You should generate a plan that is relevant to the conversation history.
             Think step by step.
@@ -121,10 +125,10 @@ export const POST = async (req: Request): Promise<Response> => {
             Use plain text formatting.
 
             ${
-              planStatus.status === "plan-rejected"
+              planStatus.status === 'plan-rejected'
                 ? `Previous plan feedback:
                   ${planStatus.feedback}`
-                : ""
+                : ''
             }
             `,
           prompt: `
@@ -135,20 +139,20 @@ export const POST = async (req: Request): Promise<Response> => {
         const reasoningId = crypto.randomUUID();
 
         writer.write({
-          type: "reasoning-start",
+          type: 'reasoning-start',
           id: reasoningId,
         });
 
         for await (const delta of plan.textStream) {
           writer.write({
-            type: "reasoning-delta",
+            type: 'reasoning-delta',
             id: reasoningId,
             delta: delta,
           });
         }
 
         writer.write({
-          type: "reasoning-end",
+          type: 'reasoning-end',
           id: reasoningId,
         });
 
@@ -156,7 +160,7 @@ export const POST = async (req: Request): Promise<Response> => {
       }
 
       const queries = streamObject({
-        model: google("gemini-2.0-flash-001"),
+        model: google('gemini-2.0-flash-001'),
         system: `You are a helpful assistant that generates queries to search the web for information.
           You should generate 3-5 queries that are relevant to the conversation history.`,
         schema: z.object({
@@ -176,10 +180,12 @@ export const POST = async (req: Request): Promise<Response> => {
       for await (const part of queries.partialObjectStream) {
         if (
           part.queries &&
-          part.queries.every((query) => typeof query === "string")
+          part.queries.every(
+            (query) => typeof query === 'string',
+          )
         ) {
           writer.write({
-            type: "data-queries",
+            type: 'data-queries',
             data: part.queries,
             id: queriesPartId,
           });
@@ -198,11 +204,11 @@ export const POST = async (req: Request): Promise<Response> => {
             query,
             results: searchResult,
           };
-        })
+        }),
       );
 
       const answer = streamText({
-        model: google("gemini-2.0-flash-001"),
+        model: google('gemini-2.0-flash-001'),
         system: `You are a helpful assistant that answers questions based on the search results.
           You should use the search results to answer the question.
           ALWAYS cite sources as markdown links.
@@ -222,12 +228,12 @@ export const POST = async (req: Request): Promise<Response> => {
               const resultsList = result.results.results
                 .map(
                   (res, j) =>
-                    `**${j + 1}. [${res.title}](${res.url ?? "#"})**\n\n${res.content ?? ""}`
+                    `**${j + 1}. [${res.title}](${res.url ?? '#'})**\n\n${res.content ?? ''}`,
                 )
-                .join("\n\n---\n\n");
+                .join('\n\n---\n\n');
               return `${queryHeader}\n${resultsList}`;
             })
-            .join("\n\n")}
+            .join('\n\n')}
         `,
       });
 

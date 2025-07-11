@@ -1,4 +1,4 @@
-import { google } from "@ai-sdk/google";
+import { google } from '@ai-sdk/google';
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
@@ -6,14 +6,14 @@ import {
   streamObject,
   streamText,
   type UIMessage,
-} from "ai";
-import z from "zod";
+} from 'ai';
+import z from 'zod';
 
 export type MyMessage = UIMessage<
   unknown,
   {
-    "slack-message": string;
-    "slack-message-feedback": string;
+    'slack-message': string;
+    'slack-message-feedback': string;
   }
 >;
 
@@ -22,15 +22,15 @@ const formatMessageHistory = (messages: UIMessage[]) => {
     .map((message) => {
       return `${message.role}: ${message.parts
         .map((part) => {
-          if (part.type === "text") {
+          if (part.type === 'text') {
             return part.text;
           }
 
-          return "";
+          return '';
         })
-        .join("")}`;
+        .join('')}`;
     })
-    .join("\n");
+    .join('\n');
 };
 
 const WRITE_SLACK_MESSAGE_FIRST_DRAFT_SYSTEM = `You are writing a Slack message for a user based on the conversation history. Only return the Slack message, no other text.`;
@@ -48,13 +48,13 @@ export const POST = async (req: Request): Promise<Response> => {
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
       let step = 0;
-      let mostRecentDraft = "";
-      let mostRecentFeedback = "";
+      let mostRecentDraft = '';
+      let mostRecentFeedback = '';
 
       while (step < 2) {
         // Write Slack message
         const writeSlackResult = streamText({
-          model: google("gemini-2.0-flash-001"),
+          model: google('gemini-2.0-flash-001'),
           system: WRITE_SLACK_MESSAGE_FIRST_DRAFT_SYSTEM,
           prompt: `
           Conversation history:
@@ -70,13 +70,13 @@ export const POST = async (req: Request): Promise<Response> => {
 
         const firstDraftId = crypto.randomUUID();
 
-        let firstDraft = "";
+        let firstDraft = '';
 
         for await (const part of writeSlackResult.textStream) {
           firstDraft += part;
 
           writer.write({
-            type: "data-slack-message",
+            type: 'data-slack-message',
             data: firstDraft,
             id: firstDraftId,
           });
@@ -86,7 +86,7 @@ export const POST = async (req: Request): Promise<Response> => {
 
         // Evaluate Slack message
         const evaluateSlackResult = streamObject({
-          model: google("gemini-2.0-flash-001"),
+          model: google('gemini-2.0-flash-001'),
           system: EVALUATE_SLACK_MESSAGE_SYSTEM,
           prompt: `
             Conversation history:
@@ -101,11 +101,13 @@ export const POST = async (req: Request): Promise<Response> => {
           schema: z.object({
             feedback: z
               .string()
-              .describe("The feedback about the most recent draft."),
+              .describe(
+                'The feedback about the most recent draft.',
+              ),
             isGoodEnough: z
               .boolean()
               .describe(
-                "Whether the most recent draft is good enough to stop the loop."
+                'Whether the most recent draft is good enough to stop the loop.',
               ),
           }),
         });
@@ -115,14 +117,15 @@ export const POST = async (req: Request): Promise<Response> => {
         for await (const part of evaluateSlackResult.partialObjectStream) {
           if (part.feedback) {
             writer.write({
-              type: "data-slack-message-feedback",
+              type: 'data-slack-message-feedback',
               data: part.feedback,
               id: feedbackId,
             });
           }
         }
 
-        const finalEvaluationObject = await evaluateSlackResult.object;
+        const finalEvaluationObject =
+          await evaluateSlackResult.object;
 
         // If the draft is good enough, break the loop
         if (finalEvaluationObject.isGoodEnough) {
@@ -137,18 +140,18 @@ export const POST = async (req: Request): Promise<Response> => {
       const textPartId = crypto.randomUUID();
 
       writer.write({
-        type: "text-start",
+        type: 'text-start',
         id: textPartId,
       });
 
       writer.write({
-        type: "text-delta",
+        type: 'text-delta',
         delta: mostRecentDraft,
         id: textPartId,
       });
 
       writer.write({
-        type: "text-end",
+        type: 'text-end',
         id: textPartId,
       });
     },

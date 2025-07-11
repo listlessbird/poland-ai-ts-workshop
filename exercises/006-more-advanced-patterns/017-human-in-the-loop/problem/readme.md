@@ -14,7 +14,7 @@ export type MyMessage = UIMessage<
      *
      * This will only be present on user messages.
      */
-    "plan-acceptance": {
+    'plan-acceptance': {
       accepted: boolean;
       feedback?: string;
     };

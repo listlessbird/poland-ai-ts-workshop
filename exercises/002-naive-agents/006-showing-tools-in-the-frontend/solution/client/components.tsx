@@ -1,25 +1,14 @@
-import type { UIDataTypes, UIMessagePart, UITools } from "ai";
-import React, { type ReactNode } from "react";
-import type { MyUIMessage } from "../api/chat.ts";
+import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import type { MyUIMessage } from '../api/chat.ts';
 
-export const Wrapper = (props: { children: React.ReactNode }) => {
+export const Wrapper = (props: {
+  children: React.ReactNode;
+}) => {
   return (
     <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
       {props.children}
     </div>
-  );
-};
-
-export const FadeIn = (props: { children: ReactNode; className?: string }) => {
-  return (
-    <span
-      className={props.className}
-      style={{
-        animation: "fadeIn 0.2s",
-      }}
-    >
-      {props.children}
-    </span>
   );
 };
 
@@ -28,27 +17,25 @@ export const Message = ({
   parts,
 }: {
   role: string;
-  parts: MyUIMessage["parts"];
-}) => (
-  <div>
-    <div className="whitespace-pre-wrap my-6 leading-7">
-      <FadeIn className="font-semibold text-gray-200">
-        {role === "user" ? "User: " : "AI: "}
-      </FadeIn>
-      {parts.map((part, index) => {
-        if (part.type === "text") {
-          return (
-            <FadeIn key={index} className="text-gray-100">
-              {part.text}
-            </FadeIn>
-          );
-        }
-        return null;
-      })}
-    </div>
+  parts: MyUIMessage['parts'];
+}) => {
+  const prefix = role === 'user' ? 'User: ' : 'AI: ';
+
+  const text = parts
+    .map((part) => {
+      if (part.type === 'text') {
+        return part.text;
+      }
+      return '';
+    })
+    .join('');
+  return (
     <div className="flex flex-col gap-2">
+      <div className="prose prose-invert my-6">
+        <ReactMarkdown>{prefix + text}</ReactMarkdown>
+      </div>
       {parts.map((part, index) => {
-        if (part.type === "tool-writeFile") {
+        if (part.type === 'tool-writeFile') {
           return (
             <div
               key={index}
@@ -58,15 +45,16 @@ export const Message = ({
                 📝 Wrote to file
               </div>
               <div className="text-blue-200">
-                Path: {part.input?.path || "Unknown"}
+                Path: {part.input?.path || 'Unknown'}
               </div>
               <div className="text-blue-200">
-                Content length: {part.input?.content?.length || 0} characters
+                Content length:{' '}
+                {part.input?.content?.length || 0} characters
               </div>
             </div>
           );
         }
-        if (part.type === "tool-readFile") {
+        if (part.type === 'tool-readFile') {
           return (
             <div
               key={index}
@@ -76,12 +64,12 @@ export const Message = ({
                 📖 Read file
               </div>
               <div className="text-green-200">
-                Path: {part.input?.path || "Unknown"}
+                Path: {part.input?.path || 'Unknown'}
               </div>
             </div>
           );
         }
-        if (part.type === "tool-deletePath") {
+        if (part.type === 'tool-deletePath') {
           return (
             <div
               key={index}
@@ -91,12 +79,12 @@ export const Message = ({
                 🗑️ Deleted path
               </div>
               <div className="text-red-200">
-                Path: {part.input?.path || "Unknown"}
+                Path: {part.input?.path || 'Unknown'}
               </div>
             </div>
           );
         }
-        if (part.type === "tool-listDirectory") {
+        if (part.type === 'tool-listDirectory') {
           return (
             <div
               key={index}
@@ -106,12 +94,12 @@ export const Message = ({
                 📁 Listed directory
               </div>
               <div className="text-yellow-200">
-                Path: {part.input?.path || "Unknown"}
+                Path: {part.input?.path || 'Unknown'}
               </div>
             </div>
           );
         }
-        if (part.type === "tool-createDirectory") {
+        if (part.type === 'tool-createDirectory') {
           return (
             <div
               key={index}
@@ -121,12 +109,12 @@ export const Message = ({
                 📂 Created directory
               </div>
               <div className="text-purple-200">
-                Path: {part.input?.path || "Unknown"}
+                Path: {part.input?.path || 'Unknown'}
               </div>
             </div>
           );
         }
-        if (part.type === "tool-exists") {
+        if (part.type === 'tool-exists') {
           return (
             <div
               key={index}
@@ -136,12 +124,12 @@ export const Message = ({
                 🔍 Checked existence
               </div>
               <div className="text-cyan-200">
-                Path: {part.input?.path || "Unknown"}
+                Path: {part.input?.path || 'Unknown'}
               </div>
             </div>
           );
         }
-        if (part.type === "tool-searchFiles") {
+        if (part.type === 'tool-searchFiles') {
           return (
             <div
               key={index}
@@ -151,7 +139,7 @@ export const Message = ({
                 🔎 Searched files
               </div>
               <div className="text-orange-200">
-                Pattern: {part.input?.pattern || "Unknown"}
+                Pattern: {part.input?.pattern || 'Unknown'}
               </div>
             </div>
           );
@@ -159,8 +147,8 @@ export const Message = ({
         return null;
       })}
     </div>
-  </div>
-);
+  );
+};
 
 export const ChatInput = ({
   input,
@@ -176,11 +164,13 @@ export const ChatInput = ({
   <form onSubmit={onSubmit}>
     <input
       className={`fixed bottom-0 w-full max-w-md p-2 mb-8 border-2 border-zinc-700 rounded shadow-xl bg-gray-800 ${
-        disabled ? "opacity-50 cursor-not-allowed" : ""
+        disabled ? 'opacity-50 cursor-not-allowed' : ''
       }`}
       value={input}
       placeholder={
-        disabled ? "Please handle tool calls first..." : "Say something..."
+        disabled
+          ? 'Please handle tool calls first...'
+          : 'Say something...'
       }
       onChange={onChange}
       disabled={disabled}

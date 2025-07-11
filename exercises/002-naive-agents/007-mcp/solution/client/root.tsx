@@ -1,20 +1,24 @@
-import { useChat } from "@ai-sdk/react";
-import React, { useState } from "react";
-import { createRoot } from "react-dom/client";
-import { ChatInput, Message, Wrapper } from "./components.tsx";
-import "./tailwind.css";
+import { useChat } from '@ai-sdk/react';
+import React, { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import { ChatInput, Message, Wrapper } from './components.tsx';
+import './tailwind.css';
 
 const App = () => {
   const { messages, sendMessage } = useChat({});
 
   const [input, setInput] = useState(
-    "Give me the latest issues on the mattpocock/ts-reset repo."
+    'Give me the latest issues on the mattpocock/ts-reset repo.',
   );
 
   return (
     <Wrapper>
       {messages.map((message) => (
-        <Message key={message.id} role={message.role} parts={message.parts} />
+        <Message
+          key={message.id}
+          role={message.role}
+          parts={message.parts}
+        />
       ))}
       <ChatInput
         input={input}
@@ -24,12 +28,12 @@ const App = () => {
           sendMessage({
             text: input,
           });
-          setInput("");
+          setInput('');
         }}
       />
     </Wrapper>
   );
 };
 
-const root = createRoot(document.getElementById("root")!);
+const root = createRoot(document.getElementById('root')!);
 root.render(<App />);

@@ -1,8 +1,12 @@
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Base directory for all file system operations
-const BASE_DIR = path.join(process.cwd(), "data", "file-system-db.local");
+const BASE_DIR = path.join(
+  process.cwd(),
+  'data',
+  'file-system-db.local',
+);
 
 // Ensure the base directory exists
 function ensureBaseDir(): void {
@@ -19,7 +23,7 @@ function validatePath(filePath: string): string {
 
   if (!fullPath.startsWith(baseDirResolved)) {
     throw new Error(
-      `Access denied: Path "${filePath}" is outside the allowed directory`
+      `Access denied: Path "${filePath}" is outside the allowed directory`,
     );
   }
 
@@ -37,7 +41,7 @@ function getRelativePath(fullPath: string): string {
  */
 export function writeFile(
   filePath: string,
-  content: string
+  content: string,
 ): { success: boolean; message: string; path: string } {
   try {
     ensureBaseDir();
@@ -49,7 +53,7 @@ export function writeFile(
       fs.mkdirSync(dir, { recursive: true });
     }
 
-    fs.writeFileSync(fullPath, content, "utf8");
+    fs.writeFileSync(fullPath, content, 'utf8');
 
     return {
       success: true,
@@ -59,7 +63,7 @@ export function writeFile(
   } catch (error) {
     return {
       success: false,
-      message: `Error writing file: ${error instanceof Error ? error.message : "Unknown error"}`,
+      message: `Error writing file: ${error instanceof Error ? error.message : 'Unknown error'}`,
       path: filePath,
     };
   }
@@ -86,7 +90,7 @@ export function readFile(filePath: string): {
       };
     }
 
-    const content = fs.readFileSync(fullPath, "utf8");
+    const content = fs.readFileSync(fullPath, 'utf8');
 
     return {
       success: true,
@@ -97,7 +101,7 @@ export function readFile(filePath: string): {
   } catch (error) {
     return {
       success: false,
-      message: `Error reading file: ${error instanceof Error ? error.message : "Unknown error"}`,
+      message: `Error reading file: ${error instanceof Error ? error.message : 'Unknown error'}`,
       path: filePath,
     };
   }
@@ -149,7 +153,7 @@ export function deletePath(pathToDelete: string): {
   } catch (error) {
     return {
       success: false,
-      message: `Error deleting path: ${error instanceof Error ? error.message : "Unknown error"}`,
+      message: `Error deleting path: ${error instanceof Error ? error.message : 'Unknown error'}`,
       path: pathToDelete,
     };
   }
@@ -158,9 +162,13 @@ export function deletePath(pathToDelete: string): {
 /**
  * List contents of a directory
  */
-export function listDirectory(dirPath: string = "."): {
+export function listDirectory(dirPath: string = '.'): {
   success: boolean;
-  items?: Array<{ name: string; type: "file" | "directory"; size?: number }>;
+  items?: Array<{
+    name: string;
+    type: 'file' | 'directory';
+    size?: number;
+  }>;
   message: string;
   path: string;
 } {
@@ -191,8 +199,8 @@ export function listDirectory(dirPath: string = "."): {
       return {
         name: item,
         type: itemStats.isDirectory()
-          ? ("directory" as const)
-          : ("file" as const),
+          ? ('directory' as const)
+          : ('file' as const),
         size: itemStats.isFile() ? itemStats.size : undefined,
       };
     });
@@ -206,7 +214,7 @@ export function listDirectory(dirPath: string = "."): {
   } catch (error) {
     return {
       success: false,
-      message: `Error listing directory: ${error instanceof Error ? error.message : "Unknown error"}`,
+      message: `Error listing directory: ${error instanceof Error ? error.message : 'Unknown error'}`,
       path: dirPath,
     };
   }
@@ -242,7 +250,7 @@ export function createDirectory(dirPath: string): {
   } catch (error) {
     return {
       success: false,
-      message: `Error creating directory: ${error instanceof Error ? error.message : "Unknown error"}`,
+      message: `Error creating directory: ${error instanceof Error ? error.message : 'Unknown error'}`,
       path: dirPath,
     };
   }
@@ -266,14 +274,14 @@ export function exists(pathToCheck: string): {
     return {
       success: true,
       exists,
-      message: `Path ${exists ? "exists" : "does not exist"}: ${getRelativePath(fullPath)}`,
+      message: `Path ${exists ? 'exists' : 'does not exist'}: ${getRelativePath(fullPath)}`,
       path: getRelativePath(fullPath),
     };
   } catch (error) {
     return {
       success: false,
       exists: false,
-      message: `Error checking path: ${error instanceof Error ? error.message : "Unknown error"}`,
+      message: `Error checking path: ${error instanceof Error ? error.message : 'Unknown error'}`,
       path: pathToCheck,
     };
   }
@@ -284,7 +292,7 @@ export function exists(pathToCheck: string): {
  */
 export function searchFiles(
   pattern: string,
-  searchDir: string = "."
+  searchDir: string = '.',
 ): {
   success: boolean;
   files?: string[];
@@ -329,7 +337,7 @@ export function searchFiles(
           searchRecursively(itemPath);
         } else if (stats.isFile()) {
           // Simple pattern matching (supports * wildcard)
-          const regexPattern = pattern.replace(/\*/g, ".*");
+          const regexPattern = pattern.replace(/\*/g, '.*');
           const regex = new RegExp(regexPattern);
 
           if (regex.test(item) || regex.test(relativeItemPath)) {
@@ -351,7 +359,7 @@ export function searchFiles(
   } catch (error) {
     return {
       success: false,
-      message: `Error searching files: ${error instanceof Error ? error.message : "Unknown error"}`,
+      message: `Error searching files: ${error instanceof Error ? error.message : 'Unknown error'}`,
       pattern,
       searchDir,
     };

@@ -1,15 +1,16 @@
-import { useChat } from "@ai-sdk/react";
-import React, { useState } from "react";
-import { createRoot } from "react-dom/client";
-import { ChatInput, Message, Wrapper } from "./components.tsx";
-import "./tailwind.css";
-import type { MyMessage } from "../api/chat.ts";
+import { useChat } from '@ai-sdk/react';
+import React, { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import { ChatInput, Message, Wrapper } from './components.tsx';
+import './tailwind.css';
+import type { MyMessage } from '../api/chat.ts';
+import ReactMarkdown from 'react-markdown';
 
 const App = () => {
   const { messages, sendMessage } = useChat<MyMessage>({});
 
   const [input, setInput] = useState(
-    `Write a Slack message to your boss complaining about a colleague's hygiene.`
+    `Write a Slack message to your boss complaining about a colleague's hygiene.`,
   );
 
   console.log(messages);
@@ -17,7 +18,11 @@ const App = () => {
   return (
     <Wrapper>
       {messages.map((message) => (
-        <Message key={message.id} role={message.role} parts={message.parts} />
+        <Message
+          key={message.id}
+          role={message.role}
+          parts={message.parts}
+        />
       ))}
       <ChatInput
         input={input}
@@ -27,12 +32,12 @@ const App = () => {
           sendMessage({
             text: input,
           });
-          setInput("");
+          setInput('');
         }}
       />
     </Wrapper>
   );
 };
 
-const root = createRoot(document.getElementById("root")!);
+const root = createRoot(document.getElementById('root')!);
 root.render(<App />);

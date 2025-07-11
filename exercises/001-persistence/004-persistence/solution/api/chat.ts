@@ -1,24 +1,31 @@
-import { convertToModelMessages, streamText, type UIMessage } from "ai";
-import { google } from "@ai-sdk/google";
+import {
+  convertToModelMessages,
+  streamText,
+  type UIMessage,
+} from 'ai';
+import { google } from '@ai-sdk/google';
 import {
   createChat,
   getChat,
   appendToChatMessages,
-} from "./persistence-layer.ts";
+} from './persistence-layer.ts';
 
 export const POST = async (req: Request): Promise<Response> => {
-  const body: { messages: UIMessage[]; id: string } = await req.json();
+  const body: { messages: UIMessage[]; id: string } =
+    await req.json();
   const { messages, id } = body;
 
   let chat = await getChat(id);
   const mostRecentMessage = messages[messages.length - 1];
 
   if (!mostRecentMessage) {
-    return new Response("No messages provided", { status: 400 });
+    return new Response('No messages provided', { status: 400 });
   }
 
-  if (mostRecentMessage.role !== "user") {
-    return new Response("Last message must be from the user", { status: 400 });
+  if (mostRecentMessage.role !== 'user') {
+    return new Response('Last message must be from the user', {
+      status: 400,
+    });
   }
 
   if (!chat) {
@@ -29,7 +36,7 @@ export const POST = async (req: Request): Promise<Response> => {
   }
 
   const result = streamText({
-    model: google("gemini-2.0-flash-001"),
+    model: google('gemini-2.0-flash-001'),
     messages: convertToModelMessages(messages),
   });
 
@@ -42,17 +49,17 @@ export const POST = async (req: Request): Promise<Response> => {
 
 export const GET = async (req: Request): Promise<Response> => {
   const url = new URL(req.url);
-  const chatId = url.searchParams.get("chatId");
+  const chatId = url.searchParams.get('chatId');
 
   if (!chatId) {
-    return new Response("No chatId provided", { status: 400 });
+    return new Response('No chatId provided', { status: 400 });
   }
 
   const chat = await getChat(chatId);
 
   return new Response(JSON.stringify(chat), {
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
 };

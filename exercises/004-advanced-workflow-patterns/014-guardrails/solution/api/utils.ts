@@ -1,19 +1,19 @@
-import type { UIMessage } from "ai";
+import type { UIMessage } from 'ai';
 
 export const formatMessageHistory = (messages: UIMessage[]) => {
   return messages
     .map((message) => {
       return `${message.role}: ${message.parts
         .map((part) => {
-          if (part.type === "text") {
+          if (part.type === 'text') {
             return part.text;
           }
 
-          return "";
+          return '';
         })
-        .join("")}`;
+        .join('')}`;
     })
-    .join("\n");
+    .join('\n');
 };
 
 export const WRITE_SLACK_MESSAGE_FIRST_DRAFT_SYSTEM = `You are writing a Slack message for a user based on the conversation history. Only return the Slack message, no other text.`;
@@ -142,15 +142,15 @@ Remember: When in doubt, err on the side of caution. Your goal is protecting use
 export type MyMessage = UIMessage<
   unknown,
   {
-    "slack-message": string;
-    "slack-message-feedback": string;
+    'slack-message': string;
+    'slack-message-feedback': string;
   }
 >;
 
 export class LoopContext {
   step = 0;
-  mostRecentDraft = "";
-  previousFeedback = "";
+  mostRecentDraft = '';
+  previousFeedback = '';
 
   shouldStop() {
     return this.step > 2;
@@ -167,14 +167,14 @@ export class LoopContext {
       .map((message) => {
         return `${message.role}: ${message.parts
           .map((part) => {
-            if (part.type === "text") {
+            if (part.type === 'text') {
               return part.text;
             }
 
-            return "";
+            return '';
           })
-          .join("")}`;
+          .join('')}`;
       })
-      .join("\n");
+      .join('\n');
   }
 }

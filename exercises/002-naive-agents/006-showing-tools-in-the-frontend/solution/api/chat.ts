@@ -1,4 +1,4 @@
-import { google } from "@ai-sdk/google";
+import { google } from '@ai-sdk/google';
 import {
   convertToModelMessages,
   stepCountIs,
@@ -6,9 +6,9 @@ import {
   tool,
   type InferUITool,
   type UIMessage,
-} from "ai";
-import { z } from "zod";
-import * as fsTools from "./file-system-functionality.ts";
+} from 'ai';
+import { z } from 'zod';
+import * as fsTools from './file-system-functionality.ts';
 
 export type MyUITools = {
   [K in keyof typeof tools]: InferUITool<(typeof tools)[K]>;
@@ -17,64 +17,76 @@ export type MyUIMessage = UIMessage<never, never, MyUITools>;
 
 const tools = {
   writeFile: tool({
-    description: "Write to a file",
+    description: 'Write to a file',
     inputSchema: z.object({
-      path: z.string().describe("The path to the file to create"),
-      content: z.string().describe("The content of the file to create"),
+      path: z
+        .string()
+        .describe('The path to the file to create'),
+      content: z
+        .string()
+        .describe('The content of the file to create'),
     }),
     execute: async ({ path, content }) => {
       return fsTools.writeFile(path, content);
     },
   }),
   readFile: tool({
-    description: "Read a file",
+    description: 'Read a file',
     inputSchema: z.object({
-      path: z.string().describe("The path to the file to read"),
+      path: z.string().describe('The path to the file to read'),
     }),
     execute: async ({ path }) => {
       return fsTools.readFile(path);
     },
   }),
   deletePath: tool({
-    description: "Delete a file or directory",
+    description: 'Delete a file or directory',
     inputSchema: z.object({
-      path: z.string().describe("The path to the file or directory to delete"),
+      path: z
+        .string()
+        .describe('The path to the file or directory to delete'),
     }),
     execute: async ({ path }) => {
       return fsTools.deletePath(path);
     },
   }),
   listDirectory: tool({
-    description: "List a directory",
+    description: 'List a directory',
     inputSchema: z.object({
-      path: z.string().describe("The path to the directory to list"),
+      path: z
+        .string()
+        .describe('The path to the directory to list'),
     }),
     execute: async ({ path }) => {
       return fsTools.listDirectory(path);
     },
   }),
   createDirectory: tool({
-    description: "Create a directory",
+    description: 'Create a directory',
     inputSchema: z.object({
-      path: z.string().describe("The path to the directory to create"),
+      path: z
+        .string()
+        .describe('The path to the directory to create'),
     }),
     execute: async ({ path }) => {
       return fsTools.createDirectory(path);
     },
   }),
   exists: tool({
-    description: "Check if a file or directory exists",
+    description: 'Check if a file or directory exists',
     inputSchema: z.object({
-      path: z.string().describe("The path to the file or directory to check"),
+      path: z
+        .string()
+        .describe('The path to the file or directory to check'),
     }),
     execute: async ({ path }) => {
       return fsTools.exists(path);
     },
   }),
   searchFiles: tool({
-    description: "Search for files",
+    description: 'Search for files',
     inputSchema: z.object({
-      pattern: z.string().describe("The pattern to search for"),
+      pattern: z.string().describe('The pattern to search for'),
     }),
     execute: async ({ pattern }) => {
       return fsTools.searchFiles(pattern);
@@ -87,7 +99,7 @@ export const POST = async (req: Request): Promise<Response> => {
   const { messages } = body;
 
   const result = streamText({
-    model: google("gemini-2.5-flash"),
+    model: google('gemini-2.5-flash'),
     messages: convertToModelMessages(messages),
     system: `
       You are a helpful assistant that can use a sandboxed file system to create, edit and delete files.
