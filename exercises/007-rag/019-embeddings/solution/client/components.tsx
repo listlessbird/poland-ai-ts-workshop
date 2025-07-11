@@ -19,26 +19,7 @@ export const Message = ({
   role: string;
   parts: MyMessage['parts'];
 }) => (
-  <div>
-    {parts.map((part) => {
-      if (part.type === 'data-queries') {
-        return (
-          <div key={part.id} className="mb-4">
-            <h2 className="text-gray-300 text-sm mb-1">
-              Queries
-            </h2>
-            <ul className="text-gray-400 text-xs monospace">
-              {Object.values(part.data).map((query) => (
-                <li key={query}>{query}</li>
-              ))}
-            </ul>
-          </div>
-        );
-      }
-
-      return null;
-    })}
-
+  <div className="prose prose-invert my-6">
     <ReactMarkdown>
       {(role === 'user' ? 'User: ' : 'AI: ') +
         parts

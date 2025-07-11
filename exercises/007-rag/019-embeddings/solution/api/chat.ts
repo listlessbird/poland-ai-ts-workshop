@@ -7,12 +7,7 @@ import {
 } from 'ai';
 import { searchTypeScriptDocs } from './create-embeddings.ts';
 
-export type MyMessage = UIMessage<
-  unknown,
-  {
-    queries: string[];
-  }
->;
+export type MyMessage = UIMessage<unknown, {}>;
 
 const formatMessageHistory = (messages: UIMessage[]) => {
   return messages
