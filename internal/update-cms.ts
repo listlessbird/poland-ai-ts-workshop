@@ -4,6 +4,7 @@ import {
   notFound,
 } from './lesson-and-section-logic.ts';
 import path from 'path';
+import { existsSync } from 'fs';
 
 const mapToLessonPath = (filePath: string) => {
   const sectionAndLessonNumber =
@@ -117,6 +118,16 @@ if (!pingResult.ok) {
   process.exit(1);
 }
 
+// If lesson still exists in the repo, don't delete it
+// This filters out the case where we delete a single file
+// in the lesson directory
+const filteredDeletedLessons = changedFiles.deleted.filter(
+  (lesson) => {
+    const lessonPath = path.join(repoPath, lesson);
+    return !existsSync(lessonPath);
+  },
+);
+
 const updateResult = await fetch(
   'http://localhost:5173/api/repos/update',
   {
@@ -125,7 +136,7 @@ const updateResult = await fetch(
       filePath: repoPath,
       modifiedLessons: changedFiles.renamed,
       addedLessons: changedFiles.created,
-      deletedLessons: changedFiles.deleted,
+      deletedLessons: filteredDeletedLessons,
     }),
   },
 );
