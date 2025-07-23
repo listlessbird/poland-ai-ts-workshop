@@ -97,7 +97,7 @@ const getChangedFiles = (): {
   };
 };
 
-const repoPath = process.cwd();
+const repoPath = path.join(process.cwd(), 'exercises');
 
 const changedFiles = getChangedFiles();
 
@@ -124,7 +124,7 @@ const updateResult = await fetch(
     body: JSON.stringify({
       filePath: repoPath,
       modifiedLessons: changedFiles.renamed,
-      createdLessons: changedFiles.created,
+      addedLessons: changedFiles.created,
       deletedLessons: changedFiles.deleted,
     }),
   },
