@@ -3,24 +3,16 @@ import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ChatInput, Message, Wrapper } from './components.tsx';
 import './tailwind.css';
-
-const id = crypto.randomUUID();
-
-const initialMessages: UIMessage[] = [
-  {
-    id: crypto.randomUUID(),
-    role: 'user',
-    parts: [{ type: 'text', text: 'Hello, how are you?' }],
-  },
-];
+import { BrowserRouter, useSearchParams } from 'react-router';
 
 const App = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const { messages, sendMessage } = useChat({
-    id,
-    messages: initialMessages,
+    id: searchParams.get('chatId') ?? crypto.randomUUID(),
   });
 
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState('Hello, how are you?');
 
   return (
     <Wrapper>
@@ -47,4 +39,8 @@ const App = () => {
 };
 
 const root = createRoot(document.getElementById('root')!);
-root.render(<App />);
+root.render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>,
+);

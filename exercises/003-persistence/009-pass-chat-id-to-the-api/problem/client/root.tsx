@@ -1,13 +1,18 @@
-import { Chat, useChat } from '@ai-sdk/react';
+import { useChat, type UIMessage } from '@ai-sdk/react';
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ChatInput, Message, Wrapper } from './components.tsx';
 import './tailwind.css';
+import { BrowserRouter, useSearchParams } from 'react-router';
 
 const App = () => {
-  const { messages, sendMessage } = useChat();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [input, setInput] = useState('');
+  console.log(searchParams.get('chatId'));
+
+  const { messages, sendMessage } = useChat({});
+
+  const [input, setInput] = useState('Hello, how are you?');
 
   return (
     <Wrapper>
@@ -34,4 +39,8 @@ const App = () => {
 };
 
 const root = createRoot(document.getElementById('root')!);
-root.render(<App />);
+root.render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>,
+);

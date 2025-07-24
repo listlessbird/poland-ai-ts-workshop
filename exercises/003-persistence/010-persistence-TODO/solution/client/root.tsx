@@ -1,18 +1,16 @@
 import { Chat, useChat } from '@ai-sdk/react';
-import React, { useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { ChatInput, Message, Wrapper } from './components.tsx';
-import './tailwind.css';
 import {
   QueryClient,
   QueryClientProvider,
-  useQuery,
   useSuspenseQuery,
 } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { createRoot } from 'react-dom/client';
 import type { DB } from '../api/persistence-layer.ts';
+import { ChatInput, Message, Wrapper } from './components.tsx';
+import './tailwind.css';
 
 const App = () => {
-  const [backupId] = useState(() => crypto.randomUUID());
   const searchParams = new URLSearchParams(
     window.location.search,
   );
@@ -32,7 +30,7 @@ const App = () => {
   });
 
   const chat = new Chat({
-    id: chatIdFromSearchParams ?? backupId,
+    id: chatIdFromSearchParams ?? crypto.randomUUID(),
     messages: data?.messages ?? [],
   });
 
