@@ -2,7 +2,6 @@ import { google } from '@ai-sdk/google';
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
-  generateText,
   streamText,
   type UIMessage,
 } from 'ai';
@@ -66,21 +65,21 @@ export const POST = async (req: Request): Promise<Response> => {
         `,
         });
 
-        const firstDraftId = crypto.randomUUID();
+        const draftId = crypto.randomUUID();
 
-        let firstDraft = '';
+        let draft = '';
 
         for await (const part of writeSlackResult.textStream) {
-          firstDraft += part;
+          draft += part;
 
           writer.write({
             type: 'data-slack-message',
-            data: firstDraft,
-            id: firstDraftId,
+            data: draft,
+            id: draftId,
           });
         }
 
-        mostRecentDraft = firstDraft;
+        mostRecentDraft = draft;
 
         // Evaluate Slack message
         const evaluateSlackResult = streamText({

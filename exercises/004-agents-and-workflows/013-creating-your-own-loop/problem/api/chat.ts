@@ -2,7 +2,6 @@ import { google } from '@ai-sdk/google';
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
-  generateText,
   streamText,
   type UIMessage,
 } from 'ai';
@@ -49,7 +48,20 @@ export const POST = async (req: Request): Promise<Response> => {
 
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
-      // Write Slack message
+      let step = TODO; // TODO: keep track of the step we're on
+      let mostRecentDraft = TODO; // TODO: keep track of the most recent draft
+      let mostRecentFeedback = TODO; // TODO: keep track of the most recent feedback
+
+      // TODO: create a loop which:
+      // 1. Writes a Slack message
+      // 2. Evaluates the Slack message
+      // 3. Saves the feedback in the variables above
+      // 4. Increments the step variable
+
+      // TODO: once the loop is done, write the final Slack message
+      // by streaming one large 'text-delta' part (see the reference
+      // material for an example)
+
       const writeSlackResult = streamText({
         model: google('gemini-2.0-flash-001'),
         system: WRITE_SLACK_MESSAGE_FIRST_DRAFT_SYSTEM,
