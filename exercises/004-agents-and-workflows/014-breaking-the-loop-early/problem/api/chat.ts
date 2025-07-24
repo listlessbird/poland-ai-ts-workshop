@@ -2,7 +2,6 @@ import { google } from '@ai-sdk/google';
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
-  generateText,
   streamText,
   type UIMessage,
 } from 'ai';
@@ -66,23 +65,25 @@ export const POST = async (req: Request): Promise<Response> => {
         `,
         });
 
-        const firstDraftId = crypto.randomUUID();
+        const draftId = crypto.randomUUID();
 
-        let firstDraft = '';
+        let draft = '';
 
         for await (const part of writeSlackResult.textStream) {
-          firstDraft += part;
+          draft += part;
 
           writer.write({
             type: 'data-slack-message',
-            data: firstDraft,
-            id: firstDraftId,
+            data: draft,
+            id: draftId,
           });
         }
 
-        mostRecentDraft = firstDraft;
+        mostRecentDraft = draft;
 
-        // Evaluate Slack message
+        // TODO: change this to streamObject, and get it to return
+        // the feedback as a string, as well as whether we should
+        // break the loop early (that the message is good enough)
         const evaluateSlackResult = streamText({
           model: google('gemini-2.0-flash-001'),
           system: EVALUATE_SLACK_MESSAGE_SYSTEM,
