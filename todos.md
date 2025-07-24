@@ -11,3 +11,7 @@ Add `TODO` comments to each problem exercise.
 ---
 
 Re-check all exercise frontends for potential spacing issues.
+
+---
+
+Look at the MCP/SSE exercise and debug why it's hanging indefinitely.

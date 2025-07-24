@@ -7,7 +7,6 @@ import {
 } from 'ai';
 
 import { experimental_createMCPClient as createMCPClient } from 'ai';
-import { Experimental_StdioMCPTransport as StdioMCPTransport } from 'ai/mcp-stdio';
 
 if (!process.env.GITHUB_PERSONAL_ACCESS_TOKEN) {
   throw new Error('GITHUB_PERSONAL_ACCESS_TOKEN is not set');
@@ -18,21 +17,13 @@ export const POST = async (req: Request): Promise<Response> => {
   const { messages } = body;
 
   const mcpClient = await createMCPClient({
-    transport: new StdioMCPTransport({
-      command: 'docker',
-      args: [
-        'run',
-        '-i',
-        '--rm',
-        '-e',
-        'GITHUB_PERSONAL_ACCESS_TOKEN',
-        'ghcr.io/github/github-mcp-server',
-      ],
-      env: {
-        GITHUB_PERSONAL_ACCESS_TOKEN:
-          process.env.GITHUB_PERSONAL_ACCESS_TOKEN!,
+    transport: {
+      type: 'sse',
+      url: 'https://api.githubcopilot.com/mcp',
+      headers: {
+        Authorization: `Bearer ${process.env.GITHUB_PERSONAL_ACCESS_TOKEN}`,
       },
-    }),
+    },
   });
 
   const result = streamText({
