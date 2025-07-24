@@ -12,6 +12,8 @@ export const Wrapper = (props: {
   );
 };
 
+// TODO: use this component to handle the custom data parts
+// you have created in the api/chat.ts file
 export const Message = ({
   role,
   parts,

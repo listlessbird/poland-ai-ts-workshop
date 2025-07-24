@@ -1,6 +1,14 @@
 import { google } from '@ai-sdk/google';
 import { generateText, streamText, type UIMessage } from 'ai';
 
+// TODO: replace all instances of UIMessage with MyMessage
+export type MyMessage = UIMessage<
+  unknown,
+  {
+    // TODO: declare custom data parts here
+  }
+>;
+
 const formatMessageHistory = (messages: UIMessage[]) => {
   return messages
     .map((message) => {
@@ -30,10 +38,11 @@ const WRITE_SLACK_MESSAGE_FINAL_SYSTEM = `You are writing a Slack message based 
 `;
 
 export const POST = async (req: Request): Promise<Response> => {
+  // TODO: change to MyMessage[]
   const body: { messages: UIMessage[] } = await req.json();
   const { messages } = body;
 
-  // Write Slack message
+  // TODO - change to streamText and write to the stream as custom data parts
   const writeSlackResult = await generateText({
     model: google('gemini-2.0-flash-001'),
     system: WRITE_SLACK_MESSAGE_FIRST_DRAFT_SYSTEM,
@@ -43,7 +52,7 @@ export const POST = async (req: Request): Promise<Response> => {
     `,
   });
 
-  // Evaluate Slack message
+  // TODO - change to streamText and write to the stream as custom data parts
   const evaluateSlackResult = await generateText({
     model: google('gemini-2.0-flash-001'),
     system: EVALUATE_SLACK_MESSAGE_SYSTEM,
@@ -56,7 +65,6 @@ export const POST = async (req: Request): Promise<Response> => {
     `,
   });
 
-  // Write final Slack message
   const finalSlackAttempt = streamText({
     model: google('gemini-2.0-flash-001'),
     system: WRITE_SLACK_MESSAGE_FINAL_SYSTEM,

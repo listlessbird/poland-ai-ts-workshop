@@ -5,6 +5,7 @@ import { ChatInput, Message, Wrapper } from './components.tsx';
 import './tailwind.css';
 
 const App = () => {
+  // TODO: pass MyMessage to the useChat hook: useChat<MyMessage>({})
   const { messages, sendMessage } = useChat({});
 
   const [input, setInput] = useState(
