@@ -97,7 +97,6 @@ export const runLocalDevServer = async (opts: {
     configFile: false,
     server: {
       port: 3000,
-      open: true,
       proxy: {
         '/api': 'http://localhost:3001',
       },
