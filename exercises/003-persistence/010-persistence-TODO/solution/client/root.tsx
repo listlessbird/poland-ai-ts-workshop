@@ -9,11 +9,14 @@ import { createRoot } from 'react-dom/client';
 import type { DB } from '../api/persistence-layer.ts';
 import { ChatInput, Message, Wrapper } from './components.tsx';
 import './tailwind.css';
+import { BrowserRouter, useSearchParams } from 'react-router';
 
 const App = () => {
-  const searchParams = new URLSearchParams(
-    window.location.search,
+  const [backupChatId, setBackupChatId] = useState(
+    crypto.randomUUID(),
   );
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const chatIdFromSearchParams = searchParams.get('chatId');
 
   const { data } = useSuspenseQuery({
@@ -29,13 +32,9 @@ const App = () => {
     },
   });
 
-  const chat = new Chat({
-    id: chatIdFromSearchParams ?? crypto.randomUUID(),
-    messages: data?.messages ?? [],
-  });
-
   const { messages, sendMessage } = useChat({
-    chat,
+    id: chatIdFromSearchParams ?? backupChatId,
+    messages: data?.messages ?? [],
   });
 
   const [input, setInput] = useState('');
@@ -58,7 +57,14 @@ const App = () => {
             text: input,
           });
           setInput('');
-          window.history.pushState({}, '', `?chatId=${chat.id}`);
+
+          if (chatIdFromSearchParams) {
+            return;
+          }
+
+          // Refresh the backup chat id
+          setBackupChatId(crypto.randomUUID());
+          setSearchParams({ chatId: backupChatId });
         }}
       />
     </Wrapper>
@@ -68,6 +74,8 @@ const App = () => {
 const root = createRoot(document.getElementById('root')!);
 root.render(
   <QueryClientProvider client={new QueryClient()}>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </QueryClientProvider>,
 );
