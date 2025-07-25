@@ -1,5 +1,3 @@
-import { google } from '@ai-sdk/google';
-import { generateText } from 'ai';
 import { evalite } from 'evalite';
 
 evalite('Capitals', {
