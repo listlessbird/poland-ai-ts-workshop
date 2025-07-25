@@ -13,7 +13,7 @@ const chainOfThoughtPaper = readFileSync(
   ),
 );
 
-evalite('Capitals', {
+evalite('Chain Of Thought Paper', {
   data: () => [
     {
       input: 'What is chain of thought prompting?',
