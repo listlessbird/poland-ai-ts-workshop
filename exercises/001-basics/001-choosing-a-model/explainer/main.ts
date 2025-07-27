@@ -1,7 +1,7 @@
 import { google } from '@ai-sdk/google';
 import { streamText } from 'ai';
 
-const model = google('gemini-2.0-flash-thinking-exp');
+const model = google('gemini-2.0-flash');
 
 const result = await streamText({
   model,
