@@ -5,3 +5,12 @@ A problem/solution where we use a workflow to:
 - Retrieve the memories from the database when new messages come in
 
 Also pass in the current date to the workflow.
+
+---
+
+To ensure successful memory extraction:
+
+- Include temporal markers (when events occurred)
+- Add personal context or experiences
+- Frame information in terms of real-world applications or experiences
+- Include specific examples or cases rather than general definitions
