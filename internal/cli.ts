@@ -105,6 +105,8 @@ program
     );
     const mainFilePath = path.resolve(selectedPath, 'main.ts');
 
+    const envFilePath = path.resolve(__dirname, '..', '.env');
+
     if (!existsSync(mainFilePath)) {
       console.error(
         `Could not find main.ts file in ${selectedDirectory} for exercise ${exerciseNumber}.`,
@@ -117,9 +119,13 @@ program
     );
 
     try {
-      execSync(`pnpm tsx --env-file=.env ${mainFilePath}`, {
-        stdio: 'inherit',
-      });
+      execSync(
+        `pnpm tsx --env-file=${envFilePath} ${mainFilePath}`,
+        {
+          stdio: 'inherit',
+          cwd: selectedPath,
+        },
+      );
     } catch (e) {
       console.error(e);
       process.exit(1);
