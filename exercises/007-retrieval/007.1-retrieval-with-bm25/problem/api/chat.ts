@@ -29,6 +29,11 @@ const formatMessageHistory = (messages: UIMessage[]) => {
     .join('\n');
 };
 
+const KEYWORD_GENERATOR_SYSTEM_PROMPT = `
+  You are a helpful TypeScript developer, able to search the TypeScript docs for information.
+  Your job is to generate a list of keywords which will be used to search the TypeScript docs.
+`;
+
 export const POST = async (req: Request): Promise<Response> => {
   const body: { messages: MyMessage[] } = await req.json();
   const { messages } = body;
@@ -36,12 +41,12 @@ export const POST = async (req: Request): Promise<Response> => {
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
       // TODO: Implement a keyword generator that generates a list of keywords
-      // based on the conversation history.
+      // based on the conversation history. Use generateObject to do this.
+      const keywords = TODO;
 
       // TODO: Use the searchTypeScriptDocs function to get the top X number of
-      // search results.
-
-      // TODO: Pass the search results to the streamText call below.
+      // search results based on the keywords
+      const topSearchResults = TODO;
 
       const answer = streamText({
         model: google('gemini-2.0-flash-001'),
