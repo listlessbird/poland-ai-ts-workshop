@@ -147,6 +147,13 @@ const embedLotsOfText = async (
   }[]
 > => {
   // TODO: Implement this function by using the embedMany function
+  throw new Error('Not implemented');
+};
+
+const embedOnePieceOfText = async (
+  text: string,
+): Promise<number[]> => {
+  // TODO: Implement this function by using the embed function
 };
 
 const calculateScore = (
@@ -154,10 +161,4 @@ const calculateScore = (
   embedding: number[],
 ): number => {
   // TODO: Implement this function by using the cosineSimilarity function
-};
-
-const embedOnePieceOfText = async (
-  text: string,
-): Promise<number[]> => {
-  // TODO: Implement this function by using the embed function
 };

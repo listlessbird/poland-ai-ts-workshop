@@ -35,7 +35,7 @@ export const POST = async (req: Request): Promise<Response> => {
       // conversation history to get the search results
       const searchResults = TODO;
 
-      // TODO: take the top X search results from the search results
+      // TODO: take the top X search results
       const topSearchResults = TODO;
 
       const answer = streamText({
