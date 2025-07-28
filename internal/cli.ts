@@ -99,11 +99,14 @@ program
       selectedDirectory = response.selectedDirectory;
     }
 
-    const selectedPath = path.resolve(
+    const selectedDirectoryFullPath = path.resolve(
       foundExerciseDir,
       selectedDirectory,
     );
-    const mainFilePath = path.resolve(selectedPath, 'main.ts');
+    const mainFilePath = path.resolve(
+      selectedDirectoryFullPath,
+      'main.ts',
+    );
 
     const envFilePath = path.resolve(__dirname, '..', '.env');
 
@@ -118,12 +121,20 @@ program
       `Running exercise ${exerciseNumber} from ${mainFilePath}`,
     );
 
+    const tsxExecutablePath = path.resolve(
+      __dirname,
+      '..',
+      'node_modules',
+      '.bin',
+      'tsx',
+    );
+
     try {
       execSync(
-        `pnpm tsx --env-file=${envFilePath} ${mainFilePath}`,
+        `${tsxExecutablePath} --env-file=${envFilePath} ${mainFilePath}`,
         {
           stdio: 'inherit',
-          cwd: selectedPath,
+          cwd: selectedDirectoryFullPath,
         },
       );
     } catch (e) {
