@@ -95,16 +95,10 @@ export const embedTsDocs = async (
   // Process each chunk sequentially
   let processedCount = 0;
   for (const chunk of chunks) {
-    const embedManyResult = await embedMany({
-      model: myEmbeddingModel,
-      values: chunk.map((doc) => doc.content),
-      maxRetries: 0,
-    });
+    const embedManyResult = await embedLotsOfText(chunk);
 
-    embedManyResult.embeddings.forEach((embedding, index) => {
-      const originalIndex = processedCount + index;
-      const originalValue = docValues[originalIndex]!;
-      embeddings[originalValue.filename] = embedding;
+    embedManyResult.forEach((embedding) => {
+      embeddings[embedding.filename] = embedding.embedding;
     });
 
     processedCount += chunk.length;
@@ -126,15 +120,12 @@ export const searchTypeScriptDocs = async (query: string) => {
   }
   const docs = await loadTsDocs();
 
-  const queryEmbedding = await embed({
-    model: myEmbeddingModel,
-    value: query,
-  });
+  const queryEmbedding = await embedOnePieceOfText(query);
 
   const scores = Object.entries(embeddings).map(
     ([key, value]) => {
       return {
-        score: cosineSimilarity(queryEmbedding.embedding, value),
+        score: calculateScore(queryEmbedding, value),
         filename: key,
         content: docs.get(key)!.content,
       };
@@ -145,3 +136,41 @@ export const searchTypeScriptDocs = async (query: string) => {
 };
 
 export const EMBED_CACHE_KEY = 'ts-docs-google';
+
+const embedLotsOfText = async (
+  documents: { filename: string; content: string }[],
+): Promise<
+  {
+    filename: string;
+    content: string;
+    embedding: number[];
+  }[]
+> => {
+  const result = await embedMany({
+    model: myEmbeddingModel,
+    values: documents.map((doc) => doc.content),
+    maxRetries: 0,
+  });
+
+  return result.embeddings.map((embedding, index) => ({
+    filename: documents[index]!.filename,
+    content: documents[index]!.content,
+    embedding,
+  }));
+};
+
+const calculateScore = (
+  queryEmbedding: number[],
+  embedding: number[],
+): number => {
+  return cosineSimilarity(queryEmbedding, embedding);
+};
+
+const embedOnePieceOfText = async (text: string) => {
+  const result = await embed({
+    model: myEmbeddingModel,
+    value: text,
+  });
+
+  return result.embedding;
+};
