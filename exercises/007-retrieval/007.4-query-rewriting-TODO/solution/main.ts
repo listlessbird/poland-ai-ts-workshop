@@ -2,7 +2,7 @@ import { runLocalDevServer } from '#shared/run-local-dev-server.ts';
 import {
   EMBED_CACHE_KEY,
   embedTsDocs,
-} from './api/create-embeddings.ts';
+} from './api/embeddings.ts';
 
 console.log('Embedding TS Docs');
 

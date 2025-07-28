@@ -1,30 +1,9 @@
-import path from 'path';
-import { readdir, readFile, writeFile } from 'fs/promises';
-import { cosineSimilarity, embed, embedMany } from 'ai';
 import { google } from '@ai-sdk/google';
-import { existsSync } from 'fs';
-
-export const loadTsDocs = async () => {
-  const TS_DOCS_LOCATION = path.resolve(
-    import.meta.dirname,
-    '../../../../../datasets/ts-docs',
-  );
-
-  const files = await readdir(TS_DOCS_LOCATION);
-
-  const docs = await Promise.all(
-    files.map(async (file) => {
-      const filePath = path.join(TS_DOCS_LOCATION, file);
-      const content = await readFile(filePath, 'utf8');
-      return {
-        filename: file,
-        content,
-      };
-    }),
-  );
-
-  return new Map(docs.map((doc) => [doc.filename, doc]));
-};
+import { cosineSimilarity, embed, embedMany } from 'ai';
+import { existsSync, mkdirSync } from 'fs';
+import { readFile, writeFile } from 'fs/promises';
+import path from 'path';
+import { loadTsDocs } from './utils.ts';
 
 export type Embeddings = Record<string, number[]>;
 
@@ -38,6 +17,10 @@ const saveEmbeddings = async (
 ) => {
   const existingEmbeddingsPath =
     getExistingEmbeddingsPath(cacheKey);
+
+  await mkdirSync(path.dirname(existingEmbeddingsPath), {
+    recursive: true,
+  });
 
   await writeFile(
     existingEmbeddingsPath,
@@ -109,7 +92,9 @@ export const embedTsDocs = async (
   return embeddings;
 };
 
-export const searchTypeScriptDocs = async (query: string) => {
+export const searchTypeScriptDocsViaEmbeddings = async (
+  query: string,
+) => {
   const embeddings =
     await getExistingEmbeddings(EMBED_CACHE_KEY);
 

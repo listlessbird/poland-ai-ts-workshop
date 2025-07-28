@@ -2,10 +2,12 @@ import { google } from '@ai-sdk/google';
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
+  generateObject,
   streamText,
   type UIMessage,
 } from 'ai';
-import { searchTypeScriptDocs } from './create-embeddings.ts';
+import { z } from 'zod';
+import { searchTypeScriptDocs } from './search.ts';
 
 export type MyMessage = UIMessage<unknown, {}>;
 
@@ -31,16 +33,41 @@ export const POST = async (req: Request): Promise<Response> => {
 
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
-      const searchResults = await searchTypeScriptDocs(
-        formatMessageHistory(messages),
-      );
+      const keywords = await generateObject({
+        model: google('gemini-2.0-flash-001'),
+        system: `You are a helpful TypeScript developer, able to search the TypeScript docs for information.
+          Your job is to generate a list of keywords which will be used to search the TypeScript docs.
+          You should also generate a search query which will be used to search the TypeScript docs. This will be used for semantic search, so can be more general.
+        `,
+        schema: z.object({
+          keywords: z
+            .array(z.string())
+            .describe(
+              'A list of keywords to search the TypeScript docs with. Use these for exact terminology.',
+            ),
+          searchQuery: z
+            .string()
+            .describe(
+              'A search query which will be used to search the TypeScript docs. Use this for broader terms.',
+            ),
+        }),
+        prompt: `
+          Conversation history:
+          ${formatMessageHistory(messages)}
+        `,
+      });
+
+      console.dir(keywords.object, { depth: null });
+
+      const searchResults = await searchTypeScriptDocs({
+        keywordsForBM25: keywords.object.keywords,
+        embeddingsQuery: keywords.object.searchQuery,
+      });
 
       const topSearchResults = searchResults.slice(0, 5);
 
       console.log(
-        topSearchResults.map(
-          (result) => `${result.filename} (${result.score})`,
-        ),
+        topSearchResults.map((result) => result.filename),
       );
 
       const answer = streamText({
@@ -59,11 +86,9 @@ export const POST = async (req: Request): Promise<Response> => {
               result.filename || `document-${i + 1}`;
 
             const content = result.content || '';
-            const score = result.score.toFixed(3);
 
             return [
               `### 📄 Source ${i + 1}: [${filename}](#${filename.replace(/[^a-zA-Z0-9]/g, '-')})`,
-              `**Relevance Score:** ${score}`,
               content,
               '---',
             ].join('\n\n');
