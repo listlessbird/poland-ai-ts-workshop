@@ -80,3 +80,28 @@ All you need to do is implement the task function, and this is going to be a pre
 By running the exercise, you'll then see the Evalite output and also open a local dev server at [localhost:3006](http://localhost:3006) to investigate the outputs.
 
 Good luck, and I'll see you in the solution.
+
+## Steps To Complete
+
+- Import the necessary AI SDK components at the top of your file
+
+  ```ts
+  import { google } from '@ai-sdk/google';
+  import { generateText } from 'ai';
+  ```
+
+- Implement the `task` function to use the AI SDK to generate a response about capitals
+
+  ```ts
+  task: async (input) => {
+    const capitalResult = // Call generateText with appropriate model and prompt
+
+    return capitalResult.text;
+  },
+  ```
+
+- Your prompt should instruct the model to answer questions about capitals of countries
+
+- Run the exercise to see the evaluation results
+
+- Check that your implementation scores well on the test cases (France/Paris, Germany/Berlin, Italy/Rome)

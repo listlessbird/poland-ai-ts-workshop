@@ -71,3 +71,24 @@ You'll also need to design the system prompt so that it always includes markdown
 You can then use Evalite to make sure that these two deterministic evals eventually pass.
 
 Good luck, and I'll see you in the solution.
+
+## Steps To Complete
+
+- Complete the "Includes Markdown Links" scorer
+  - Implement logic to check if the output contains markdown links using a regular expression (your LLM will be able to help you with this)
+  - Return 1 if links are found, 0 if not
+
+- Complete the "Output length" scorer
+  - Implement logic to check if the output is less than 500 characters
+  - Return 1 if it's concise enough, 0 if not
+
+- Run the exercise to see the evaluation results
+
+- Update the system prompt to:
+  - Pass the links data to the model
+  - Explicitly instruct the model to include markdown links
+  - Direct the model to be extremely succinct in its answers
+  - Provide examples of properly formatted markdown links
+
+- Run the evaluation using Evalite and check if both scorers pass
+  - If they don't pass, refine your prompt until they do
