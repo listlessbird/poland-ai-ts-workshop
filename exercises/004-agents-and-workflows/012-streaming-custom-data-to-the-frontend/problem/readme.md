@@ -72,3 +72,19 @@ export const Message = ({
 ```
 
 And again, there's examples for all of these things in the reference material, which as a generous teacher, I will link to. But good luck and I will see you in the solution.
+
+## Steps To Complete
+
+- Create a `MyMessage` type with custom data parts for 'slack-message' and 'slack-message-feedback'
+
+- Update the API to use `streamText` instead of `generateText` for the first draft and evaluation
+
+- Create a `createUIMessageStream` to manage the writing of messages and data parts
+
+- Use the `writer.write()` method to add custom data parts to the stream as they're generated
+
+- Update the frontend to use the custom `MyMessage` type in the `useChat` hook
+
+- Modify the `Message` component to render the custom data parts with appropriate styling
+
+- Test your implementation by running the local dev server and checking if you see the Slack message draft and feedback appearing on the screen before the final message

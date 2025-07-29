@@ -76,3 +76,15 @@ const formatMessageHistory = (messages: UIMessage[]) => {
 The final draft will be streamed directly to the frontend, so the user will only see the best attempt so far.
 
 Good luck, and I'll see you in the solution.
+
+## Steps To Complete
+
+- Implement the first `writeSlackResult` function to generate the initial Slack message draft using the Google Gemini model with the provided system prompt
+
+- Implement the `evaluateSlackResult` function to evaluate the first draft using another LLM call with the evaluation system prompt
+
+- Implement the `finalSlackAttempt` function to stream the final Slack message based on the conversation, first draft, and feedback
+
+- Test your implementation by running the local dev server and submitting the pre-filled prompt in the UI
+
+- Observe how the three-step process produces a better result than a single LLM call would, checking the final streamed response in the UI

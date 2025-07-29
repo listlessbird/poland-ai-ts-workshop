@@ -40,3 +40,26 @@ Once the loop is done, we'll use the final draft as our response, streaming it a
 Make sure you lock down the stop condition of your while loop - paid systems with potential infinite loops can be scary! Always ensure your loop has a clear exit condition.
 
 Good luck, and I'll see you in the solution.
+
+## Steps To Complete
+
+- Initialize variables at the beginning of the `execute` function: `step` (starting at 0), `mostRecentDraft` (empty string), and `mostRecentFeedback` (empty string)
+
+- Create a while loop that continues until `step < 2` (or another number of your choosing)
+
+- Increment the `step` variable at the end of each loop iteration
+
+- Inside the loop, implement the slack message writing logic:
+  - Stream the draft to the client using `writer.write`
+  - Store the draft in `mostRecentDraft`
+
+- Still inside the loop, implement the evaluation logic:
+  - Stream the feedback to the client
+  - Store the feedback in `mostRecentFeedback`
+
+- After the loop completes, stream the final text as a text part:
+  - Create a text-start part
+  - Create a text-delta part with the final draft
+  - Create a text-end part
+
+- Test your implementation by running the local dev server and checking if the Slack message generation shows multiple drafts and feedback cycles

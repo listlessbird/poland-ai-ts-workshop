@@ -161,9 +161,17 @@ onSubmit={(e) => {
 }}
 ```
 
-### Todo:
+## Steps To Complete
 
-- Set search params to include the backup `chatId` if not already set
-- Generate a new backup `chatId` to avoid creating multiple chats with same ID
-
-So you've got a fair chunk of work to do on both frontend and backend. Good luck, and I'll see you in the solution.
+- Modify the `useChat` hook call in the frontend to include the `chatId` (either from URL or backup) and any existing messages from the backend
+- Update the form submission handler:
+  - to set search params with the chatId when creating a new chat
+  - to refresh the backup chatId when creating a new chat
+- In the backend POST handler:
+  - implement retrieving an existing chat with `getChat(id)`
+  - if the chat doesn't exist, create it with `createChat(id, messages)`
+  - if the chat exists, append the most recent message with `appendToChatMessages`
+  - modify `toUIMessageStreamResponse()` to save the AI response message using `onFinish` callback
+- Test your implementation by running the dev server and seeing if messages persist when you refresh the page
+- Test that new chats get unique IDs in the URL
+- Check that when you visit a chat URL directly, the previous messages load correctly

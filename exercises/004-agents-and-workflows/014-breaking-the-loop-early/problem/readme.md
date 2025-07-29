@@ -57,3 +57,21 @@ We need to:
 The way that `streamObject` works is a little esoteric, so I've provided a little bit of reference material which I will link to below.
 
 Good luck, and I'll see you in the solution.
+
+## Steps To Complete
+
+- Replace the `streamText` call in the evaluation section with a `streamObject` call
+
+- Import the `streamObject` function from the 'ai' package
+
+- Import the `zod` package for schema definition
+
+- Define a schema for the output that includes:
+  - A feedback string
+  - A boolean indicating if the draft is good enough
+
+- Update the code to stream the feedback to the frontend as it appears in the `partialObjectStream`
+
+- Modify the loop to break early if the LLM indicates the draft is good enough
+
+- Test your implementation by running the local dev server and observing if the loop breaks early when appropriate
