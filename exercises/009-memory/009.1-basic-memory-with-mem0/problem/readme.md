@@ -147,3 +147,19 @@ Once this is done, we should be able to tell our LLM some preferences, for insta
 Then you should be able to refresh the browser and see some of the new preferences sneaking into the LLM's behavior.
 
 It's pretty exciting and pretty powerful. Good luck, and I will see you in the solution.
+
+## Steps To Complete
+
+- Implement the memory search functionality in the `execute` function using `memory.search()`, passing in the formatted message history and user ID
+
+- Add the retrieved memories to the system prompt using the `formatMemory` function to format each memory item
+
+- Implement the memory storage in the `onFinish` function, combining the original messages with the response messages
+
+- Run the local dev server and test if your implementation works by:
+  - Entering a message about a preference (e.g., "Remember that I prefer aisle seats on planes")
+  - Refreshing the page or starting a new chat
+  - Asking something like "What are my seating preferences on planes?"
+  - Checking if the LLM correctly recalls your preference
+
+- Look at the console logs to verify that the memory search and add operations are working properly
