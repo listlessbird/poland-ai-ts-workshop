@@ -72,3 +72,14 @@ const searchQuery = TODO;
 This isn't a terribly difficult job. We just need to take the keyword writer we've already got and add something that makes sure we're doing it for the embeddings as well as for the BM25.
 
 Good luck, and I will see you in the solution.
+
+## Steps To Complete
+
+- Modify the `generateObject` schema in `problem/api/chat.ts` to include a field for the search query
+- Update the system prompt to explain that the search query will be used for semantic search
+- Add a description to the search query field in the schema
+- Replace the `TODO` to use the generated search query
+- Test your implementation by running the dev server and asking questions about TypeScript
+- Check the console logs to see the generated keywords and search query
+- Verify that the search results are more relevant to your current question
+- Try asking follow-up questions to test how well the system handles conversation context

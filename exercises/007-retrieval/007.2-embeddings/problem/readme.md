@@ -98,3 +98,14 @@ You'll need to call the `searchTypeScriptDocs` function with the conversation hi
 I recommend logging out the search results to see which files are being fetched. Once that's done, we should get similar performance to what we had before, except probably a little bit improved.
 
 Good luck with the implementation!
+
+## Steps To Complete
+
+- Implement the `embedLotsOfText` function in `create-embeddings.ts` using the `embedMany` function from AI SDK
+- Implement the `embedOnePieceOfText` function using the `embed` function
+- Implement the `calculateScore` function using the `cosineSimilarity` function
+- In `chat.ts`, call the `searchTypeScriptDocs` function with the conversation history
+- Slice the results to get the top 5 (or another number of your choosing) search results
+- Add a console.log to see which files are being fetched
+- Test your implementation by running the local dev server and asking questions about TypeScript in the chat interface
+- Observe the console logs to see which files are being retrieved for your queries
