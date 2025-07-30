@@ -49,7 +49,7 @@ Try messing about with the prompt, see if you can get some different outputs, an
 
 ## Steps To Complete
 
-- Examine the provided code that uses `toUIMessageStream()` to output `UIMessage` components
+- Examine the provided code that uses `toUIMessageStream()` to output `UIMessage`s
 - Run the code to see the structure of a `UIMessageStream` in action
 - Observe the different parts that make up the stream (start, start step, text start, text delta, etc.)
 - Try modifying the prompt to generate different content and observe how the `UIMessageStream` structure remains similar
