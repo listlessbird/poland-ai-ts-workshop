@@ -1,21 +1,26 @@
+import { google } from '@ai-sdk/google';
 import {
   convertToModelMessages,
   createUIMessageStreamResponse,
   streamText,
+  type ModelMessage,
   type UIMessage,
 } from 'ai';
-import { google } from '@ai-sdk/google';
 
 export const POST = async (req: Request): Promise<Response> => {
-  const body: { messages: UIMessage[] } = await req.json();
-  const { messages } = body;
+  const body = await req.json();
 
-  const result = streamText({
+  const messages: UIMessage[] = body.messages;
+
+  const modelMessages: ModelMessage[] =
+    convertToModelMessages(messages);
+
+  const streamTextResult = streamText({
     model: google('gemini-2.0-flash'),
-    messages: convertToModelMessages(messages),
+    messages: modelMessages,
   });
 
-  const stream = result.toUIMessageStream();
+  const stream = streamTextResult.toUIMessageStream();
 
   return createUIMessageStreamResponse({
     stream,

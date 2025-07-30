@@ -2,32 +2,11 @@ import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ChatInput, Message, Wrapper } from './components.tsx';
 import './tailwind.css';
-import type { UIMessage } from 'ai';
-
-const messages: UIMessage[] = [
-  {
-    id: '1',
-    role: 'user',
-    parts: [
-      {
-        type: 'text',
-        text: 'Hello, how are you?',
-      },
-    ],
-  },
-  {
-    id: '2',
-    role: 'assistant',
-    parts: [
-      {
-        type: 'text',
-        text: "I'm good, thank you!",
-      },
-    ],
-  },
-];
 
 const App = () => {
+  // TODO: use the useChat hook to get the messages and sendMessage function
+  const { messages, sendMessage } = TODO;
+
   const [input, setInput] = useState('');
 
   return (
