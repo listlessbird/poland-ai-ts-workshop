@@ -9,6 +9,7 @@ const stream = streamText({
     'Give me the first paragraph of a story about an imaginary planet.',
 });
 
+// Using toUIMessageStream() instead!
 for await (const chunk of stream.toUIMessageStream()) {
   console.log(chunk);
 }
