@@ -117,9 +117,12 @@ const result = streamText({
 
 const stream = result.toUIMessageStream({
   onFinish: ({ messages }) => {
+    console.log('--- ON FINISH ---');
     console.dir(messages, { depth: null });
   },
 });
+
+console.log('--- STREAM ---');
 
 for await (const message of stream) {
   console.log(message);
