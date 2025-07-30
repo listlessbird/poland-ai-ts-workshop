@@ -1,0 +1,98 @@
+--- STREAM ---
+{ type: 'start' }
+{ type: 'start-step' }
+{
+  type: 'tool-input-start',
+  toolCallId: 'mjDMqVhIzJMwcC22',
+  toolName: 'writeFile',
+  providerExecuted: undefined
+}
+{
+  type: 'tool-input-delta',
+  toolCallId: 'mjDMqVhIzJMwcC22',
+  inputTextDelta: `{"path":"pirate.md","content":"A salty dog with a patch on his eye,\\nSailed the seas under a stormy sky.\\nWith a cutlass keen and a parrot so green,\\nHe plundered and roamed, a fearsome machine.\\n\\nGold doubloons and jewels so bright,\\nFilled his chest with all his might.\\nA life of adventure, wild and free,\\nA pirate's life, for him and for me!"}`
+}
+{
+  type: 'tool-input-available',
+  toolCallId: 'mjDMqVhIzJMwcC22',
+  toolName: 'writeFile',
+  input: {
+    path: 'pirate.md',
+    content: 'A salty dog with a patch on his eye,\n' +
+      'Sailed the seas under a stormy sky.\n' +
+      'With a cutlass keen and a parrot so green,\n' +
+      'He plundered and roamed, a fearsome machine.\n' +
+      '\n' +
+      'Gold doubloons and jewels so bright,\n' +
+      'Filled his chest with all his might.\n' +
+      'A life of adventure, wild and free,\n' +
+      "A pirate's life, for him and for me!"
+  },
+  providerExecuted: undefined,
+  providerMetadata: undefined
+}
+{
+  type: 'tool-output-available',
+  toolCallId: 'mjDMqVhIzJMwcC22',
+  output: {
+    success: true,
+    message: 'File written successfully: pirate.md',
+    path: 'pirate.md'
+  },
+  providerExecuted: undefined
+}
+{ type: 'finish-step' }
+{ type: 'start-step' }
+{ type: 'text-start', id: '0' }
+{ type: 'text-delta', id: '0', delta: 'I' }
+{
+  type: 'text-delta',
+  id: '0',
+  delta: "'ve written a poem about a pirate and saved it to a file named `pir"
+}
+{ type: 'text-delta', id: '0', delta: 'ate.md`.' }
+{ type: 'text-end', id: '0' }
+{ type: 'finish-step' }
+{ type: 'finish' }
+--- ON FINISH ---
+[
+  {
+    id: '',
+    metadata: undefined,
+    role: 'assistant',
+    parts: [
+      { type: 'step-start' },
+      {
+        type: 'tool-writeFile',
+        toolCallId: 'mjDMqVhIzJMwcC22',
+        state: 'output-available',
+        input: {
+          path: 'pirate.md',
+          content: 'A salty dog with a patch on his eye,\n' +
+            'Sailed the seas under a stormy sky.\n' +
+            'With a cutlass keen and a parrot so green,\n' +
+            'He plundered and roamed, a fearsome machine.\n' +
+            '\n' +
+            'Gold doubloons and jewels so bright,\n' +
+            'Filled his chest with all his might.\n' +
+            'A life of adventure, wild and free,\n' +
+            "A pirate's life, for him and for me!"
+        },
+        output: {
+          success: true,
+          message: 'File written successfully: pirate.md',
+          path: 'pirate.md'
+        },
+        errorText: undefined,
+        providerExecuted: undefined
+      },
+      { type: 'step-start' },
+      {
+        type: 'text',
+        text: "I've written a poem about a pirate and saved it to a file named `pirate.md`.",
+        providerMetadata: undefined,
+        state: 'done'
+      }
+    ]
+  }
+]
