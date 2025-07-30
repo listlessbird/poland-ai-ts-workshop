@@ -28,6 +28,11 @@ export const POST = async (req: Request): Promise<Response> => {
 
       Use markdown files to store information.
     `,
+    // TODO: add the tools to the streamText call,
+    tools: TODO,
+    // TODO: add a custom stop condition to the streamText call
+    // to force the agent to stop after 10 steps have been taken
+    stopWhen: TODO,
   });
 
   return result.toUIMessageStreamResponse();
