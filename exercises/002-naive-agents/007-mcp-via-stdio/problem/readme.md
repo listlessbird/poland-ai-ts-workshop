@@ -1,13 +1,108 @@
-Now we understand how tools work, we can investigate how to integrate MCP into our setup.
+One way that you can provide tool sets to your agent is via MCP.
 
-If we only use MCP's most basic features, we can think of it as a USB port for plugging in tools into our application.
+MCP, or the Model Context Protocol, is a protocol you can use to connect your client (which in our case is the application that we're building) to an MCP server.
 
-MCP servers can be run locally, and then connected to via a standard I/O connection.
+MCP servers can expose tool sets, in other words, functions that you can call as the client, to do things in the real world.
 
-Alternatively, we can connect to a remote HTTP server running an MCP server.
+For instance, the GitHub MCP server, which is what we're going to be using, lets you create repositories, find text files, close issues, open pull requests, and all sorts of other useful GitHub actions.
 
-In this exercise, we're going to use a local MCP server running in a Docker container.
+By taking these pre-built tools and plugging them into our system, we're going to be on the fast track to making something really useful.
 
-We're going to use the GitHub MCP server, which is a server that can be used to interact with the GitHub API.
+Luckily, the AI SDK has a few functions that help you do that.
 
-To run the GitHub MCP server, we need to have a GitHub personal access token.
+## The Exercise
+
+In this exercise, we'll be working in the `POST` route only.
+
+We're first going to look at a couple of imported functions from `ai` and `ai/mcp-stdio`. These are experimental, of course, because everything in MCP is experimental, and we're going to use them just below in our code.
+
+Before we start streaming, we need to initiate an MCP client. This will use the `StdioMCPTransport` from `ai/mcp-stdio`.
+
+```ts
+import { experimental_createMCPClient as createMCPClient } from 'ai';
+import { Experimental_StdioMCPTransport as StdioMCPTransport } from 'ai/mcp-stdio';
+```
+
+What this is going to do is run a process locally and monitor its `stdin` and `stdout` in order to communicate with it.
+
+You'll need to run the GitHub MCP server in a Docker container. That's how they recommend you do it.
+
+To save you the pain I went through integrating this, here's the code for how to set it up:
+
+```ts
+const myTransport = new StdioMCPTransport({
+  command: 'docker',
+  args: [
+    'run',
+    '-i',
+    '--rm',
+    '-e',
+    'GITHUB_PERSONAL_ACCESS_TOKEN',
+    'ghcr.io/github/github-mcp-server',
+  ],
+  env: {
+    GITHUB_PERSONAL_ACCESS_TOKEN:
+      process.env.GITHUB_PERSONAL_ACCESS_TOKEN!,
+  },
+});
+```
+
+For those who don't have Docker yet, you'll need to download Docker Desktop if you don't already have it installed. You'll also need to acquire a GitHub personal access token.
+
+Give your token some basic access and put that in your `.env` file in the root of the repository:
+
+```
+GITHUB_PERSONAL_ACCESS_TOKEN=your_token_here
+```
+
+Once the MCP client has been set up, you then need to acquire its tools and pass those tools into `streamText`. The MCP client will have a `tools` method that you can call to get them.
+
+## Closing the MCP Client
+
+Finally, because we're running the MCP server ourselves (that's what the `StdioMCPTransport` does - it kicks off the MCP server), we will need to manually close it when we're done.
+
+So in the `onFinish` callback, we're going to close the stream by calling `mcpClient.close()`.
+
+For us, this means we're going to kick off the GitHub MCP server when our request is made. And when our request finishes, we're going to close it down. This might not be the most desirable approach, but for now it's going to work.
+
+Once that's all set up and working, you should be able to communicate with your own GitHub account via a tool that you've built yourself.
+
+Why not get it to list some issues on a repository that you know, or even ask it to investigate a repository that you don't know well. Good luck!
+
+## Steps To Complete
+
+- Get a GitHub personal access token and add it to your `.env` file
+
+- Install Docker Desktop if you don't have it already
+
+- Create an MCP client using the `createMCPClient` function and the `StdioMCPTransport` class to connect to the GitHub MCP server. As a reminder, here's how to set up the transport:
+
+```ts
+const myTransport = new StdioMCPTransport({
+  command: 'docker',
+  args: [
+    'run',
+    '-i',
+    '--rm',
+    '-e',
+    'GITHUB_PERSONAL_ACCESS_TOKEN',
+    'ghcr.io/github/github-mcp-server',
+  ],
+  env: {
+    GITHUB_PERSONAL_ACCESS_TOKEN:
+      process.env.GITHUB_PERSONAL_ACCESS_TOKEN!,
+  },
+});
+```
+
+- Use the `mcpClient.tools()` method to get the tools and pass them to the `streamText` function.
+
+- Implement the `onFinish` callback to close the MCP client when the stream is finished
+
+```ts
+onFinish: async () => {
+  // Close the MCP client
+},
+```
+
+- Test your implementation by running the local dev server and asking the agent to interact with GitHub, such as fetching issues from a repository
