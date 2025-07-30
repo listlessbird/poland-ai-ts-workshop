@@ -5,6 +5,7 @@ import { ChatInput, Message, Wrapper } from './components.tsx';
 import './tailwind.css';
 
 const App = () => {
+  // TODO - pass MyUIMessage as a type argument to useChat
   const { messages, sendMessage } = useChat({});
 
   const [input, setInput] = useState(
