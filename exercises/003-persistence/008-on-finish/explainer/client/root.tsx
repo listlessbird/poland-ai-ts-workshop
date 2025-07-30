@@ -7,7 +7,9 @@ import './tailwind.css';
 const App = () => {
   const { messages, sendMessage } = useChat({});
 
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(
+    'Write me a poem about a fish called Grant.',
+  );
 
   return (
     <Wrapper>
