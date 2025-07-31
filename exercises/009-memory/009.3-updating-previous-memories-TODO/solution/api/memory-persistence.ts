@@ -1,6 +1,10 @@
-import { promises as fs } from 'fs';
+import {
+  accessSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from 'fs';
 import { join } from 'path';
-import type { UIMessage } from 'ai';
 
 export namespace DB {
   // Types for our persistence layer
@@ -29,19 +33,19 @@ export const generateId = () => {
 /**
  * Ensure the data directory exists
  */
-async function ensureDataDirectory(): Promise<void> {
+function ensureDataDirectory(): void {
   const dataDir = join(process.cwd(), 'data');
   try {
-    await fs.access(dataDir);
+    accessSync(dataDir);
   } catch {
-    await fs.mkdir(dataDir, { recursive: true });
+    mkdirSync(dataDir, { recursive: true });
   }
 }
 
-async function loadDB(): Promise<DB.PersistenceData> {
+function loadDB(): DB.PersistenceData {
   try {
-    await ensureDataDirectory();
-    const data = await fs.readFile(DATA_FILE_PATH, 'utf-8');
+    ensureDataDirectory();
+    const data = readFileSync(DATA_FILE_PATH, 'utf-8');
     return JSON.parse(data) as DB.PersistenceData;
   } catch (error) {
     return { memories: [] };
@@ -51,10 +55,10 @@ async function loadDB(): Promise<DB.PersistenceData> {
 /**
  * Load all chats from the JSON file
  */
-export async function loadMemories(): Promise<DB.MemoryItem[]> {
+export function loadMemories(): DB.MemoryItem[] {
   try {
-    await ensureDataDirectory();
-    const data = await fs.readFile(DATA_FILE_PATH, 'utf-8');
+    ensureDataDirectory();
+    const data = readFileSync(DATA_FILE_PATH, 'utf-8');
     const parsed: DB.PersistenceData = JSON.parse(data);
     return parsed.memories || [];
   } catch (error) {
@@ -66,29 +70,27 @@ export async function loadMemories(): Promise<DB.MemoryItem[]> {
 /**
  * Save all chats to the JSON file
  */
-export async function saveMemories(
-  memories: DB.MemoryItem[],
-): Promise<void> {
-  const data = await loadDB();
+export function saveMemories(memories: DB.MemoryItem[]): void {
+  const data = loadDB();
   data.memories = [...data.memories, ...memories];
 
-  await fs.writeFile(
+  writeFileSync(
     DATA_FILE_PATH,
     JSON.stringify(data, null, 2),
     'utf-8',
   );
 }
 
-export async function updateMemory(
+export function updateMemory(
   memoryId: string,
   memory: Omit<DB.MemoryItem, 'id'>,
-): Promise<boolean> {
-  const data = await loadDB();
+): boolean {
+  const data = loadDB();
   data.memories = data.memories.map((m) =>
     m.id === memoryId ? { ...m, ...memory } : m,
   );
 
-  await fs.writeFile(
+  writeFileSync(
     DATA_FILE_PATH,
     JSON.stringify(data, null, 2),
     'utf-8',
@@ -97,13 +99,11 @@ export async function updateMemory(
   return true;
 }
 
-export async function deleteMemory(
-  memoryId: string,
-): Promise<boolean> {
-  const data = await loadDB();
+export function deleteMemory(memoryId: string): boolean {
+  const data = loadDB();
   data.memories = data.memories.filter((m) => m.id !== memoryId);
 
-  await fs.writeFile(
+  writeFileSync(
     DATA_FILE_PATH,
     JSON.stringify(data, null, 2),
     'utf-8',

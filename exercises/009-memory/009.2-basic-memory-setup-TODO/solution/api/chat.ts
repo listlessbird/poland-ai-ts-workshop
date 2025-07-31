@@ -113,7 +113,7 @@ export const POST = async (req: Request): Promise<Response> => {
 
       const newMemories = memoriesResult.object.memories;
 
-      await saveMemories(
+      saveMemories(
         newMemories.map((memory) => ({
           id: generateId(),
           memory,

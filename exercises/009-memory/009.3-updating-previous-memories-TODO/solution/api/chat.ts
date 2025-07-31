@@ -160,22 +160,18 @@ export const POST = async (req: Request): Promise<Response> => {
           !updates.some((update) => update.id === deletion),
       );
 
-      await Promise.all(
-        updates.map((update) =>
-          updateMemory(update.id, {
-            memory: update.memory,
-            createdAt: new Date().toISOString(),
-          }),
-        ),
+      updates.forEach((update) =>
+        updateMemory(update.id, {
+          memory: update.memory,
+          createdAt: new Date().toISOString(),
+        }),
       );
 
-      await Promise.all(
-        filteredDeletions.map((deletion) =>
-          deleteMemory(deletion),
-        ),
+      filteredDeletions.forEach((deletion) =>
+        deleteMemory(deletion),
       );
 
-      await saveMemories(
+      saveMemories(
         additions.map((addition) => ({
           id: generateId(),
           memory: addition,
