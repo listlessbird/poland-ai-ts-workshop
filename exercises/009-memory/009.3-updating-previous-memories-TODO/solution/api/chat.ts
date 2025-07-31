@@ -12,6 +12,8 @@ import { z } from 'zod';
 import {
   loadMemories,
   saveMemories,
+  deleteMemory,
+  updateMemory,
   type DB,
 } from './memory-persistence.ts';
 
@@ -40,6 +42,7 @@ const partsToText = (parts: UIMessage['parts']) => {
 const formatMemory = (memory: DB.MemoryItem) => {
   return [
     `Memory: ${memory.memory}`,
+    `ID: ${memory.id}`,
     `Created At: ${memory.createdAt}`,
   ].join('\n');
 };
@@ -74,11 +77,36 @@ export const POST = async (req: Request): Promise<Response> => {
       const allMessages = [...messages, ...response.messages];
 
       const memoriesResult = await generateObject({
-        model: google('gemini-2.0-flash-lite'),
+        model: google('gemini-2.0-flash'),
         schema: z.object({
-          memories: z.array(z.string()),
+          updates: z
+            .array(
+              z.object({
+                id: z
+                  .string()
+                  .describe(
+                    'The ID of the existing memory to update',
+                  ),
+                memory: z
+                  .string()
+                  .describe('The updated memory content'),
+              }),
+            )
+            .describe(
+              'Array of existing memories that need to be updated with new information',
+            ),
+          deletions: z
+            .array(z.string())
+            .describe(
+              'Array of memory IDs that should be deleted (outdated, incorrect, or no longer relevant)',
+            ),
+          additions: z
+            .array(z.string())
+            .describe(
+              "Array of new memory strings to add to the user's permanent memory",
+            ),
         }),
-        system: `You are a memory extraction agent. Your task is to analyze the conversation history and extract permanent memories about the user.
+        system: `You are a memory management agent. Your task is to analyze the conversation history and manage the user's permanent memories by adding new ones, updating existing ones, and deleting outdated ones.
 
         PERMANENT MEMORIES are facts about the user that:
         - Are unlikely to change over time (preferences, traits, characteristics)
@@ -99,9 +127,17 @@ export const POST = async (req: Request): Promise<Response> => {
         - "User is currently debugging code" (situational)
         - "User said hello" (trivial interaction)
 
-        Extract any new permanent memories from this conversation. Return an array of memory strings that should be added to the user's permanent memory. Each memory should be a concise, factual statement about the user.
+        MEMORY MANAGEMENT TASKS:
+        1. ADDITIONS: Extract any new permanent memories from this conversation that aren't already covered by existing memories.
+        2. UPDATES: Identify existing memories that need to be updated with new information (e.g., if user mentioned they moved cities, update their location memory).
+        3. DELETIONS: Identify existing memories that are now outdated, incorrect, or no longer relevant based on new information in the conversation.
 
-        If no new permanent memories are found, return an empty array.`,
+        For each memory operation:
+        - Additions: Return concise, factual statements about the user
+        - Updates: Provide the memory ID and the updated content
+        - Deletions: Provide the memory ID of memories that should be removed
+
+        If no memory changes are needed, return empty arrays for all operations.`,
         prompt: `
         CONVERSATION HISTORY:
         ${formatMessageHistory(allMessages)}
@@ -111,12 +147,38 @@ export const POST = async (req: Request): Promise<Response> => {
         `,
       });
 
-      const newMemories = memoriesResult.object.memories;
+      const { updates, deletions, additions } =
+        memoriesResult.object;
+
+      console.log('Updates', updates);
+      console.log('Deletions', deletions);
+      console.log('Additions', additions);
+
+      // Only delete memories that are not being updated
+      const filteredDeletions = deletions.filter(
+        (deletion) =>
+          !updates.some((update) => update.id === deletion),
+      );
+
+      await Promise.all(
+        updates.map((update) =>
+          updateMemory(update.id, {
+            memory: update.memory,
+            createdAt: new Date().toISOString(),
+          }),
+        ),
+      );
+
+      await Promise.all(
+        filteredDeletions.map((deletion) =>
+          deleteMemory(deletion),
+        ),
+      );
 
       await saveMemories(
-        newMemories.map((memory) => ({
+        additions.map((addition) => ({
           id: generateId(),
-          memory,
+          memory: addition,
           createdAt: new Date().toISOString(),
         })),
       );
