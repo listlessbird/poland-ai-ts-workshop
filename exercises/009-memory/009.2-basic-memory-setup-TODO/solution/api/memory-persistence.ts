@@ -5,6 +5,7 @@ import type { UIMessage } from 'ai';
 export namespace DB {
   // Types for our persistence layer
   export interface MemoryItem {
+    id: string;
     memory: string;
     createdAt: string;
   }
@@ -20,6 +21,10 @@ const DATA_FILE_PATH = join(
   'data',
   'memories.local.json',
 );
+
+export const generateId = () => {
+  return Math.random().toString(36).substring(2, 10);
+};
 
 /**
  * Ensure the data directory exists

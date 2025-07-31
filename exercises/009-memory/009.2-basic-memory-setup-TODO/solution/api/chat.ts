@@ -3,6 +3,7 @@ import {
   convertToModelMessages,
   createUIMessageStream,
   createUIMessageStreamResponse,
+  generateId,
   generateObject,
   streamText,
   type UIMessage,
@@ -118,10 +119,9 @@ export const POST = async (req: Request): Promise<Response> => {
 
       const newMemories = memoriesResult.object.memories;
 
-      console.log('New Memories', newMemories);
-
-      const result = await saveMemories(
+      await saveMemories(
         newMemories.map((memory) => ({
+          id: generateId(),
           memory,
           createdAt: new Date().toISOString(),
         })),
