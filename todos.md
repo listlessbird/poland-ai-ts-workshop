@@ -23,3 +23,7 @@ Remove any `.gitignore` files and change `data` to `gitignore-me`. Data is too g
 ---
 
 Check that the CLI, when you're selecting which directory to run the exercise in, only gives you directories as options.
+
+---
+
+Make the CLI listen for `n` to go to the next exercise, `p` to go to the previous exercise, and `enter` to ask for a list of exercises.
