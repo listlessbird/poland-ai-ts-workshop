@@ -5,15 +5,17 @@ import {
   streamText,
   tool,
   type InferUITool,
+  type InferUITools,
   type UIMessage,
 } from 'ai';
 import { z } from 'zod';
 import * as fsTools from './file-system-functionality.ts';
 
-export type MyUITools = {
-  [K in keyof typeof tools]: InferUITool<(typeof tools)[K]>;
-};
-export type MyUIMessage = UIMessage<never, never, MyUITools>;
+export type MyUIMessage = UIMessage<
+  never,
+  never,
+  InferUITools<typeof tools>
+>;
 
 const tools = {
   writeFile: tool({

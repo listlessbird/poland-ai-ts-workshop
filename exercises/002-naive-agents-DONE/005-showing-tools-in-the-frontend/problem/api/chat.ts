@@ -11,12 +11,6 @@ import {
 import { z } from 'zod';
 import * as fsTools from './file-system-functionality.ts';
 
-export type ToolsFromToolDefinition<
-  T extends Record<string, Tool>,
-> = {
-  [K in keyof T]: InferUITool<T[K]>;
-};
-
 // TODO - move the tool definitions from the streamText call into
 // the variable below
 const tools = TODO;
