@@ -1,0 +1,202 @@
+import { google } from '@ai-sdk/google';
+import {
+  createUIMessageStream,
+  createUIMessageStreamResponse,
+  streamObject,
+  streamText,
+  type UIMessage,
+} from 'ai';
+import z from 'zod';
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
+import { LangfuseExporter } from 'langfuse-vercel';
+import { Langfuse } from 'langfuse';
+
+const otelSDK = new NodeSDK({
+  traceExporter: new LangfuseExporter(),
+  instrumentations: [getNodeAutoInstrumentations()],
+});
+
+otelSDK.start();
+
+export type MyMessage = UIMessage<
+  unknown,
+  {
+    'slack-message': string;
+    'slack-message-feedback': string;
+  }
+>;
+
+const formatMessageHistory = (messages: UIMessage[]) => {
+  return messages
+    .map((message) => {
+      return `${message.role}: ${message.parts
+        .map((part) => {
+          if (part.type === 'text') {
+            return part.text;
+          }
+
+          return '';
+        })
+        .join('')}`;
+    })
+    .join('\n');
+};
+
+const WRITE_SLACK_MESSAGE_FIRST_DRAFT_SYSTEM = `You are writing a Slack message for a user based on the conversation history. Only return the Slack message, no other text.`;
+const EVALUATE_SLACK_MESSAGE_SYSTEM = `You are evaluating the Slack message produced by the user.
+
+  Evaluation criteria:
+  - The Slack message should be written in a way that is easy to understand.
+  - It should be appropriate for a professional Slack conversation.
+`;
+
+const langfuse = new Langfuse({
+  environment: process.env.NODE_ENV,
+  publicKey: process.env.LANGFUSE_PUBLIC_KEY,
+  secretKey: process.env.LANGFUSE_SECRET_KEY,
+  baseUrl: process.env.LANGFUSE_BASE_URL,
+});
+
+export const POST = async (req: Request): Promise<Response> => {
+  const body: { messages: MyMessage[]; id: string } =
+    await req.json();
+  const { messages } = body;
+
+  const trace = langfuse.trace({
+    name: 'generate-slack-message',
+    sessionId: body.id,
+  });
+
+  const stream = createUIMessageStream<MyMessage>({
+    execute: async ({ writer }) => {
+      let step = 0;
+      let mostRecentDraft = '';
+      let mostRecentFeedback = '';
+
+      while (step < 2) {
+        // Write Slack message
+        const writeSlackResult = streamText({
+          model: google('gemini-2.0-flash-001'),
+          system: WRITE_SLACK_MESSAGE_FIRST_DRAFT_SYSTEM,
+          prompt: `
+          Conversation history:
+          ${formatMessageHistory(messages)}
+
+          Previous draft (if any):
+          ${mostRecentDraft}
+
+          Previous feedback (if any):
+          ${mostRecentFeedback}
+        `,
+          experimental_telemetry: {
+            isEnabled: true,
+            metadata: {
+              langfuseTraceId: trace.id,
+            },
+          },
+        });
+
+        const firstDraftId = crypto.randomUUID();
+
+        let firstDraft = '';
+
+        for await (const part of writeSlackResult.textStream) {
+          firstDraft += part;
+
+          writer.write({
+            type: 'data-slack-message',
+            data: firstDraft,
+            id: firstDraftId,
+          });
+        }
+
+        mostRecentDraft = firstDraft;
+
+        // Evaluate Slack message
+        const evaluateSlackResult = streamObject({
+          model: google('gemini-2.0-flash-001'),
+          system: EVALUATE_SLACK_MESSAGE_SYSTEM,
+          prompt: `
+            Conversation history:
+            ${formatMessageHistory(messages)}
+
+            Most recent draft:
+            ${mostRecentDraft}
+
+            Previous feedback (if any):
+            ${mostRecentFeedback}
+          `,
+          schema: z.object({
+            feedback: z
+              .string()
+              .describe(
+                'The feedback about the most recent draft.',
+              ),
+            isGoodEnough: z
+              .boolean()
+              .describe(
+                'Whether the most recent draft is good enough to stop the loop.',
+              ),
+          }),
+          experimental_telemetry: {
+            isEnabled: true,
+            metadata: {
+              langfuseTraceId: trace.id,
+            },
+          },
+        });
+
+        const feedbackId = crypto.randomUUID();
+
+        for await (const part of evaluateSlackResult.partialObjectStream) {
+          if (part.feedback) {
+            writer.write({
+              type: 'data-slack-message-feedback',
+              data: part.feedback,
+              id: feedbackId,
+            });
+          }
+        }
+
+        const finalEvaluationObject =
+          await evaluateSlackResult.object;
+
+        // If the draft is good enough, break the loop
+        if (finalEvaluationObject.isGoodEnough) {
+          break;
+        }
+
+        mostRecentFeedback = finalEvaluationObject.feedback;
+
+        step++;
+      }
+
+      const textPartId = crypto.randomUUID();
+
+      writer.write({
+        type: 'text-start',
+        id: textPartId,
+      });
+
+      writer.write({
+        type: 'text-delta',
+        delta: mostRecentDraft,
+        id: textPartId,
+      });
+
+      writer.write({
+        type: 'text-end',
+        id: textPartId,
+      });
+    },
+    onFinish: async () => {
+      await langfuse.flushAsync();
+      await otelSDK.shutdown();
+    },
+  });
+
+  return createUIMessageStreamResponse({
+    stream,
+  });
+};
