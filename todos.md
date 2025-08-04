@@ -27,3 +27,7 @@ Check that the CLI, when you're selecting which directory to run the exercise in
 ---
 
 Make the CLI listen for `n` to go to the next exercise, `p` to go to the previous exercise, and `enter` to ask for a list of exercises.
+
+---
+
+Rename each exercise folder to use 07.1, 07.2, etc.
