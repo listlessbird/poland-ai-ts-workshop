@@ -30,34 +30,22 @@ export const findDecisionsToProcess = (opts: {
 
   // TODO: Get all the actions from the assistant message
   // and return them in an array.
-  const actions = mostRecentAssistantMessage.parts
-    .filter((part) => part.type === 'data-action-start')
-    .map((part) => part.data.action);
+  const actions = TODO;
 
   // TODO: Get all the decisions that the user has made
   // and return them in a map.
-  const decisions = new Map(
-    mostRecentUserMessage.parts
-      .filter((part) => part.type === 'data-action-decision')
-      .map((part) => [part.data.actionId, part.data.decision]),
-  );
+  const decisions = TODO;
 
   const decisionsToProcess: HITLDecisionsToProcess[] = [];
 
   for (const action of actions) {
     const decision = decisions.get(action.id);
 
-    if (!decision) {
-      return {
-        message: `No decision found for action ${action.id}`,
-        status: 400,
-      };
-    }
-
-    decisionsToProcess.push({
-      action,
-      decision,
-    });
+    // TODO: if the decision is not found, return an error -
+    // the user should make a decision before continuing.
+    //
+    // TODO: if the decision is found, add the action and
+    // decision to the decisionsToProcess array.
   }
 
   return decisionsToProcess;

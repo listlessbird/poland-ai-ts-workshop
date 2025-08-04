@@ -19,6 +19,11 @@ export type Action = {
   subject: string;
 };
 
+export type ActionOutput = {
+  type: 'send-email';
+  message: string;
+};
+
 export type ActionDecision =
   | {
       type: 'approve';
@@ -40,10 +45,9 @@ export type MyMessage = UIMessage<
       decision: ActionDecision;
     };
     'action-end': {
+      output: ActionOutput;
+      // The original action ID that this output is for.
       actionId: string;
-      output: {
-        message: string;
-      };
     };
   }
 >;
@@ -83,7 +87,11 @@ const getDiary = (messages: MyMessage[]): string => {
             }
 
             if (part.type === 'data-action-end') {
-              return `The action was performed: ${part.data.output.message}`;
+              if (part.data.output.type === 'send-email') {
+                return `The action was performed: ${part.data.output.message}`;
+              }
+
+              return '';
             }
 
             return '';
@@ -112,9 +120,6 @@ export const POST = async (req: Request): Promise<Response> => {
     });
   }
 
-  // NOTE: assistant messages are allowed to be undefined,
-  // since at the very start of the conversation we'll only
-  // have a user message.
   const mostRecentAssistantMessage = messages.findLast(
     (message) => message.role === 'assistant',
   );
@@ -124,18 +129,67 @@ export const POST = async (req: Request): Promise<Response> => {
     mostRecentAssistantMessage,
   });
 
-  // NOTE: if hitlResult returns a HITLError,
-  // we should return a Response with the error message
   if ('status' in hitlResult) {
     return new Response(hitlResult.message, {
       status: hitlResult.status,
     });
   }
 
-  console.dir(hitlResult, { depth: null });
-
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
+      const messagesAfterHitl: MyMessage[] = messages;
+
+      for (const { action, decision } of hitlResult) {
+        if (decision.type === 'approve') {
+          // Perform the action
+          sendEmail({
+            to: action.to,
+            subject: action.subject,
+            content: action.content,
+          });
+
+          const messagePart: MyMessage['parts'][number] = {
+            type: 'data-action-end',
+            data: {
+              actionId: action.id,
+              output: {
+                type: action.type,
+                message: 'Email sent',
+              },
+            },
+          };
+
+          // Write the result of the action to the stream
+          writer.write(messagePart);
+
+          // Add the message part to the messages array
+          messagesAfterHitl[
+            messagesAfterHitl.length - 1
+          ]!.parts.push(messagePart);
+        } else {
+          const messagePart: MyMessage['parts'][number] = {
+            type: 'data-action-end',
+            data: {
+              actionId: action.id,
+              output: {
+                type: action.type,
+                message: 'Email not sent: ' + decision.reason,
+              },
+            },
+          };
+
+          // Write the result of the action to the stream
+          writer.write(messagePart);
+
+          // Add the message part to the messages array
+          messagesAfterHitl[
+            messagesAfterHitl.length - 1
+          ]!.parts.push(messagePart);
+        }
+      }
+
+      console.log(getDiary(messagesAfterHitl));
+
       const streamTextResponse = streamText({
         model: google('gemini-2.0-flash-001'),
         system: `
@@ -143,7 +197,7 @@ export const POST = async (req: Request): Promise<Response> => {
           You will be given a diary of the conversation so far.
           The user's name is "John Doe".
         `,
-        prompt: getDiary(messages),
+        prompt: getDiary(messagesAfterHitl),
         tools: {
           sendEmail: {
             description: 'Send an email',

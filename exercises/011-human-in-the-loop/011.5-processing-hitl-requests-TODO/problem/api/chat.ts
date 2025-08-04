@@ -39,12 +39,10 @@ export type MyMessage = UIMessage<
       actionId: string;
       decision: ActionDecision;
     };
-    'action-end': {
-      actionId: string;
-      output: {
-        message: string;
-      };
-    };
+    // TODO: declare an action-end part that contains
+    // the output of the action. This should contain
+    // the id and output of the action.
+    'action-end': TODO;
   }
 >;
 
@@ -82,9 +80,9 @@ const getDiary = (messages: MyMessage[]): string => {
               return `The user rejected the action: ${part.data.decision.reason}`;
             }
 
-            if (part.type === 'data-action-end') {
-              return `The action was performed: ${part.data.output.message}`;
-            }
+            // TODO: if the part is a data-action-end,
+            // return a string that describes the output of
+            // the action.
 
             return '';
           })
@@ -100,17 +98,8 @@ export const POST = async (req: Request): Promise<Response> => {
 
   const mostRecentUserMessage = messages[messages.length - 1];
 
-  if (!mostRecentUserMessage) {
-    return new Response('Messages array cannot be empty', {
-      status: 400,
-    });
-  }
-
-  if (mostRecentUserMessage.role !== 'user') {
-    return new Response('Last message must be a user message', {
-      status: 400,
-    });
-  }
+  // TODO: return a Response of status 400 if there
+  // is no most recent user message.
 
   // NOTE: assistant messages are allowed to be undefined,
   // since at the very start of the conversation we'll only

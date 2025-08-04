@@ -21,21 +21,17 @@ export const findDecisionsToProcess = (opts: {
   const { mostRecentUserMessage, mostRecentAssistantMessage } =
     opts;
 
-  // TODO: If there's no assistant message in the chat,
-  // there's nothing to process and we can proceed with
-  // the conversation.
+  // If there's no assistant message in the chat, there's nothing to process.
   if (!mostRecentAssistantMessage) {
     return [];
   }
 
-  // TODO: Get all the actions from the assistant message
-  // and return them in an array.
+  // Get all the actions that the assistant has started
   const actions = mostRecentAssistantMessage.parts
     .filter((part) => part.type === 'data-action-start')
     .map((part) => part.data.action);
 
-  // TODO: Get all the decisions that the user has made
-  // and return them in a map.
+  // Get all the decisions that the user has made
   const decisions = new Map(
     mostRecentUserMessage.parts
       .filter((part) => part.type === 'data-action-decision')
@@ -47,6 +43,8 @@ export const findDecisionsToProcess = (opts: {
   for (const action of actions) {
     const decision = decisions.get(action.id);
 
+    // If no decision is found, return an error - the user
+    // should make a decision before continuing.
     if (!decision) {
       return {
         message: `No decision found for action ${action.id}`,
