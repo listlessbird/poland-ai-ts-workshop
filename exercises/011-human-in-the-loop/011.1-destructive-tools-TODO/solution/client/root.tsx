@@ -9,7 +9,7 @@ const App = () => {
   const { messages, sendMessage } = useChat<MyMessage>({});
 
   const [input, setInput] = useState(
-    `Write a Slack message to your boss complaining about a colleague's hygiene.`,
+    `Send an email to team@aihero.dev saying what a fantastic AI workshop I'm currently attending. Thank them for the workshop.`,
   );
 
   const actionIdsWithDecisionsMade = useMemo(() => {
