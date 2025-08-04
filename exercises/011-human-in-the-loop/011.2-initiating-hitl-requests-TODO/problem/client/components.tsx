@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import type { Action, MyMessage } from '../api/chat.ts';
+import type { MyMessage } from '../api/chat.ts';
 
 export const Wrapper = (props: {
   children: React.ReactNode;
