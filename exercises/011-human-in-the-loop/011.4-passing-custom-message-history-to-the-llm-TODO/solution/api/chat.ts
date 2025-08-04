@@ -48,34 +48,36 @@ const getDiary = (messages: MyMessage[]): string => {
         message.role === 'user'
           ? '## User Message'
           : '## Assistant Message',
-        message.parts.map((part): string => {
-          if (part.type === 'text') {
-            return part.text;
-          }
+        message.parts
+          .map((part): string => {
+            if (part.type === 'text') {
+              return part.text;
+            }
 
-          if (part.type === 'data-action-start') {
-            if (part.data.action.type === 'send-email') {
-              return [
-                'The assistant requested to send an email:',
-                `To: ${part.data.action.to}`,
-                `Subject: ${part.data.action.subject}`,
-                `Content: ${part.data.action.content}`,
-              ].join('\n');
+            if (part.type === 'data-action-start') {
+              if (part.data.action.type === 'send-email') {
+                return [
+                  'The assistant requested to send an email:',
+                  `To: ${part.data.action.to}`,
+                  `Subject: ${part.data.action.subject}`,
+                  `Content: ${part.data.action.content}`,
+                ].join('\n');
+              }
+
+              return '';
+            }
+
+            if (part.type === 'data-action-decision') {
+              if (part.data.decision.type === 'approve') {
+                return 'The user approved the action.';
+              }
+
+              return `The user rejected the action: ${part.data.decision.reason}`;
             }
 
             return '';
-          }
-
-          if (part.type === 'data-action-decision') {
-            if (part.data.decision.type === 'approve') {
-              return 'The user approved the action.';
-            }
-
-            return `The user rejected the action: ${part.data.decision.reason}`;
-          }
-
-          return '';
-        }),
+          })
+          .join('\n\n'),
       ].join('\n\n');
     })
     .join('\n\n');
