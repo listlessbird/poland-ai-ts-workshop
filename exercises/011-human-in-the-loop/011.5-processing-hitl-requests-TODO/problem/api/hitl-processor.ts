@@ -21,7 +21,7 @@ export const findDecisionsToProcess = (opts: {
   const { mostRecentUserMessage, mostRecentAssistantMessage } =
     opts;
 
-  // TODO: If there's no assistant message in the chat,
+  // NOTE: If there's no assistant message in the chat,
   // there's nothing to process and we can proceed with
   // the conversation.
   if (!mostRecentAssistantMessage) {
