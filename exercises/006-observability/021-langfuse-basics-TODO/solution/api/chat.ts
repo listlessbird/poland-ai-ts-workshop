@@ -8,13 +8,11 @@ import {
 } from 'ai';
 import z from 'zod';
 import { NodeSDK } from '@opentelemetry/sdk-node';
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { LangfuseExporter } from 'langfuse-vercel';
 import { Langfuse } from 'langfuse';
 
 const otelSDK = new NodeSDK({
   traceExporter: new LangfuseExporter(),
-  instrumentations: [getNodeAutoInstrumentations()],
 });
 
 otelSDK.start();
@@ -63,10 +61,7 @@ export const POST = async (req: Request): Promise<Response> => {
     await req.json();
   const { messages } = body;
 
-  const trace = langfuse.trace({
-    name: 'generate-slack-message',
-    sessionId: body.id,
-  });
+  const trace = langfuse.trace();
 
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
@@ -91,6 +86,7 @@ export const POST = async (req: Request): Promise<Response> => {
         `,
           experimental_telemetry: {
             isEnabled: true,
+            functionId: 'generate-slack-message',
             metadata: {
               langfuseTraceId: trace.id,
             },
@@ -141,6 +137,7 @@ export const POST = async (req: Request): Promise<Response> => {
           }),
           experimental_telemetry: {
             isEnabled: true,
+            functionId: 'evaluate-slack-message',
             metadata: {
               langfuseTraceId: trace.id,
             },
@@ -189,10 +186,17 @@ export const POST = async (req: Request): Promise<Response> => {
         type: 'text-end',
         id: textPartId,
       });
-    },
-    onFinish: async () => {
+
+      trace.update({
+        input: messages,
+        output: mostRecentDraft,
+        metadata: {
+          feedback: mostRecentFeedback,
+        },
+        name: 'generate-slack-message',
+      });
+
       await langfuse.flushAsync();
-      await otelSDK.shutdown();
     },
   });
 

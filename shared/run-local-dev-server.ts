@@ -18,7 +18,7 @@ const indexHtmlTemplate = `<!doctype html>
       name="viewport"
       content="width=device-width, initial-scale=1.0"
     />
-    <title>Vite + React + TS</title>
+    <title>AI TypeScript Toolkit</title>
   </head>
   <body>
     <div id="root"></div>
