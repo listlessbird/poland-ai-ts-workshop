@@ -72,13 +72,11 @@ export const POST = async (req: Request): Promise<Response> => {
           Previous feedback (if any):
           ${mostRecentFeedback}
         `,
-          experimental_telemetry: {
-            isEnabled: true,
-            functionId: 'generate-slack-message',
-            metadata: {
-              langfuseTraceId: trace.id,
-            },
-          },
+          // TODO: declare the experimental_telemetry property using the following object:
+          // - isEnabled: true
+          // - functionId: 'your-name-here'
+          // - metadata: { langfuseTraceId: trace.id }
+          experimental_telemetry: TODO,
         });
 
         const firstDraftId = crypto.randomUUID();
@@ -123,13 +121,11 @@ export const POST = async (req: Request): Promise<Response> => {
                 'Whether the most recent draft is good enough to stop the loop.',
               ),
           }),
-          experimental_telemetry: {
-            isEnabled: true,
-            functionId: 'evaluate-slack-message',
-            metadata: {
-              langfuseTraceId: trace.id,
-            },
-          },
+          // TODO: declare the experimental_telemetry property using the following object:
+          // - isEnabled: true
+          // - functionId: 'your-name-here'
+          // - metadata: { langfuseTraceId: trace.id }
+          experimental_telemetry: TODO,
         });
 
         const feedbackId = crypto.randomUUID();

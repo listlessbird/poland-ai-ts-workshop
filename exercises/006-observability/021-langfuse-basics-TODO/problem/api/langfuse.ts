@@ -1,5 +1,3 @@
-import { Langfuse } from 'langfuse';
-
 // TODO: declare the otelSDK variable using the NodeSDK class
 // from the @opentelemetry/sdk-node package,
 // and pass it the LangfuseExporter instance
@@ -14,9 +12,4 @@ otelSDK.start();
 // - publicKey: process.env.LANGFUSE_PUBLIC_KEY
 // - secretKey: process.env.LANGFUSE_SECRET_KEY
 // - baseUrl: process.env.LANGFUSE_BASE_URL
-export const langfuse = new Langfuse({
-  environment: process.env.NODE_ENV,
-  publicKey: process.env.LANGFUSE_PUBLIC_KEY,
-  secretKey: process.env.LANGFUSE_SECRET_KEY,
-  baseUrl: process.env.LANGFUSE_BASE_URL,
-});
+export const langfuse = TODO;
