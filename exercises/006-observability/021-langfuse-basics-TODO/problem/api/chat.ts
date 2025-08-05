@@ -46,9 +46,10 @@ export const POST = async (req: Request): Promise<Response> => {
     await req.json();
   const { messages } = body;
 
-  const trace = langfuse.trace({
-    sessionId: body.id,
-  });
+  // TODO: declare the trace variable using the langfuse.trace method,
+  // and pass it the following arguments:
+  // - sessionId: body.id
+  const trace = TODO;
 
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
@@ -174,17 +175,17 @@ export const POST = async (req: Request): Promise<Response> => {
         id: textPartId,
       });
 
-      trace.update({
-        input: messages,
-        output: mostRecentDraft,
-        metadata: {
-          feedback: mostRecentFeedback,
-        },
-        name: 'generate-slack-message',
-      });
+      // TODO: update the trace with the following information:
+      // - input: messages
+      // - output: mostRecentDraft
+      // - metadata: { feedback: mostRecentFeedback }
+      // - name: 'generate-slack-message'
+      TODO;
     },
     onFinish: async () => {
-      await langfuse.flushAsync();
+      // TODO: flush the langfuse traces using the langfuse.flushAsync method
+      // and await the result
+      TODO;
     },
   });
 
