@@ -6,6 +6,7 @@ import z from 'zod';
 
 export const songFinderAgent = async (opts: {
   prompt: string;
+  onStatusUpdate: (status: string) => void;
   onSummaryStart: () => string;
   onSummaryDelta: (id: string, delta: string) => void;
   onSummaryEnd: (id: string) => void;
@@ -13,6 +14,8 @@ export const songFinderAgent = async (opts: {
   const tavilyClient = tavily({
     apiKey: process.env.TAVILY_API_KEY,
   });
+
+  opts.onStatusUpdate('Starting search...');
 
   const streamResult = streamText({
     model: google('gemini-2.0-flash'),
@@ -33,13 +36,15 @@ export const songFinderAgent = async (opts: {
             .describe('The query to search the web for'),
         }),
         execute: async ({ q }) => {
-          console.log('Searching for:', q);
+          opts.onStatusUpdate(`Searching for: ${q}`);
 
           const result = await tavilyClient.search(q, {
             maxResults: 5,
           });
 
-          console.log('Results found:', result.results.length);
+          opts.onStatusUpdate(
+            `Found ${result.results.length} results`,
+          );
 
           return result.results
             .map((result, index) =>
@@ -60,6 +65,8 @@ export const songFinderAgent = async (opts: {
   });
 
   await streamResult.consumeStream();
+
+  opts.onStatusUpdate('Summarizing results...');
 
   const finalMessages = (await streamResult.response).messages;
 

@@ -15,29 +15,21 @@ export const Wrapper = (props: {
 export const Message = ({
   role,
   parts,
+  isStreaming,
 }: {
   role: string;
+  isStreaming: boolean;
   parts: MyMessage['parts'];
 }) => (
-  <div>
+  <div className="my-4">
     {parts.map((part) => {
-      if (part.type === 'data-slack-message') {
-        return (
-          <div key={part.id} className="mb-4">
-            <h2 className="text-gray-300 text-sm mb-1">
-              First draft
-            </h2>
-            <p className="text-gray-400 text-xs">{part.data}</p>
-          </div>
-        );
-      }
+      if (part.type === 'data-status-update') {
+        if (!isStreaming) {
+          return null;
+        }
 
-      if (part.type === 'data-slack-message-feedback') {
         return (
           <div key={part.id} className="mb-4">
-            <h2 className="text-gray-300 text-sm mb-1">
-              Feedback
-            </h2>
             <p className="text-gray-400 text-xs">{part.data}</p>
           </div>
         );

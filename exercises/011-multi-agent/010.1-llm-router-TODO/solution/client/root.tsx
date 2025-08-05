@@ -6,7 +6,9 @@ import './tailwind.css';
 import type { MyMessage } from '../api/chat.ts';
 
 const App = () => {
-  const { messages, sendMessage } = useChat<MyMessage>({});
+  const { messages, sendMessage, status } = useChat<MyMessage>(
+    {},
+  );
 
   const [input, setInput] = useState(
     `Find a slow song by Fleetwood Mac.`,
@@ -21,6 +23,7 @@ const App = () => {
           key={message.id}
           role={message.role}
           parts={message.parts}
+          isStreaming={status === 'streaming'}
         />
       ))}
       <ChatInput

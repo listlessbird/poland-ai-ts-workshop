@@ -9,8 +9,7 @@ import { studentNotesManagerAgent } from './agents/student-notes-manager.ts';
 export type MyMessage = UIMessage<
   unknown,
   {
-    'slack-message': string;
-    'slack-message-feedback': string;
+    'status-update': string;
   }
 >;
 
@@ -36,8 +35,17 @@ export const POST = async (req: Request): Promise<Response> => {
 
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
+      const statusUpdateId = crypto.randomUUID();
+
       const result = await studentNotesManagerAgent({
         prompt: formatMessageHistory(messages),
+        onStatusUpdate: (status) => {
+          writer.write({
+            type: 'data-status-update',
+            id: statusUpdateId,
+            data: status,
+          });
+        },
         onSummaryStart: () => {
           const id = crypto.randomUUID();
 
