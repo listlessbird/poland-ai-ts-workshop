@@ -61,7 +61,9 @@ export const POST = async (req: Request): Promise<Response> => {
     await req.json();
   const { messages } = body;
 
-  const trace = langfuse.trace();
+  const trace = langfuse.trace({
+    sessionId: body.id,
+  });
 
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
