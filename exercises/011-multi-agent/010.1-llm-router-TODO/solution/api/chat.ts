@@ -4,6 +4,7 @@ import {
   type UIMessage,
 } from 'ai';
 import { songFinderAgent } from './agents/song-finder-agent.ts';
+import { studentNotesManagerAgent } from './agents/student-notes-manager.ts';
 
 export type MyMessage = UIMessage<
   unknown,
@@ -35,7 +36,7 @@ export const POST = async (req: Request): Promise<Response> => {
 
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
-      const result = await songFinderAgent({
+      const result = await studentNotesManagerAgent({
         prompt: formatMessageHistory(messages),
         onSummaryStart: () => {
           const id = crypto.randomUUID();

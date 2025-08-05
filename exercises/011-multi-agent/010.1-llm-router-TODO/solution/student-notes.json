@@ -1,0 +1,23 @@
+{
+  "students": {
+    "fecb8a03-38a1-4f00-bbd1-470b434032a1": {
+      "id": "fecb8a03-38a1-4f00-bbd1-470b434032a1",
+      "name": "Kirsty",
+      "notes": [
+        "mezzo-soprano",
+        "Had another lesson with Kirsty. We looked at some popular stuff like \"Landslide\" by Fleetwood Mac. We're doing \"Hallelujah\". We looked at breathing and some twang."
+      ],
+      "createdAt": "2025-08-05T12:36:15.261Z",
+      "updatedAt": "2025-08-05T12:45:25.509Z"
+    },
+    "2d026658-0bf0-459b-b37b-9f106738cc21": {
+      "id": "2d026658-0bf0-459b-b37b-9f106738cc21",
+      "name": "John",
+      "notes": [
+        "Had another lesson with John. We looked at the Roy Orbison Song Crying. Voice improving, breathing getting stronger, needs to work on posture next. A little bit of anchoring would also do a world of good."
+      ],
+      "createdAt": "2025-08-05T12:48:14.142Z",
+      "updatedAt": "2025-08-05T12:48:14.142Z"
+    }
+  }
+}
