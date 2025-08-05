@@ -18,7 +18,7 @@ Connect the reference material to the exercises.
 
 ---
 
-Remove any `.gitignore` files and change `data` to `gitignore-me`. Data is too general and means that I need to add.gitignore files into each directory where it's used which is ugly.
+Remove any `.gitignore` files and change `data` to `gitignore-me`. `data` is too general and means that I need to add.gitignore files into each directory where it's used which is ugly.
 
 ---
 
