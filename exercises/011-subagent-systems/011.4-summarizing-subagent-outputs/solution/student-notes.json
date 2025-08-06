@@ -1,0 +1,77 @@
+{
+  "students": {
+    "fecb8a03-38a1-4f00-bbd1-470b434032a1": {
+      "id": "fecb8a03-38a1-4f00-bbd1-470b434032a1",
+      "name": "Kirsty",
+      "notes": [
+        "mezzo-soprano",
+        "Had another lesson with Kirsty. We looked at some popular stuff like \"Landslide\" by Fleetwood Mac. We're doing \"Hallelujah\". We looked at breathing and some twang.",
+        "Suggested song: \"Send in the Clowns\" by Stephen Sondheim. It's a well-known song often suggested for mezzo-sopranos. It has a musical theatre feel, which might appeal to someone who likes the drama and emotion in \"Hallelujah\" and the storytelling aspect of \"Landslide\"",
+        "Suggested songs: \"As Long As He Needs Me\" from Oliver! and \"Belle\" from Beauty and the Beast."
+      ],
+      "createdAt": "2025-08-05T12:36:15.261Z",
+      "updatedAt": "2025-08-06T11:46:32.072Z"
+    },
+    "2d026658-0bf0-459b-b37b-9f106738cc21": {
+      "id": "2d026658-0bf0-459b-b37b-9f106738cc21",
+      "name": "John",
+      "notes": [
+        "Had another lesson with John. We looked at the Roy Orbison Song Crying. Voice improving, breathing getting stronger, needs to work on posture next. A little bit of anchoring would also do a world of good.",
+        "Had another lesson with John. His posture is improving. Stomach's still a little bit tight."
+      ],
+      "createdAt": "2025-08-05T12:48:14.142Z",
+      "updatedAt": "2025-08-05T12:52:44.350Z"
+    },
+    "e01c8e8c-fe81-45f4-89b4-9c1f7d553cce": {
+      "id": "e01c8e8c-fe81-45f4-89b4-9c1f7d553cce",
+      "name": "Phil",
+      "notes": [
+        "Phil is a 25-year-old bricklayer who wants to learn to sing as a hobby. He's really into Counting Crows. His top note is currently E-flat. We focused on breathing and the usual first lesson stuff. Next time I want to focus a little bit more on twang.",
+        "He also really wants to be a part of the concert at the end of the year, so I need to make sure I save a slot for him.",
+        "We've got another lesson next week at the same time. Managed to get to F.",
+        "Suggested song: 'Another Horsedreamer's Blues' by Counting Crows (available on Spotify: https://open.spotify.com/track/0PGV9NsrMSXpff3eRcSdnr)"
+      ],
+      "createdAt": "2025-08-05T12:53:35.243Z",
+      "updatedAt": "2025-08-06T11:26:14.987Z"
+    },
+    "5cf28a17-8827-453e-8f9c-f04f85256c19": {
+      "id": "5cf28a17-8827-453e-8f9c-f04f85256c19",
+      "name": "Jamie",
+      "notes": [""],
+      "createdAt": "2025-08-06T10:02:57.476Z",
+      "updatedAt": "2025-08-06T10:02:57.476Z"
+    },
+    "e5148348-23b6-4639-94f9-5546c013d5f0": {
+      "id": "e5148348-23b6-4639-94f9-5546c013d5f0",
+      "name": "Jamie",
+      "notes": [""],
+      "createdAt": "2025-08-06T10:03:52.978Z",
+      "updatedAt": "2025-08-06T10:03:52.978Z"
+    },
+    "0edf1d2d-2a48-4d3e-be60-3236815b2ac4": {
+      "id": "0edf1d2d-2a48-4d3e-be60-3236815b2ac4",
+      "name": "Tim",
+      "notes": [
+        "We're going to focus on musical theatre tunes and resolve breathing issues."
+      ],
+      "createdAt": "2025-08-06T10:05:30.308Z",
+      "updatedAt": "2025-08-06T10:38:41.373Z"
+    },
+    "59879d40-5fbc-46e9-a902-17af9a91af7c": {
+      "id": "59879d40-5fbc-46e9-a902-17af9a91af7c",
+      "name": "Bill",
+      "notes": ["", "No Fred or Angel here."],
+      "createdAt": "2025-08-06T10:39:14.305Z",
+      "updatedAt": "2025-08-06T10:42:40.870Z"
+    },
+    "8b907315-f560-488d-91c4-2d30de523ca2": {
+      "id": "8b907315-f560-488d-91c4-2d30de523ca2",
+      "name": "Adrian",
+      "notes": [
+        "Adrian is 24 years old. He's a very experienced singer. Wants to get better at musical theatre. Top note is a G#. Needs to revisit some old muscles and look at anchoring and breathing."
+      ],
+      "createdAt": "2025-08-06T11:29:30.917Z",
+      "updatedAt": "2025-08-06T11:29:30.917Z"
+    }
+  }
+}
