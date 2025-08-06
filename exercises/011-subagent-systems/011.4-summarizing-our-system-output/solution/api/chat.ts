@@ -75,6 +75,7 @@ export const POST = async (req: Request): Promise<Response> => {
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
       const formattedMessages = formatMessageHistory(messages);
+      let diary = '';
       let step = 0;
 
       while (step < 10) {
@@ -112,6 +113,10 @@ export const POST = async (req: Request): Promise<Response> => {
             Initial prompt:
             
             ${formattedMessages}
+            
+            The diary of the work performed so far:
+            
+            ${diary ?? 'No work has been performed yet.'}
           `,
           schema: z.object({
             tasks: z.array(
@@ -165,10 +170,125 @@ export const POST = async (req: Request): Promise<Response> => {
           break;
         }
 
-        break;
+        const tasksWithIds = tasks.map((task, index) => {
+          return {
+            id: indexToIdMap.get(index)!,
+            ...task,
+          };
+        });
+
+        await Promise.all(
+          tasksWithIds.map(async (task) => {
+            const subagent = subagents[task.subagent];
+
+            if (!subagent) {
+              throw new Error(
+                `Unknown subagent: ${task.subagent}`,
+              );
+            }
+
+            try {
+              const result = await subagent({
+                prompt: task.task,
+              });
+
+              writer.write({
+                type: 'data-task',
+                id: task.id,
+                data: {
+                  id: task.id,
+                  subagent: task.subagent,
+                  task: task.task,
+                  output: result,
+                },
+              });
+
+              diary = [
+                diary,
+                '',
+                `The ${task.subagent} subagent was asked to perform the following task:`,
+                `<task>`,
+                task.task,
+                `</task>`,
+                `The subagent provided the following output:`,
+                `<output>`,
+                result,
+                `</output>`,
+              ].join('\n');
+            } catch (error) {
+              writer.write({
+                type: 'data-task',
+                id: task.id,
+                data: {
+                  id: task.id,
+                  subagent: task.subagent,
+                  task: task.task,
+                  output: `Error: ${error}`,
+                },
+              });
+
+              diary = [
+                diary,
+                '',
+                `The ${task.subagent} subagent was asked to perform the following task:`,
+                `<task>`,
+                task.task,
+                `</task>`,
+                `The subagent failed to perform the task:`,
+                `<output>`,
+                `Error: ${error}`,
+                `</output>`,
+              ].join('\n');
+            }
+          }),
+        );
 
         step++;
       }
+
+      const result = streamText({
+        model: google('gemini-2.0-flash'),
+        system: `
+          The current date and time is ${new Date().toISOString()}.
+
+          You are a helpful assistant that summarizes the results of a multi-agent system.
+
+          You will be given a diary of the work performed so far and the user's initial prompt.
+
+          You should provide a summary of the tasks performed and provide the results to the user.
+        `,
+        prompt: `
+          Initial prompt:
+          
+          ${formattedMessages}
+          
+          The diary of the work performed so far:
+          
+          ${diary}
+        `,
+      });
+
+      const textPartId = crypto.randomUUID();
+
+      writer.write({
+        type: 'text-start',
+        id: textPartId,
+      });
+
+      for await (const chunk of result.textStream) {
+        writer.write({
+          type: 'text-delta',
+          id: textPartId,
+          delta: chunk,
+        });
+      }
+
+      writer.write({
+        type: 'text-end',
+        id: textPartId,
+      });
+
+      await result.consumeStream();
     },
     onError(error) {
       console.error(error);
