@@ -47,6 +47,8 @@ export const POST = async (req: Request): Promise<Response> => {
   } = await req.json();
   const { messages, subagent } = body;
 
+  console.log('Subagent:', subagent);
+
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
       const formattedMessages = formatMessageHistory(messages);

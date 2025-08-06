@@ -13,9 +13,11 @@ export type Subagent =
   | 'scheduler-agent';
 
 const App = () => {
-  const [subagent, setSubagent] = useState<Subagent>(
-    'student-notes-manager',
-  );
+  const [subagent, setSubagent] =
+    useState<Subagent>('todos-agent');
+
+  console.log(subagent);
+
   const { messages, sendMessage } = useChat<MyMessage>({
     transport: new DefaultChatTransport({
       body: {

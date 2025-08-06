@@ -1,6 +1,6 @@
-import React, { type ReactNode, useState } from 'react';
-import type { MyMessage } from '../api/chat.ts';
+import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import type { MyMessage } from '../api/chat.ts';
 import type { Subagent } from './root.tsx';
 
 export const Wrapper = (props: {
@@ -32,90 +32,9 @@ export const Message = ({
           </div>
         );
       }
-
-      if (part.type === 'data-task') {
-        return <TaskItem key={part.id} task={part.data} />;
-      }
     })}
   </div>
 );
-
-const TaskItem = ({
-  task,
-}: {
-  task: {
-    id: string;
-    subagent: string;
-    task: string;
-    output: string;
-  };
-}) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const isCompleted = !!task.output;
-
-  return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 mb-2">
-      <div className="flex items-start space-x-2">
-        <div className="flex-shrink-0 mt-0.5">
-          {isCompleted ? (
-            <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-              <svg
-                className="w-2.5 h-2.5 text-white"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-          ) : (
-            <div className="w-4 h-4 border-2 border-gray-500 rounded-full"></div>
-          )}
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h3
-                className={`text-xs font-medium ${isCompleted ? 'text-green-400' : 'text-gray-300'}`}
-              >
-                {task.subagent}
-              </h3>
-              <p
-                className={`text-xs mt-0.5 ${isCompleted ? 'text-gray-400 line-through' : 'text-gray-200'}`}
-              >
-                {task.task}
-              </p>
-            </div>
-
-            {isCompleted && (
-              <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="ml-2 text-xs text-blue-400 hover:text-blue-300 transition-colors"
-              >
-                {isExpanded ? 'Hide details' : 'See details'}
-              </button>
-            )}
-          </div>
-
-          {isCompleted && isExpanded && (
-            <div className="mt-2 p-2 bg-gray-700 rounded border-l-4 border-green-500">
-              <h4 className="text-xs font-medium text-green-400 mb-1">
-                Output:
-              </h4>
-              <div className="text-xs text-gray-300 prose prose-invert prose-xs max-w-none">
-                <ReactMarkdown>{task.output}</ReactMarkdown>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export const ChatInput = ({
   input,
@@ -132,54 +51,55 @@ export const ChatInput = ({
   subagent: Subagent;
   setSubagent: (subagent: Subagent) => void;
 }) => (
-  <div className="fixed bottom-0 w-full max-w-md p-2 mb-8 border-2 border-zinc-700 rounded shadow-xl bg-gray-800">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center space-x-2">
+  <div className="fixed bottom-0 w-full max-w-md mb-8 shadow-xl">
+    <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-end space-x-2 w-full">
+        <h2 className="text-xs text-gray-300">Mode:</h2>
         <button
           onClick={() => setSubagent('todos-agent')}
-          className={`px-4 py-2 rounded-md ${
+          className={`px-3 py-1 rounded-md text-xs flex-shrink-0 ${
             subagent === 'todos-agent'
               ? 'bg-blue-500 text-white'
               : 'bg-gray-700 text-gray-300'
           }`}
         >
-          Todos Agent
+          Todos
         </button>
         <button
           onClick={() => setSubagent('student-notes-manager')}
-          className={`px-4 py-2 rounded-md ${
+          className={`px-3 py-1 rounded-md text-xs flex-shrink-0 ${
             subagent === 'student-notes-manager'
               ? 'bg-blue-500 text-white'
               : 'bg-gray-700 text-gray-300'
           }`}
         >
-          Student Notes Manager
+          Student Notes
         </button>
         <button
           onClick={() => setSubagent('song-finder-agent')}
-          className={`px-4 py-2 rounded-md ${
+          className={`px-3 py-1 rounded-md text-xs flex-shrink-0 ${
             subagent === 'song-finder-agent'
               ? 'bg-blue-500 text-white'
               : 'bg-gray-700 text-gray-300'
           }`}
         >
-          Song Finder Agent
+          Song Finder
         </button>
         <button
           onClick={() => setSubagent('scheduler-agent')}
-          className={`px-4 py-2 rounded-md ${
+          className={`px-3 py-1 rounded-md text-xs flex-shrink-0 ${
             subagent === 'scheduler-agent'
               ? 'bg-blue-500 text-white'
               : 'bg-gray-700 text-gray-300'
           }`}
         >
-          Scheduler Agent
+          Scheduler
         </button>
       </div>
     </div>
     <form onSubmit={onSubmit}>
       <input
-        className={`w-full ${
+        className={`w-full border-2 bg-gray-800 border-zinc-700 rounded p-2 text-sm${
           disabled ? 'opacity-50 cursor-not-allowed' : ''
         }`}
         value={input}
