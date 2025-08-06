@@ -1,14 +1,10 @@
-import {
-  stepCountIs,
-  streamText,
-  tool,
-  type ModelMessage,
-} from 'ai';
+import { stepCountIs, streamText, tool } from 'ai';
 
 import { google } from '@ai-sdk/google';
 import { join } from 'node:path';
 import z from 'zod';
 import { createPersistenceLayer } from '../create-persistence-layer.ts';
+import { formatModelMessages } from '../utils.ts';
 
 type Todo = {
   id: string;
@@ -43,46 +39,6 @@ const formatTodos = (todos: Todo[]) => {
     .join('\n\n');
 };
 
-const formatMessages = (messages: ModelMessage[]) => {
-  return messages
-    .map((message) => {
-      let content: string;
-
-      if (typeof message.content === 'string') {
-        content = message.content;
-      } else {
-        content = message.content
-          .map((part) => {
-            if (part.type === 'text') {
-              return part.text;
-            }
-
-            if (part.type === 'tool-call') {
-              return [
-                `Tool call: ${part.toolName}`,
-                `Input: ${JSON.stringify(part.input)}`,
-              ].join('\n');
-            }
-
-            if (part.type === 'tool-result') {
-              return [
-                `Tool result: ${part.toolName}`,
-                `Output: ${JSON.stringify(part.output)}`,
-              ].join('\n');
-            }
-          })
-          .filter((part) => part !== undefined)
-          .join('\n\n');
-      }
-
-      return [
-        message.role === 'user' ? 'User:' : 'Assistant:',
-        content,
-      ].join('\n\n');
-    })
-    .join('\n\n');
-};
-
 export const todosAgent = async (opts: {
   prompt: string;
   onSummaryStart: () => string;
@@ -90,7 +46,9 @@ export const todosAgent = async (opts: {
   onSummaryEnd: (id: string) => void;
 }) => {
   const db = await todosDb.loadDatabase();
-  const todos = Object.values(db.todos);
+  const outstandingTodos = Object.values(db.todos).filter(
+    (todo) => !todo.completed,
+  );
 
   const streamResult = streamText({
     model: google('gemini-2.0-flash'),
@@ -107,9 +65,11 @@ export const todosAgent = async (opts: {
 
       Never show the IDs to the user; they are for internal use only.
 
-      The current todos are:
+      The current date and time is ${new Date().toISOString()}.
 
-      ${formatTodos(todos)}
+      The current outstanding todos are:
+
+      ${formatTodos(outstandingTodos)}
     `,
     prompt: opts.prompt,
     tools: {
@@ -226,7 +186,7 @@ export const todosAgent = async (opts: {
 
       The subagent's output is:
 
-      ${formatMessages(finalMessages)}
+      ${formatModelMessages(finalMessages)}
     `,
   });
 

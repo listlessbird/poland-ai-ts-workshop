@@ -10,6 +10,7 @@ import { join } from 'node:path';
 import z from 'zod';
 import { createPersistenceLayer } from '../create-persistence-layer.ts';
 import type { MyMessage } from '../chat.ts';
+import { formatModelMessages } from '../utils.ts';
 
 type CalendarEvent = {
   id: string;
@@ -50,46 +51,6 @@ const formatCalendarEvents = (events: CalendarEvent[]) => {
     .join('\n\n');
 };
 
-const formatMessages = (messages: ModelMessage[]) => {
-  return messages
-    .map((message) => {
-      let content: string;
-
-      if (typeof message.content === 'string') {
-        content = message.content;
-      } else {
-        content = message.content
-          .map((part) => {
-            if (part.type === 'text') {
-              return part.text;
-            }
-
-            if (part.type === 'tool-call') {
-              return [
-                `Tool call: ${part.toolName}`,
-                `Input: ${JSON.stringify(part.input)}`,
-              ].join('\n');
-            }
-
-            if (part.type === 'tool-result') {
-              return [
-                `Tool result: ${part.toolName}`,
-                `Output: ${JSON.stringify(part.output)}`,
-              ].join('\n');
-            }
-          })
-          .filter((part) => part !== undefined)
-          .join('\n\n');
-      }
-
-      return [
-        message.role === 'user' ? 'User:' : 'Assistant:',
-        content,
-      ].join('\n\n');
-    })
-    .join('\n\n');
-};
-
 export const schedulerAgent = async (opts: {
   prompt: string;
   onSummaryStart: () => string;
@@ -112,9 +73,10 @@ export const schedulerAgent = async (opts: {
 
       When you are asked to create an event, ensure that you check the day's events first to avoid conflicts.
 
-      If you need to find an ID for a lesson, use the list events tool.
-      
       You will be given a prompt, and you will need to use the tools to manage the calendar.
+
+      If you need to find an ID for a lesson to update or delete it, use the list events tool.
+      This will return a list of events in the calendar, and you can use the ID of the event to update or delete it.
     `,
     prompt: opts.prompt,
     tools: {
@@ -249,22 +211,23 @@ export const schedulerAgent = async (opts: {
             ),
         }),
         execute: async (input) => {
+          console.log('listEvents', input);
           const db = await eventsDb.loadDatabase();
           const allEvents = Object.values(db.events);
 
+          const rangeStart = input.start
+            ? new Date(input.start).getTime()
+            : 0;
+          const rangeEnd = input.end
+            ? new Date(input.end).getTime()
+            : Infinity;
+
           const filteredEvents = allEvents.filter((event) => {
             const eventStart = new Date(event.start);
-            const eventEnd = new Date(event.end);
-
-            const rangeStart = input.start
-              ? new Date(input.start)
-              : new Date(0);
-            const rangeEnd = input.end
-              ? new Date(input.end)
-              : new Date();
 
             return (
-              eventStart >= rangeStart && eventEnd <= rangeEnd
+              eventStart.getTime() >= rangeStart &&
+              eventStart.getTime() <= rangeEnd
             );
           });
 
@@ -300,7 +263,7 @@ export const schedulerAgent = async (opts: {
 
       The subagent's output is:
 
-      ${formatMessages(finalMessages)}
+      ${formatModelMessages(finalMessages)}
     `,
   });
 

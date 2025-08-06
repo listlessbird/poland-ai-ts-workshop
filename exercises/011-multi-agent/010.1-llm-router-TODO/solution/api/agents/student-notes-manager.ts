@@ -9,6 +9,7 @@ import { google } from '@ai-sdk/google';
 import { join } from 'node:path';
 import z from 'zod';
 import { createPersistenceLayer } from '../create-persistence-layer.ts';
+import { formatModelMessages } from '../utils.ts';
 
 type Student = {
   id: string;
@@ -42,46 +43,6 @@ const formatStudentNotes = (studentNotes: Student[]) => {
         `</notes>`,
       ].join('\n'),
     )
-    .join('\n\n');
-};
-
-const formatMessages = (messages: ModelMessage[]) => {
-  return messages
-    .map((message) => {
-      let content: string;
-
-      if (typeof message.content === 'string') {
-        content = message.content;
-      } else {
-        content = message.content
-          .map((part) => {
-            if (part.type === 'text') {
-              return part.text;
-            }
-
-            if (part.type === 'tool-call') {
-              return [
-                `Tool call: ${part.toolName}`,
-                `Input: ${JSON.stringify(part.input)}`,
-              ].join('\n');
-            }
-
-            if (part.type === 'tool-result') {
-              return [
-                `Tool result: ${part.toolName}`,
-                `Output: ${JSON.stringify(part.output)}`,
-              ].join('\n');
-            }
-          })
-          .filter((part) => part !== undefined)
-          .join('\n\n');
-      }
-
-      return [
-        message.role === 'user' ? 'User:' : 'Assistant:',
-        content,
-      ].join('\n\n');
-    })
     .join('\n\n');
 };
 
@@ -186,7 +147,7 @@ export const studentNotesManagerAgent = async (opts: {
 
       The subagent's output is:
 
-      ${formatMessages(finalMessages)}
+      ${formatModelMessages(finalMessages)}
     `,
   });
 

@@ -1,3 +1,4 @@
+import { google } from '@ai-sdk/google';
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
@@ -5,12 +6,11 @@ import {
   streamText,
   type UIMessage,
 } from 'ai';
-import { todosAgent } from './agents/todos-agent.ts';
 import z from 'zod';
-import { google } from '@ai-sdk/google';
-import { studentNotesManagerAgent } from './agents/student-notes-manager.ts';
-import { songFinderAgent } from './agents/song-finder-agent.ts';
 import { schedulerAgent } from './agents/scheduler-agent.ts';
+import { songFinderAgent } from './agents/song-finder-agent.ts';
+import { studentNotesManagerAgent } from './agents/student-notes-manager.ts';
+import { todosAgent } from './agents/todos-agent.ts';
 
 export type MyMessage = UIMessage<
   unknown,
@@ -74,15 +74,22 @@ export const POST = async (req: Request): Promise<Response> => {
 
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
-      let diary = formatMessageHistory(messages);
+      const formattedMessages = formatMessageHistory(messages);
+      let diary = '';
       let step = 0;
 
       const planResult = streamText({
         model: google('gemini-2.0-flash'),
         system: `
           You are a helpful assistant that manages a multi-agent system.
-          You will be given a diary of the work performed so far,
-          and you will need to generate a plan for the next steps.
+
+          This multi-agent system is designed to help singing teachers manage their students.
+
+
+          You will be given a conversation history and the user's initial prompt.
+          You will need to generate a plan for the next steps.
+
+          The current date is ${new Date().toISOString()}.
 
           This plan should be in multiple steps.
 
@@ -105,14 +112,30 @@ export const POST = async (req: Request): Promise<Response> => {
 
           Multiple agents can be run in parallel.
 
-          <example>
-            - todos-agent: Find a song
-          </example>
+          If you are asked about a student, fetch their notes before performing any other tasks.
         `,
-        prompt: diary,
+        prompt: formattedMessages,
       });
 
-      writer.merge(planResult.toUIMessageStream());
+      const reasoningId = crypto.randomUUID();
+
+      writer.write({
+        type: 'reasoning-start',
+        id: reasoningId,
+      });
+
+      for await (const chunk of planResult.textStream) {
+        writer.write({
+          type: 'reasoning-delta',
+          id: reasoningId,
+          delta: chunk,
+        });
+      }
+
+      writer.write({
+        type: 'reasoning-end',
+        id: reasoningId,
+      });
 
       await planResult.consumeStream();
 
@@ -120,16 +143,22 @@ export const POST = async (req: Request): Promise<Response> => {
         diary,
         '',
         `A plan was generated:`,
-        planResult.text,
-      ].join('\n');
+        await planResult.text,
+      ]
+        .join('\n')
+        .trim();
+
+      console.log(diary);
 
       while (step < 10) {
         const tasksResult = streamObject({
           model: google('gemini-2.0-flash'),
           system: `
             You are a helpful assistant that manages a multi-agent system.
-            You will be given a diary of the work performed so far,
-            and a plan to follow.
+            You will be given a conversation history and the user's initial prompt.
+            You will also be given a plan to follow.
+
+            The current date is ${new Date().toISOString()}.
 
             You must follow the plan exactly, and generate the _next_ step only.
 
@@ -152,7 +181,15 @@ export const POST = async (req: Request): Promise<Response> => {
             Think step-by-step - first decide what tasks need to be performed,
             then decide which subagent to use for each task.
           `,
-          prompt: diary,
+          prompt: `
+            Initial prompt:
+            
+            ${formattedMessages}
+            
+            The diary of the work performed so far:
+            
+            ${diary}
+          `,
           schema: z.object({
             tasks: z.array(
               z.object({
@@ -213,52 +250,80 @@ export const POST = async (req: Request): Promise<Response> => {
         });
 
         // TODO: Run these in parallel
-        for (const task of tasksWithIds) {
-          const subagent = subagents[task.subagent];
+        await Promise.allSettled(
+          tasksWithIds.map(async (task) => {
+            const subagent = subagents[task.subagent];
 
-          if (!subagent) {
-            throw new Error(
-              `Unknown subagent: ${task.subagent}`,
-            );
-          }
+            if (!subagent) {
+              throw new Error(
+                `Unknown subagent: ${task.subagent}`,
+              );
+            }
 
-          const subagentResult = await subagent({
-            prompt: task.task,
-            onSummaryStart: () => {
-              return '';
-            },
-            onSummaryDelta: () => {
-              return '';
-            },
-            onSummaryEnd: () => {
-              return '';
-            },
-          });
+            try {
+              const result = await subagent({
+                prompt: task.task,
+                onSummaryStart: () => {
+                  return '';
+                },
+                onSummaryDelta: () => {
+                  return '';
+                },
+                onSummaryEnd: () => {
+                  return '';
+                },
+              });
 
-          writer.write({
-            type: 'data-task',
-            id: task.id,
-            data: {
-              id: task.id,
-              subagent: task.subagent,
-              task: task.task,
-              output: subagentResult,
-            },
-          });
+              writer.write({
+                type: 'data-task',
+                id: task.id,
+                data: {
+                  id: task.id,
+                  subagent: task.subagent,
+                  task: task.task,
+                  output: result,
+                },
+              });
 
-          diary = [
-            diary,
-            '',
-            `The ${task.subagent} subagent was asked to perform the following task:`,
-            `<task>`,
-            task.task,
-            `</task>`,
-            `The subagent provided the following output:`,
-            `<output>`,
-            subagentResult,
-            `</output>`,
-          ].join('\n');
-        }
+              diary = [
+                diary,
+                '',
+                `The ${task.subagent} subagent was asked to perform the following task:`,
+                `<task>`,
+                task.task,
+                `</task>`,
+                `The subagent provided the following output:`,
+                `<output>`,
+                result,
+                `</output>`,
+              ].join('\n');
+            } catch (error) {
+              writer.write({
+                type: 'data-task',
+                id: task.id,
+                data: {
+                  id: task.id,
+                  subagent: task.subagent,
+                  task: task.task,
+                  output: `Error: ${error}`,
+                },
+              });
+
+              diary = [
+                diary,
+                '',
+                `The ${task.subagent} subagent was asked to perform the following task:`,
+                `<task>`,
+                task.task,
+                `</task>`,
+                `The subagent failed to perform the task:`,
+                `<output>`,
+                `Error: ${error}`,
+                `</output>`,
+              ].join('\n');
+            }
+          }),
+        );
 
         step++;
       }
@@ -266,17 +331,44 @@ export const POST = async (req: Request): Promise<Response> => {
       const result = streamText({
         model: google('gemini-2.0-flash'),
         system: `
+          The current date and time is ${new Date().toISOString()}.
+
           You are a helpful assistant that summarizes the results of a multi-agent system.
 
-          You will be given a diary of the work performed so far,
-          and you will need to summarize the results.
+          You will be given a diary of the work performed so far and the user's initial prompt.
 
-          The user will ONLY see the summary, not the thought process or results - so make it good!
+          You should provide a summary of the tasks performed and provide the results to the user.
         `,
-        prompt: diary,
+        prompt: `
+          Initial prompt:
+          
+          ${formattedMessages}
+          
+          The diary of the work performed so far:
+          
+          ${diary}
+        `,
       });
 
-      writer.merge(result.toUIMessageStream());
+      const textPartId = crypto.randomUUID();
+
+      writer.write({
+        type: 'text-start',
+        id: textPartId,
+      });
+
+      for await (const chunk of result.textStream) {
+        writer.write({
+          type: 'text-delta',
+          id: textPartId,
+          delta: chunk,
+        });
+      }
+
+      writer.write({
+        type: 'text-end',
+        id: textPartId,
+      });
 
       await result.consumeStream();
     },

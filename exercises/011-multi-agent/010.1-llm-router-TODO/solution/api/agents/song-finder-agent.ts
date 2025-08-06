@@ -3,6 +3,7 @@ import { stepCountIs, streamText, tool } from 'ai';
 import { google } from '@ai-sdk/google';
 import { tavily } from '@tavily/core';
 import z from 'zod';
+import { formatModelMessages } from '../utils.ts';
 
 export const songFinderAgent = async (opts: {
   prompt: string;
@@ -69,13 +70,15 @@ export const songFinderAgent = async (opts: {
       Reply as if you are the subagent.
       The user will ONLY see the summary, not the thought process or results - so make it good!
     `,
-    messages: [
-      {
-        role: 'user',
-        content: `Initial prompt: ${opts.prompt}`,
-      },
-      ...finalMessages,
-    ],
+    prompt: `
+      Initial prompt:
+      
+      ${opts.prompt}
+
+      The subagent's output is:
+
+      ${formatModelMessages(finalMessages)}
+    `,
   });
 
   const summaryPartId = opts.onSummaryStart();
