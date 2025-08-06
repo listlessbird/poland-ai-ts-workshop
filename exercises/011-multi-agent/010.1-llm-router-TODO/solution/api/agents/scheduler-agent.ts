@@ -11,36 +11,40 @@ import z from 'zod';
 import { createPersistenceLayer } from '../create-persistence-layer.ts';
 import type { MyMessage } from '../chat.ts';
 
-type Student = {
+type CalendarEvent = {
   id: string;
-  name: string;
-  notes: string[];
+  title: string;
+  description?: string;
+  start: string;
+  end: string;
   createdAt: string;
   updatedAt: string;
 };
 
-const notesDb = createPersistenceLayer<{
-  students: {
-    [studentId: string]: Student;
+const eventsDb = createPersistenceLayer<{
+  events: {
+    [eventId: string]: CalendarEvent;
   };
 }>({
-  databasePath: join(process.cwd(), 'student-notes.json'),
+  databasePath: join(process.cwd(), 'schedule.json'),
   defaultDatabase: {
-    students: {},
+    events: {},
   },
 });
 
-const formatStudentNotes = (studentNotes: Student[]) => {
-  return studentNotes
-    .map((student) =>
+const formatCalendarEvents = (events: CalendarEvent[]) => {
+  return events
+    .map((event) =>
       [
-        `## ${student.name}`,
-        `ID: ${student.id}`,
-        `Created at: ${student.createdAt}`,
-        `Updated at: ${student.updatedAt}`,
-        `<notes>`,
-        student.notes,
-        `</notes>`,
+        `## ${event.title}`,
+        `ID: ${event.id}`,
+        `Start: ${event.start}`,
+        `End: ${event.end}`,
+        `Created at: ${event.createdAt}`,
+        `Updated at: ${event.updatedAt}`,
+        `<description>`,
+        event.description,
+        `</description>`,
       ].join('\n'),
     )
     .join('\n\n');
@@ -86,77 +90,192 @@ const formatMessages = (messages: ModelMessage[]) => {
     .join('\n\n');
 };
 
-export const studentNotesManagerAgent = async (opts: {
+export const schedulerAgent = async (opts: {
   prompt: string;
+  onStatusUpdate: (status: string) => void;
   onSummaryStart: () => string;
   onSummaryDelta: (id: string, delta: string) => void;
   onSummaryEnd: (id: string) => void;
 }) => {
-  const db = await notesDb.loadDatabase();
-
-  const studentNotesAsArray = Object.values(db.students);
+  opts.onStatusUpdate(`Deciding what to do...`);
 
   const streamResult = streamText({
     model: google('gemini-2.0-flash'),
     system: `
-      You are a helpful assistant that manages student notes.
-      The user is the singing teacher, and you are a helpful assistant that manages their student notes.
-      You may be asked to search for information, or to add notes to the student's notes.
+      You are a helpful assistant that manages a calendar.
 
-      In their current state, the notes are:
+      The current date and time is ${new Date().toISOString()}.
 
-      ${formatStudentNotes(studentNotesAsArray)}
+      You have access to the following tools:
+
+      - createEvents: Create one or more events in the calendar
+      - updateEvent: Update an existing event in the calendar
+      - deleteEvent: Delete an existing event in the calendar
+      - listEvents: List events in the calendar between a specified range
+
+      When you are asked to create an event, ensure that you check the day's events first to avoid conflicts.
+
+      If you need to find an ID for a lesson, use the list events tool.
+      
+      You will be given a prompt, and you will need to use the tools to manage the calendar.
     `,
     prompt: opts.prompt,
     tools: {
-      appendToStudentNotes: tool({
-        description: "Append to a student's notes",
+      createEvents: tool({
+        description: 'Create a new event in the calendar',
         inputSchema: z.object({
-          studentId: z.string(),
-          note: z
-            .string()
-            .describe(
-              "The note to append to the student's notes.",
-            ),
+          events: z.array(
+            z.object({
+              title: z.string(),
+              description: z.string().optional(),
+              start: z
+                .string()
+                .describe(
+                  'The start time of the event in ISO 8601 format',
+                ),
+              end: z
+                .string()
+                .describe(
+                  'The end time of the event in ISO 8601 format',
+                ),
+            }),
+          ),
         }),
-        execute: async ({ studentId, note }) => {
-          if (!db.students[studentId]) {
-            return 'Could not append note - student not found with that id.';
-          }
+        execute: async (input) => {
+          const events = input.events.map((event) => ({
+            id: crypto.randomUUID(),
+            title: event.title,
+            description: event.description,
+            start: event.start,
+            end: event.end,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          }));
 
-          await notesDb.updateDatabase((db) => {
-            const student = db.students[studentId]!;
-            db.students[studentId] = {
-              ...student,
-              notes: [...student.notes, note],
-              updatedAt: new Date().toISOString(),
-            };
+          await eventsDb.updateDatabase((db) => {
+            events.forEach((event) => {
+              db.events[event.id] = event;
+            });
           });
 
-          return `Success.`;
+          return [
+            `Events created successfully`,
+            ...events.map(
+              (event) => `- ${event.title} (${event.id})`,
+            ),
+          ].join('\n');
         },
       }),
-      createStudent: tool({
-        description: 'Create a new student',
+      updateEvent: tool({
+        description: 'Update an existing event in the calendar',
         inputSchema: z.object({
-          name: z.string(),
-          note: z
+          id: z.string(),
+          title: z
             .string()
-            .describe("The note to add to the student's notes."),
+            .optional()
+            .describe(
+              'The title of the event - only include if you want to change it',
+            ),
+          description: z
+            .string()
+            .optional()
+            .describe(
+              'The description of the event - only include if you want to change it',
+            ),
+          start: z
+            .string()
+            .optional()
+            .describe(
+              'The start time of the event - only include if you want to change it',
+            ),
+          end: z
+            .string()
+            .optional()
+            .describe(
+              'The end time of the event - only include if you want to change it',
+            ),
         }),
-        execute: async ({ name, note }) => {
-          const studentId = crypto.randomUUID();
-          await notesDb.updateDatabase((db) => {
-            db.students[studentId] = {
-              id: studentId,
-              name,
-              notes: [note],
-              createdAt: new Date().toISOString(),
+        execute: async (input) => {
+          const db = await eventsDb.loadDatabase();
+
+          const event = db.events[input.id];
+
+          if (!event) {
+            return `Event with ID ${input.id} not found`;
+          }
+
+          await eventsDb.updateDatabase((db) => {
+            db.events[input.id] = {
+              ...event,
+              ...input,
               updatedAt: new Date().toISOString(),
             };
           });
 
-          return `Success. Created student with id ${studentId}.`;
+          return 'Event updated successfully';
+        },
+      }),
+      deleteEvent: tool({
+        description: 'Delete an existing event in the calendar',
+        inputSchema: z.object({
+          id: z.string(),
+        }),
+        execute: async (input) => {
+          const db = await eventsDb.loadDatabase();
+
+          if (!db.events[input.id]) {
+            return `Event with ID ${input.id} not found`;
+          }
+
+          await eventsDb.updateDatabase((db) => {
+            delete db.events[input.id];
+          });
+
+          return 'Event deleted successfully';
+        },
+      }),
+      listEvents: tool({
+        description:
+          'List events in the calendar between a specified range',
+        inputSchema: z.object({
+          start: z
+            .string()
+            .optional()
+            .describe(
+              'The start time of the range in ISO 8601 format - if not provided, the start of the calendar will be used',
+            ),
+          end: z
+            .string()
+            .optional()
+            .describe(
+              'The end time of the range in ISO 8601 format - if not provided, the end of the calendar will be used',
+            ),
+        }),
+        execute: async (input) => {
+          const db = await eventsDb.loadDatabase();
+          const allEvents = Object.values(db.events);
+
+          const filteredEvents = allEvents.filter((event) => {
+            const eventStart = new Date(event.start);
+            const eventEnd = new Date(event.end);
+
+            const rangeStart = input.start
+              ? new Date(input.start)
+              : new Date(0);
+            const rangeEnd = input.end
+              ? new Date(input.end)
+              : new Date();
+
+            return (
+              eventStart >= rangeStart && eventEnd <= rangeEnd
+            );
+          });
+
+          if (filteredEvents.length === 0) {
+            return 'No events found in the specified range';
+          }
+
+          return formatCalendarEvents(filteredEvents);
         },
       }),
     },

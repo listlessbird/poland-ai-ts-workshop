@@ -14,10 +14,21 @@
       "id": "2d026658-0bf0-459b-b37b-9f106738cc21",
       "name": "John",
       "notes": [
-        "Had another lesson with John. We looked at the Roy Orbison Song Crying. Voice improving, breathing getting stronger, needs to work on posture next. A little bit of anchoring would also do a world of good."
+        "Had another lesson with John. We looked at the Roy Orbison Song Crying. Voice improving, breathing getting stronger, needs to work on posture next. A little bit of anchoring would also do a world of good.",
+        "Had another lesson with John. His posture is improving. Stomach's still a little bit tight."
       ],
       "createdAt": "2025-08-05T12:48:14.142Z",
-      "updatedAt": "2025-08-05T12:48:14.142Z"
+      "updatedAt": "2025-08-05T12:52:44.350Z"
+    },
+    "e01c8e8c-fe81-45f4-89b4-9c1f7d553cce": {
+      "id": "e01c8e8c-fe81-45f4-89b4-9c1f7d553cce",
+      "name": "Phil",
+      "notes": [
+        "Phil is a 25-year-old bricklayer who wants to learn to sing as a hobby. He's really into Counting Crows. His top note is currently E-flat. We focused on breathing and the usual first lesson stuff. Next time I want to focus a little bit more on twang.",
+        "He also really wants to be a part of the concert at the end of the year, so I need to make sure I save a slot for him."
+      ],
+      "createdAt": "2025-08-05T12:53:35.243Z",
+      "updatedAt": "2025-08-05T12:54:20.784Z"
     }
   }
 }
