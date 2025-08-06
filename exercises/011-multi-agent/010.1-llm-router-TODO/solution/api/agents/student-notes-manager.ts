@@ -87,13 +87,10 @@ const formatMessages = (messages: ModelMessage[]) => {
 
 export const studentNotesManagerAgent = async (opts: {
   prompt: string;
-  onStatusUpdate: (status: string) => void;
   onSummaryStart: () => string;
   onSummaryDelta: (id: string, delta: string) => void;
   onSummaryEnd: (id: string) => void;
 }) => {
-  opts.onStatusUpdate('Deciding what to do...');
-
   const db = await notesDb.loadDatabase();
 
   const studentNotesAsArray = Object.values(db.students);
@@ -170,8 +167,6 @@ export const studentNotesManagerAgent = async (opts: {
   await streamResult.consumeStream();
 
   const finalMessages = (await streamResult.response).messages;
-
-  opts.onStatusUpdate('Summarizing...');
 
   const summarizeStreamResult = streamText({
     model: google('gemini-2.0-flash'),

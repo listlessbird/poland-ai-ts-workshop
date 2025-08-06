@@ -92,13 +92,10 @@ const formatMessages = (messages: ModelMessage[]) => {
 
 export const schedulerAgent = async (opts: {
   prompt: string;
-  onStatusUpdate: (status: string) => void;
   onSummaryStart: () => string;
   onSummaryDelta: (id: string, delta: string) => void;
   onSummaryEnd: (id: string) => void;
 }) => {
-  opts.onStatusUpdate(`Deciding what to do...`);
-
   const streamResult = streamText({
     model: google('gemini-2.0-flash'),
     system: `

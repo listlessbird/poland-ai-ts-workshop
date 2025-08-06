@@ -85,13 +85,10 @@ const formatMessages = (messages: ModelMessage[]) => {
 
 export const todosAgent = async (opts: {
   prompt: string;
-  onStatusUpdate: (status: string) => void;
   onSummaryStart: () => string;
   onSummaryDelta: (id: string, delta: string) => void;
   onSummaryEnd: (id: string) => void;
 }) => {
-  opts.onStatusUpdate(`Deciding what to do...`);
-
   const db = await todosDb.loadDatabase();
   const todos = Object.values(db.todos);
 
