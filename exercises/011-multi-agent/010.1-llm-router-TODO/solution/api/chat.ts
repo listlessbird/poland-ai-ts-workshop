@@ -11,6 +11,7 @@ import { schedulerAgent } from './agents/scheduler-agent.ts';
 import { songFinderAgent } from './agents/song-finder-agent.ts';
 import { studentNotesManagerAgent } from './agents/student-notes-manager.ts';
 import { todosAgent } from './agents/todos-agent.ts';
+import { summarizeAgentOutput } from './summarize-agent-output.ts';
 
 export type MyMessage = UIMessage<
   unknown,
@@ -249,8 +250,7 @@ export const POST = async (req: Request): Promise<Response> => {
           };
         });
 
-        // TODO: Run these in parallel
-        await Promise.allSettled(
+        await Promise.all(
           tasksWithIds.map(async (task) => {
             const subagent = subagents[task.subagent];
 
@@ -263,25 +263,25 @@ export const POST = async (req: Request): Promise<Response> => {
             try {
               const result = await subagent({
                 prompt: task.task,
-                onSummaryStart: () => {
-                  return '';
-                },
-                onSummaryDelta: () => {
-                  return '';
-                },
-                onSummaryEnd: () => {
-                  return '';
-                },
               });
 
-              writer.write({
-                type: 'data-task',
-                id: task.id,
-                data: {
-                  id: task.id,
-                  subagent: task.subagent,
-                  task: task.task,
-                  output: result,
+              let summary = '';
+
+              await summarizeAgentOutput({
+                initialPrompt: formattedMessages,
+                agentOutput: result,
+                onSummaryDelta: (delta) => {
+                  summary += delta;
+                  writer.write({
+                    type: 'data-task',
+                    id: task.id,
+                    data: {
+                      id: task.id,
+                      subagent: task.subagent,
+                      task: task.task,
+                      output: delta,
+                    },
+                  });
                 },
               });
 
@@ -294,7 +294,7 @@ export const POST = async (req: Request): Promise<Response> => {
                 `</task>`,
                 `The subagent provided the following output:`,
                 `<output>`,
-                result,
+                summary,
                 `</output>`,
               ].join('\n');
             } catch (error) {

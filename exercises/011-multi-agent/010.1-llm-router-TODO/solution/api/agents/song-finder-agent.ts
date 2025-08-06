@@ -7,9 +7,6 @@ import { formatModelMessages } from '../utils.ts';
 
 export const songFinderAgent = async (opts: {
   prompt: string;
-  onSummaryStart: () => string;
-  onSummaryDelta: (id: string, delta: string) => void;
-  onSummaryEnd: (id: string) => void;
 }) => {
   const tavilyClient = tavily({
     apiKey: process.env.TAVILY_API_KEY,
@@ -60,36 +57,5 @@ export const songFinderAgent = async (opts: {
 
   const finalMessages = (await streamResult.response).messages;
 
-  const summarizeStreamResult = streamText({
-    model: google('gemini-2.0-flash'),
-    system: `
-      You are a helpful assistant that summarizes the results of a subagent's search.
-      You will be given an agent's thought process and results, and you will need to summarize the results.
-      You will also be given the initial prompt so you can understand the context of the search.
-      Provide a summary that is relevant to the initial prompt.
-      Reply as if you are the subagent.
-      The user will ONLY see the summary, not the thought process or results - so make it good!
-    `,
-    prompt: `
-      Initial prompt:
-      
-      ${opts.prompt}
-
-      The subagent's output is:
-
-      ${formatModelMessages(finalMessages)}
-    `,
-  });
-
-  const summaryPartId = opts.onSummaryStart();
-
-  for await (const delta of summarizeStreamResult.textStream) {
-    opts.onSummaryDelta(summaryPartId, delta);
-  }
-
-  opts.onSummaryEnd(summaryPartId);
-
-  await summarizeStreamResult.consumeStream();
-
-  return summarizeStreamResult.text;
+  return formatModelMessages(finalMessages);
 };

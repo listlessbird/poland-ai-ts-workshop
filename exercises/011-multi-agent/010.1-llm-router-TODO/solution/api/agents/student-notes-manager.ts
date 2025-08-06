@@ -1,9 +1,4 @@
-import {
-  stepCountIs,
-  streamText,
-  tool,
-  type ModelMessage,
-} from 'ai';
+import { stepCountIs, streamText, tool } from 'ai';
 
 import { google } from '@ai-sdk/google';
 import { join } from 'node:path';
@@ -48,9 +43,6 @@ const formatStudentNotes = (studentNotes: Student[]) => {
 
 export const studentNotesManagerAgent = async (opts: {
   prompt: string;
-  onSummaryStart: () => string;
-  onSummaryDelta: (id: string, delta: string) => void;
-  onSummaryEnd: (id: string) => void;
 }) => {
   const db = await notesDb.loadDatabase();
 
@@ -129,39 +121,5 @@ export const studentNotesManagerAgent = async (opts: {
 
   const finalMessages = (await streamResult.response).messages;
 
-  const summarizeStreamResult = streamText({
-    model: google('gemini-2.0-flash'),
-    system: `
-      You are a helpful assistant that summarizes a subagent's output.
-      You will be given an agent's thought process and results, and you will need to summarize the results.
-      You will also be given the initial prompt so you can understand the context of the output.
-      Provide a summary that is relevant to the initial prompt.
-      Reply as if you are the subagent.
-      The user will ONLY see the summary, not the thought process or results - so make it good!
-      
-    `,
-    prompt: `
-      Initial prompt:
-      
-      ${opts.prompt}
-
-      The subagent's output is:
-
-      ${formatModelMessages(finalMessages)}
-    `,
-  });
-
-  const summaryPartId = opts.onSummaryStart();
-
-  for await (const chunk of summarizeStreamResult.toUIMessageStream()) {
-    if (chunk.type === 'text-delta') {
-      opts.onSummaryDelta(summaryPartId, chunk.delta);
-    }
-  }
-
-  opts.onSummaryEnd(summaryPartId);
-
-  await summarizeStreamResult.consumeStream();
-
-  return summarizeStreamResult.text;
+  return formatModelMessages(finalMessages);
 };
