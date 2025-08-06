@@ -165,6 +165,8 @@ export const POST = async (req: Request): Promise<Response> => {
           break;
         }
 
+        // For now, we'll just break after the first step
+        // so we can see the output
         break;
 
         step++;
