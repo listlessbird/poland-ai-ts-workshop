@@ -3,9 +3,7 @@ import {
   createUIMessageStreamResponse,
   type UIMessage,
 } from 'ai';
-import { songFinderAgent } from './agents/song-finder-agent.ts';
-import { studentNotesManagerAgent } from './agents/student-notes-manager.ts';
-import { schedulerAgent } from './agents/scheduler-agent.ts';
+import { todosAgent } from './agents/todos-agent.ts';
 
 export type MyMessage = UIMessage<
   unknown,
@@ -38,7 +36,7 @@ export const POST = async (req: Request): Promise<Response> => {
     execute: async ({ writer }) => {
       const statusUpdateId = crypto.randomUUID();
 
-      const result = await schedulerAgent({
+      const result = await todosAgent({
         prompt: formatMessageHistory(messages),
         onStatusUpdate: (status) => {
           writer.write({

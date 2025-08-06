@@ -10,36 +10,34 @@ import { join } from 'node:path';
 import z from 'zod';
 import { createPersistenceLayer } from '../create-persistence-layer.ts';
 
-type Student = {
+type Todo = {
   id: string;
-  name: string;
-  notes: string[];
+  title: string;
+  completed: boolean;
   createdAt: string;
   updatedAt: string;
 };
 
-const notesDb = createPersistenceLayer<{
-  students: {
-    [studentId: string]: Student;
+const todosDb = createPersistenceLayer<{
+  todos: {
+    [todoId: string]: Todo;
   };
 }>({
-  databasePath: join(process.cwd(), 'student-notes.json'),
+  databasePath: join(process.cwd(), 'todos.json'),
   defaultDatabase: {
-    students: {},
+    todos: {},
   },
 });
 
-const formatStudentNotes = (studentNotes: Student[]) => {
-  return studentNotes
-    .map((student) =>
+const formatTodos = (todos: Todo[]) => {
+  return todos
+    .map((todo) =>
       [
-        `## ${student.name}`,
-        `ID: ${student.id}`,
-        `Created at: ${student.createdAt}`,
-        `Updated at: ${student.updatedAt}`,
-        `<notes>`,
-        student.notes,
-        `</notes>`,
+        `## ${todo.title}`,
+        `ID: ${todo.id}`,
+        `Completed: ${todo.completed}`,
+        `Created at: ${todo.createdAt}`,
+        `Updated at: ${todo.updatedAt}`,
       ].join('\n'),
     )
     .join('\n\n');
@@ -85,82 +83,125 @@ const formatMessages = (messages: ModelMessage[]) => {
     .join('\n\n');
 };
 
-export const studentNotesManagerAgent = async (opts: {
+export const todosAgent = async (opts: {
   prompt: string;
   onStatusUpdate: (status: string) => void;
   onSummaryStart: () => string;
   onSummaryDelta: (id: string, delta: string) => void;
   onSummaryEnd: (id: string) => void;
 }) => {
-  opts.onStatusUpdate('Deciding what to do...');
+  opts.onStatusUpdate(`Deciding what to do...`);
 
-  const db = await notesDb.loadDatabase();
-
-  const studentNotesAsArray = Object.values(db.students);
+  const db = await todosDb.loadDatabase();
+  const todos = Object.values(db.todos);
 
   const streamResult = streamText({
     model: google('gemini-2.0-flash'),
     system: `
-      You are a helpful assistant that manages student notes.
-      The user is the singing teacher, and you are a helpful assistant that manages their student notes.
-      You may be asked to search for information, or to add notes to the student's notes.
+      You are a helpful assistant that manages a list of todos.
+
+      You have access to the following tools:
+
+      - createTodos: Create one or more todos
+      - updateTodo: Update an existing todo
+      - deleteTodo: Delete an existing todo
+
+      You will be given a prompt, and you will need to use the tools to manage the todos.
 
       Never show the IDs to the user; they are for internal use only.
 
-      In their current state, the notes are:
+      The current todos are:
 
-      ${formatStudentNotes(studentNotesAsArray)}
+      ${formatTodos(todos)}
     `,
     prompt: opts.prompt,
     tools: {
-      appendToStudentNotes: tool({
-        description: "Append to a student's notes",
+      createTodos: tool({
+        description: 'Create a new todo',
         inputSchema: z.object({
-          studentId: z.string(),
-          note: z
-            .string()
-            .describe(
-              "The note to append to the student's notes.",
-            ),
+          todos: z.array(
+            z.object({
+              title: z.string(),
+            }),
+          ),
         }),
-        execute: async ({ studentId, note }) => {
-          if (!db.students[studentId]) {
-            return 'Could not append note - student not found with that id.';
-          }
+        execute: async (input) => {
+          const todos = input.todos.map((todo) => ({
+            id: crypto.randomUUID(),
+            title: todo.title,
+            completed: false,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          }));
 
-          await notesDb.updateDatabase((db) => {
-            const student = db.students[studentId]!;
-            db.students[studentId] = {
-              ...student,
-              notes: [...student.notes, note],
-              updatedAt: new Date().toISOString(),
-            };
+          await todosDb.updateDatabase((db) => {
+            todos.forEach((todo) => {
+              db.todos[todo.id] = todo;
+            });
           });
 
-          return `Success.`;
+          return [
+            `Todos created successfully`,
+            ...todos.map(
+              (todo) => `- ${todo.title} (${todo.id})`,
+            ),
+          ].join('\n');
         },
       }),
-      createStudent: tool({
-        description: 'Create a new student',
+      updateTodo: tool({
+        description: 'Update an existing todo',
         inputSchema: z.object({
-          name: z.string(),
-          note: z
+          id: z.string(),
+          title: z
             .string()
-            .describe("The note to add to the student's notes."),
+            .optional()
+            .describe(
+              'The title of the todo - only include if you want to change it',
+            ),
+          completed: z
+            .boolean()
+            .optional()
+            .describe(
+              'Whether the todo is completed - only include if you want to change it',
+            ),
         }),
-        execute: async ({ name, note }) => {
-          const studentId = crypto.randomUUID();
-          await notesDb.updateDatabase((db) => {
-            db.students[studentId] = {
-              id: studentId,
-              name,
-              notes: [note],
-              createdAt: new Date().toISOString(),
+        execute: async (input) => {
+          const db = await todosDb.loadDatabase();
+
+          const todo = db.todos[input.id];
+
+          if (!todo) {
+            return `Todo with ID ${input.id} not found`;
+          }
+
+          await todosDb.updateDatabase((db) => {
+            db.todos[input.id] = {
+              ...todo,
+              ...input,
               updatedAt: new Date().toISOString(),
             };
           });
 
-          return `Success. Created student with id ${studentId}.`;
+          return 'Todo updated successfully';
+        },
+      }),
+      deleteTodo: tool({
+        description: 'Delete an existing todo',
+        inputSchema: z.object({
+          id: z.string(),
+        }),
+        execute: async (input) => {
+          const db = await todosDb.loadDatabase();
+
+          if (!db.todos[input.id]) {
+            return `Todo with ID ${input.id} not found`;
+          }
+
+          await todosDb.updateDatabase((db) => {
+            delete db.todos[input.id];
+          });
+
+          return 'Todo deleted successfully';
         },
       }),
     },
@@ -171,8 +212,6 @@ export const studentNotesManagerAgent = async (opts: {
 
   const finalMessages = (await streamResult.response).messages;
 
-  opts.onStatusUpdate('Summarizing...');
-
   const summarizeStreamResult = streamText({
     model: google('gemini-2.0-flash'),
     system: `
@@ -182,7 +221,6 @@ export const studentNotesManagerAgent = async (opts: {
       Provide a summary that is relevant to the initial prompt.
       Reply as if you are the subagent.
       The user will ONLY see the summary, not the thought process or results - so make it good!
-      
     `,
     prompt: `
       Initial prompt:

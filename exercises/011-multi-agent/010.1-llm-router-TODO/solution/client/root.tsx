@@ -18,12 +18,14 @@ const App = () => {
 
   return (
     <Wrapper>
-      {messages.map((message) => (
+      {messages.map((message, index, arr) => (
         <Message
           key={message.id}
           role={message.role}
           parts={message.parts}
-          isStreaming={status === 'streaming'}
+          isStreaming={
+            status === 'streaming' && index === arr.length - 1
+          }
         />
       ))}
       <ChatInput
