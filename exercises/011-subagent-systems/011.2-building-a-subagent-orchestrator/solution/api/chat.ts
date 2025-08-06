@@ -43,23 +43,6 @@ const formatMessageHistory = (messages: MyMessage[]) => {
               return part.text;
             }
 
-            if (part.type === 'data-task') {
-              return [
-                `The ${part.data.subagent} subagent was asked to perform the following task:`,
-                `<task>`,
-                part.data.task,
-                `</task>`,
-                ...(part.data.output
-                  ? [
-                      `The subagent provided the following output:`,
-                      `<output>`,
-                      part.data.output,
-                      `</output>`,
-                    ]
-                  : []),
-              ].join('\n');
-            }
-
             return '';
           })
           .join('\n'),
