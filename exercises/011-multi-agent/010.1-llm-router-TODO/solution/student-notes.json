@@ -5,10 +5,11 @@
       "name": "Kirsty",
       "notes": [
         "mezzo-soprano",
-        "Had another lesson with Kirsty. We looked at some popular stuff like \"Landslide\" by Fleetwood Mac. We're doing \"Hallelujah\". We looked at breathing and some twang."
+        "Had another lesson with Kirsty. We looked at some popular stuff like \"Landslide\" by Fleetwood Mac. We're doing \"Hallelujah\". We looked at breathing and some twang.",
+        "Suggested song: \"Send in the Clowns\" by Stephen Sondheim. It's a well-known song often suggested for mezzo-sopranos. It has a musical theatre feel, which might appeal to someone who likes the drama and emotion in \"Hallelujah\" and the storytelling aspect of \"Landslide\""
       ],
       "createdAt": "2025-08-05T12:36:15.261Z",
-      "updatedAt": "2025-08-05T12:45:25.509Z"
+      "updatedAt": "2025-08-06T10:08:11.012Z"
     },
     "2d026658-0bf0-459b-b37b-9f106738cc21": {
       "id": "2d026658-0bf0-459b-b37b-9f106738cc21",
@@ -29,6 +30,33 @@
       ],
       "createdAt": "2025-08-05T12:53:35.243Z",
       "updatedAt": "2025-08-05T12:54:20.784Z"
+    },
+    "5cf28a17-8827-453e-8f9c-f04f85256c19": {
+      "id": "5cf28a17-8827-453e-8f9c-f04f85256c19",
+      "name": "Jamie",
+      "notes": [
+        ""
+      ],
+      "createdAt": "2025-08-06T10:02:57.476Z",
+      "updatedAt": "2025-08-06T10:02:57.476Z"
+    },
+    "e5148348-23b6-4639-94f9-5546c013d5f0": {
+      "id": "e5148348-23b6-4639-94f9-5546c013d5f0",
+      "name": "Jamie",
+      "notes": [
+        ""
+      ],
+      "createdAt": "2025-08-06T10:03:52.978Z",
+      "updatedAt": "2025-08-06T10:03:52.978Z"
+    },
+    "0edf1d2d-2a48-4d3e-be60-3236815b2ac4": {
+      "id": "0edf1d2d-2a48-4d3e-be60-3236815b2ac4",
+      "name": "Tim",
+      "notes": [
+        "We're going to focus on musical theatre tunes and resolve breathing issues."
+      ],
+      "createdAt": "2025-08-06T10:05:30.308Z",
+      "updatedAt": "2025-08-06T10:05:30.308Z"
     }
   }
 }

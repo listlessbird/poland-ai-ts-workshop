@@ -201,4 +201,6 @@ export const studentNotesManagerAgent = async (opts: {
   opts.onSummaryEnd(summaryPartId);
 
   await summarizeStreamResult.consumeStream();
+
+  return summarizeStreamResult.text;
 };

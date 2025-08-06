@@ -6,26 +6,21 @@ import './tailwind.css';
 import type { MyMessage } from '../api/chat.ts';
 
 const App = () => {
-  const { messages, sendMessage, status } = useChat<MyMessage>(
-    {},
-  );
+  const { messages, sendMessage } = useChat<MyMessage>({});
 
   const [input, setInput] = useState(
-    `Find a slow song by Fleetwood Mac.`,
+    `Find all of my lessons for tomorrow and pull up all of their notes.`,
   );
 
   console.log(messages);
 
   return (
     <Wrapper>
-      {messages.map((message, index, arr) => (
+      {messages.map((message) => (
         <Message
           key={message.id}
           role={message.role}
           parts={message.parts}
-          isStreaming={
-            status === 'streaming' && index === arr.length - 1
-          }
         />
       ))}
       <ChatInput

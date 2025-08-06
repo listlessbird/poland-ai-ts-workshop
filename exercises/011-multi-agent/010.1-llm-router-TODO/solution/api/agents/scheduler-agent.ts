@@ -315,4 +315,6 @@ export const schedulerAgent = async (opts: {
   opts.onSummaryEnd(summaryPartId);
 
   await summarizeStreamResult.consumeStream();
+
+  return summarizeStreamResult.text;
 };

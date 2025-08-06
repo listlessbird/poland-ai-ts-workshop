@@ -15,40 +15,29 @@ export const Wrapper = (props: {
 export const Message = ({
   role,
   parts,
-  isStreaming,
 }: {
   role: string;
-  isStreaming: boolean;
   parts: MyMessage['parts'];
 }) => (
   <div className="my-4">
+    <div className="text-sm text-gray-500">
+      {role === 'user' ? 'User: ' : 'AI: '}
+    </div>
     {parts.map((part) => {
-      if (part.type === 'data-status-update') {
-        if (!isStreaming) {
-          return null;
-        }
+      if (part.type === 'text') {
+        return <ReactMarkdown>{part.text}</ReactMarkdown>;
+      }
 
+      if (part.type === 'data-task') {
         return (
-          <div key={part.id} className="mb-4">
-            <p className="text-gray-400 text-xs">{part.data}</p>
+          <div className="text-sm text-gray-500">
+            <h3>{part.data.subagent}</h3>
+            <p>{part.data.task}</p>
+            <p>{part.data.output}</p>
           </div>
         );
       }
-
-      return null;
     })}
-
-    <ReactMarkdown>
-      {(role === 'user' ? 'User: ' : 'AI: ') +
-        parts
-          .map((part) => {
-            if (part.type === 'text') {
-              return part.text;
-            }
-            return '';
-          })
-          .join('')}
-    </ReactMarkdown>
   </div>
 );
 

@@ -241,4 +241,6 @@ export const todosAgent = async (opts: {
   opts.onSummaryEnd(summaryPartId);
 
   await summarizeStreamResult.consumeStream();
+
+  return summarizeStreamResult.text;
 };
