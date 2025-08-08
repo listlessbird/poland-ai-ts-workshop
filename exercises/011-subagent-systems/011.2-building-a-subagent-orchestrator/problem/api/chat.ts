@@ -37,14 +37,9 @@ const subagents = {
 const getSystemPrompt = () => {
   return `
     You are a helpful assistant that manages a multi-agent system.
-    You will be given a conversation history and the user's initial prompt.
-    You will also be given a plan to follow.
+    You will be given a conversation history.
 
     The current date is ${new Date().toISOString()}.
-
-    You must follow the plan exactly, and generate the _next_ step only.
-
-    If the plan is complete, return an empty list of tasks.
 
     You have access to four subagents:
 
