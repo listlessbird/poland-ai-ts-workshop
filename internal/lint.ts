@@ -3,18 +3,35 @@ import {
   existsSync,
   readdirSync,
   readFileSync,
+  unlinkSync,
 } from 'fs';
 import { join } from 'path';
+import { styleText } from 'util';
 
 const EXERCISE_DIR = 'exercises';
 
 const sections = readdirSync(EXERCISE_DIR);
 
-const errors: {
-  section: string;
-  exercise: string;
-  error: string;
-}[] = [];
+// Group errors by section and exercise
+const groupedErrors: {
+  [section: string]: {
+    [exercise: string]: string[];
+  };
+} = {};
+
+const addError = (
+  section: string,
+  exercise: string,
+  error: string,
+) => {
+  if (!groupedErrors[section]) {
+    groupedErrors[section] = {};
+  }
+  if (!groupedErrors[section][exercise]) {
+    groupedErrors[section][exercise] = [];
+  }
+  groupedErrors[section][exercise].push(error);
+};
 
 for (const section of sections) {
   const sectionDir = join(EXERCISE_DIR, section);
@@ -23,18 +40,36 @@ for (const section of sections) {
   for (const exercise of exercises) {
     const exerciseDir = join(sectionDir, exercise);
 
-    const folders = readdirSync(exerciseDir);
+    const topLevelFilesAndFolders = readdirSync(exerciseDir);
 
-    const folderForReadme = folders.find(
+    const folderForReadme = topLevelFilesAndFolders.find(
       (folder) => folder === 'problem' || folder === 'explainer',
     );
 
+    const allFilesRecursively = readdirSync(exerciseDir, {
+      recursive: true,
+    });
+
+    const gitKeepFile = allFilesRecursively.find((file) =>
+      file.includes('.gitkeep'),
+    );
+
+    if (allFilesRecursively.length > 0 && gitKeepFile) {
+      // addError(
+      //   section,
+      //   exercise,
+      //   'Found a .gitkeep file - deleted',
+      // );
+
+      unlinkSync(join(exerciseDir, gitKeepFile as string));
+    }
+
     if (!folderForReadme) {
-      errors.push({
+      addError(
         section,
         exercise,
-        error: 'No problem or explainer folder found',
-      });
+        'No problem or explainer folder found',
+      );
       continue;
     }
 
@@ -43,17 +78,22 @@ for (const section of sections) {
     );
 
     if (!readmeExists) {
-      errors.push({
-        section,
-        exercise,
-        error: 'No readme.md file found',
-      });
+      addError(section, exercise, 'No readme.md file found');
     }
   }
 }
 
-for (const error of errors) {
-  console.log(
-    `[${error.section}] ${error.exercise}: ${error.error}`,
-  );
+// Output grouped errors with proper indentation
+for (const [section, exercises] of Object.entries(
+  groupedErrors,
+)) {
+  console.log(styleText(['bold'], section));
+
+  for (const [exercise, errors] of Object.entries(exercises)) {
+    console.log(`  ${exercise}`);
+
+    for (const error of errors) {
+      console.log(styleText(['red'], `    ${error}`));
+    }
+  }
 }
