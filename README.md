@@ -37,7 +37,7 @@ pnpm run exercise <exercise-number>
 For example:
 
 ```bash
-pnpm run exercise 001
+pnpm run exercise 01.1
 ```
 
 This will:
@@ -54,18 +54,18 @@ Exercises are organized in the `exercises/` directory with the following structu
 
 ```
 exercises/
-├── 001-basics-DONE/
-│   ├── 001-choosing-a-model/
+├── 01-basics/
+│   ├── 01.1-choosing-a-model/
 │   │   ├── problem/
 │   │   │   ├── readme.md
 │   │   │   └── main.ts
 │   │   └── solution/
 │   │       └── main.ts
-│   └── 002-stream-text-to-terminal/
+│   └── 01.2-stream-text-to-terminal/
 │       ├── problem/
 │       └── solution/
-├── 002-naive-agents-DONE/
-├── 003-persistence-DONE/
+├── 02-naive-agents/
+├── 03-persistence/
 └── ...
 ```
 
