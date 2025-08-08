@@ -9,7 +9,9 @@ const App = () => {
   // TODO: use the useChat hook to get the messages and sendMessage function
   const { messages, sendMessage } = TODO;
 
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(
+    `What's the capital of France?`,
+  );
 
   return (
     <Wrapper>

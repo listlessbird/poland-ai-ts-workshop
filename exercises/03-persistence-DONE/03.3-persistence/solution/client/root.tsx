@@ -37,7 +37,9 @@ const App = () => {
     messages: data?.messages ?? [],
   });
 
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(
+    `Who's the best football player in the world?`,
+  );
 
   return (
     <Wrapper>

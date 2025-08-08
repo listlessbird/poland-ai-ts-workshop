@@ -38,7 +38,9 @@ const App = () => {
   // as well as any existing messages from the backend
   const { messages, sendMessage } = useChat({});
 
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(
+    `Who's the best football player in the world?`,
+  );
 
   return (
     <Wrapper>

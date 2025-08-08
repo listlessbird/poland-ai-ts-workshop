@@ -8,7 +8,9 @@ import type { MyMessage } from '../api/chat.ts';
 const App = () => {
   const { messages, sendMessage } = useChat<MyMessage>({});
 
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(
+    'What should balding men do to improve their outlook on life?',
+  );
 
   return (
     <Wrapper>
