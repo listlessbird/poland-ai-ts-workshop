@@ -58,12 +58,10 @@ export const POST = async (req: Request): Promise<Response> => {
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
       const formattedMessages = formatMessageHistory(messages);
-      let step = 0;
 
-      while (step < 10) {
-        const tasksResult = streamObject({
-          model: google('gemini-2.0-flash'),
-          system: `
+      const tasksResult = streamObject({
+        model: google('gemini-2.0-flash'),
+        system: `
             You are a helpful assistant that manages a multi-agent system.
             You will be given a conversation history and the user's initial prompt.
             You will also be given a plan to follow.
@@ -91,69 +89,60 @@ export const POST = async (req: Request): Promise<Response> => {
             Think step-by-step - first decide what tasks need to be performed,
             then decide which subagent to use for each task.
           `,
-          prompt: `
+        prompt: `
             Initial prompt:
             
             ${formattedMessages}
           `,
-          schema: z.object({
-            tasks: z.array(
-              z.object({
-                subagent: z
-                  .enum([
-                    'todos-agent',
-                    'student-notes-manager',
-                    'song-finder-agent',
-                    'scheduler-agent',
-                  ])
-                  .describe('The subagent to use'),
-                task: z
-                  .string()
-                  .describe(
-                    'A detailed description of the task to perform',
-                  ),
-              }),
-            ),
-          }),
-        });
+        schema: z.object({
+          tasks: z.array(
+            z.object({
+              subagent: z
+                .enum([
+                  'todos-agent',
+                  'student-notes-manager',
+                  'song-finder-agent',
+                  'scheduler-agent',
+                ])
+                .describe('The subagent to use'),
+              task: z
+                .string()
+                .describe(
+                  'A detailed description of the task to perform',
+                ),
+            }),
+          ),
+        }),
+      });
 
-        const indexToIdMap = new Map<number, string>();
+      const indexToIdMap = new Map<number, string>();
 
-        for await (const chunk of tasksResult.partialObjectStream) {
-          const tasks = chunk.tasks ?? [];
+      for await (const chunk of tasksResult.partialObjectStream) {
+        const tasks = chunk.tasks ?? [];
 
-          tasks.forEach((task, index) => {
-            if (!indexToIdMap.has(index)) {
-              indexToIdMap.set(index, crypto.randomUUID());
-            }
+        tasks.forEach((task, index) => {
+          if (!indexToIdMap.has(index)) {
+            indexToIdMap.set(index, crypto.randomUUID());
+          }
 
-            const id = indexToIdMap.get(index)!;
+          const id = indexToIdMap.get(index)!;
 
-            writer.write({
-              type: 'data-task',
+          writer.write({
+            type: 'data-task',
+            id,
+            data: {
               id,
-              data: {
-                id,
-                subagent: task?.subagent ?? '',
-                task: task?.task ?? '',
-                output: '',
-              },
-            });
+              subagent: task?.subagent ?? '',
+              task: task?.task ?? '',
+              output: '',
+            },
           });
-        }
-
-        const tasks = (await tasksResult.object).tasks;
-
-        if (tasks.length === 0) {
-          break;
-        }
-
-        // For now, we'll just break after the first step
-        // so we can see the output
-        break;
-
-        step++;
+        });
       }
+
+      const tasks = (await tasksResult.object).tasks;
+
+      console.dir(tasks);
     },
     onError(error) {
       console.error(error);
