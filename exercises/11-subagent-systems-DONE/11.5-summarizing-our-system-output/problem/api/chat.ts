@@ -267,10 +267,6 @@ export const POST = async (req: Request): Promise<Response> => {
       // TODO: Write the summary to the client, either by manually
       // writing the text parts or by using .toUIMessageStream()
       // and calling writer.merge() to merge the text parts.
-      //
-      // If you use .toUIMessageStream(), you'll need to pass
-      // .toUIMessageStream({ sendStart: false }) to avoid
-      // creating multiple messages.
       TODO;
     },
     onError(error) {

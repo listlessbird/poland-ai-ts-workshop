@@ -23,10 +23,6 @@ const summarizeResult = TODO;
 // TODO: Write the summary to the client, either by manually
 // writing the text parts or by using .toUIMessageStream()
 // and calling writer.merge() to merge the text parts.
-//
-// If you use .toUIMessageStream(), you'll need to pass
-// .toUIMessageStream({ sendStart: false }) to avoid
-// creating multiple messages.
 TODO;
 ```
 
@@ -38,8 +34,6 @@ For the second TODO, we need to get that generated text to the client. We have t
 
 1. Manually writing the text parts
 2. Using `.toUIMessageStream()` and `writer.merge()`
-
-If we choose the second option, we need to make sure we pass `{ sendStart: false }` to avoid creating multiple messages. Take a look at the reference material to help.
 
 Good luck, and I'll see you in the solution!
 
