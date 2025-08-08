@@ -6,10 +6,6 @@ Re-check all exercise frontends for potential spacing issues.
 
 ---
 
-Look at the MCP/SSE exercise and debug why it's hanging indefinitely.
-
----
-
 Remove any `.gitignore` files and change `data` to `gitignore-me`. `data` is too general and means that I need to add.gitignore files into each directory where it's used which is ugly.
 
 ---
@@ -27,3 +23,7 @@ Review all exercise texts to see what reference material I need to add. Last com
 ---
 
 Reorder all reference material and link it to the exercises.
+
+---
+
+Look at the `body` of the `useChat` hook issue in `10.1`.
