@@ -34,7 +34,7 @@ const App = () => {
 };
 ```
 
-After setting up the frontend, we need to work on the API route in `api/chat.ts`. This POST route will be called when the user sends a message, sending the entire history of all messages collected so far.
+After setting up the frontend, we need to work on the API route in `api/chat.ts`. This `POST` route will be called when the user sends a message, sending the entire history of all messages collected so far.
 
 The API route has several TODOs to complete:
 
@@ -62,7 +62,7 @@ export const POST = async (req: Request): Promise<Response> => {
 };
 ```
 
-When examining the request in the network tab, you'll find that `body.messages` contains an array of `UIMessage`s. To send these to `streamText`, we first need to convert them from `UIMessage`s to `ModelMessage`s using a function from the `ai` package.
+When examining the request in the network tab, you'll find that `body.messages` contains an array of `UIMessage`s. To send these to `streamText`, we first need to convert them from `UIMessage`s to `ModelMessage`s using a function from the `ai` package. Check the [reference material](/exercises/99-reference/99.7-ui-messages-vs-model-messages/explainer/readme.md) for more information.
 
 Once all these steps are complete, you'll be able to have a full conversation with the Gemini model, not just a single call and response, but an evolving conversation where the LLM maintains context over all previous messages.
 
