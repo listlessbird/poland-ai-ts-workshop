@@ -37,6 +37,8 @@ for (const section of sections) {
   const sectionDir = join(EXERCISE_DIR, section);
   const exercises = readdirSync(sectionDir);
 
+  const sectionNumber = section.split('-')[0]!;
+
   for (const exercise of exercises) {
     const exerciseDir = join(sectionDir, exercise);
 
@@ -46,24 +48,34 @@ for (const section of sections) {
       (folder) => folder === 'problem' || folder === 'explainer',
     );
 
+    const solutionFolderExists = topLevelFilesAndFolders.find(
+      (folder) => folder === 'solution',
+    );
+
     const allFilesRecursively = readdirSync(exerciseDir, {
       recursive: true,
     });
 
+    // IMPROPER NUMBER FORMAT
+    const exerciseNumber = exercise.split('-')[0]!;
+    if (!exerciseNumber?.startsWith(sectionNumber)) {
+      addError(
+        section,
+        exercise,
+        `Exercise number does not start with ${sectionNumber}`,
+      );
+    }
+
+    // AUTO DELETE .gitkeep FILES
     const gitKeepFile = allFilesRecursively.find((file) =>
       file.includes('.gitkeep'),
     );
 
     if (allFilesRecursively.length > 0 && gitKeepFile) {
-      // addError(
-      //   section,
-      //   exercise,
-      //   'Found a .gitkeep file - deleted',
-      // );
-
       unlinkSync(join(exerciseDir, gitKeepFile as string));
     }
 
+    // NO PROBLEM OR EXPLAINER FOLDER
     if (!folderForReadme) {
       addError(
         section,
@@ -73,12 +85,41 @@ for (const section of sections) {
       continue;
     }
 
+    // NO README.MD FILE
     const readmeExists = existsSync(
       join(exerciseDir, folderForReadme, 'readme.md'),
     );
 
     if (!readmeExists) {
       addError(section, exercise, 'No readme.md file found');
+    }
+
+    // NO MAIN.TS FILE IN PROBLEM OR EXPLAINER FOLDER
+    const mainTsExists = existsSync(
+      join(exerciseDir, folderForReadme, 'main.ts'),
+    );
+
+    if (!mainTsExists) {
+      addError(
+        section,
+        exercise,
+        'No main.ts file found in problem or explainer folder',
+      );
+    }
+
+    // NO MAIN.TS FILE IN SOLUTION FOLDER
+    if (solutionFolderExists) {
+      const solutionMainTsExists = existsSync(
+        join(exerciseDir, 'solution', 'main.ts'),
+      );
+
+      if (!solutionMainTsExists) {
+        addError(
+          section,
+          exercise,
+          'No main.ts file found in solution folder',
+        );
+      }
     }
   }
 }
@@ -96,4 +137,8 @@ for (const [section, exercises] of Object.entries(
       console.log(styleText(['red'], `    ${error}`));
     }
   }
+}
+
+if (Object.keys(groupedErrors).length > 0) {
+  process.exitCode = 1;
 }
