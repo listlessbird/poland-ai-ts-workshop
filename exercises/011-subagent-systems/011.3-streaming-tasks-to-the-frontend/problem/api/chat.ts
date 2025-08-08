@@ -2,6 +2,7 @@ import { google } from '@ai-sdk/google';
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
+  generateObject,
   streamObject,
   streamText,
   type UIMessage,
@@ -61,7 +62,8 @@ export const POST = async (req: Request): Promise<Response> => {
     execute: async ({ writer }) => {
       const formattedMessages = formatMessageHistory(messages);
 
-      const tasksResult = streamObject({
+      // TODO: Swap this over to streamObject instead of generateObject.
+      const tasksResult = await generateObject({
         model: google('gemini-2.0-flash'),
         system: `
           You are a helpful assistant that manages a multi-agent system.
@@ -139,7 +141,8 @@ export const POST = async (req: Request): Promise<Response> => {
         });
       }
 
-      const tasks = (await tasksResult.object).tasks;
+      // TODO: Remember to await the tasksResult.object
+      const tasks = tasksResult.object.tasks;
 
       console.dir(tasks);
     },
