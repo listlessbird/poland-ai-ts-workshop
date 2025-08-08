@@ -73,12 +73,18 @@ export const POST = async (req: Request): Promise<Response> => {
   const stream = createUIMessageStream<MyMessage>({
     execute: async ({ writer }) => {
       const formattedMessages = formatMessageHistory(messages);
+      // NOTE: We'll be using this to track the number of steps
+      // we've taken.
       let step = 0;
 
       // TODO: Create a diary data structure to keep track of the
       // work performed so far.
+      // In the solution, I've used a simple string to track
+      // the work performed so far, which is simple appended to.
       let diary = TODO;
 
+      // NOTE: We'll run this loop until we've taken 10 steps.
+      // This prevents the loop from running forever.
       while (step < 10) {
         const tasksResult = streamObject({
           model: google('gemini-2.0-flash'),
@@ -166,6 +172,7 @@ export const POST = async (req: Request): Promise<Response> => {
 
         const tasks = (await tasksResult.object).tasks;
 
+        // NOTE: If there are no tasks, we'll break out of the loop.
         if (tasks.length === 0) {
           break;
         }
@@ -179,7 +186,6 @@ export const POST = async (req: Request): Promise<Response> => {
           };
         });
 
-        // NOTE: We'll now run the tasks in parallel.
         await Promise.all(
           tasksWithIds.map(async (task) => {
             const subagent = subagents[task.subagent];
