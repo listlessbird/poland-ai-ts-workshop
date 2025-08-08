@@ -110,27 +110,6 @@ export const POST = async (req: Request): Promise<Response> => {
         // to a unique id, which we can use to pass to the writer.
         const indexToIdMap = new Map<number, string>();
 
-        for await (const chunk of tasksResult.partialObjectStream) {
-          const tasks = chunk.tasks ?? [];
-
-          tasks.forEach((task, index) => {
-            // NOTE: If we haven't seen this index before,
-            // we need to create a new id for it.
-            if (!indexToIdMap.has(index)) {
-              indexToIdMap.set(index, crypto.randomUUID());
-            }
-
-            const id = indexToIdMap.get(index)!;
-
-            // TODO: Write the task to the client, using writer.write,
-            // remembering to pass in the id above.
-            // If we don't pass in an id, a new data part will
-            // be created for each task update - potentially
-            // spewing out a LOT of half-formed in the UI.
-            TODO;
-          });
-        }
-
         // TODO: Get the tasks from the result.
         const tasks = TODO;
 

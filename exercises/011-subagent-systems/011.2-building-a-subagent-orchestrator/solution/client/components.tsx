@@ -31,90 +31,9 @@ export const Message = ({
           </div>
         );
       }
-
-      if (part.type === 'data-task') {
-        return <TaskItem key={part.id} task={part.data} />;
-      }
     })}
   </div>
 );
-
-const TaskItem = ({
-  task,
-}: {
-  task: {
-    id: string;
-    subagent: string;
-    task: string;
-    output: string;
-  };
-}) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const isCompleted = !!task.output;
-
-  return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 mb-2">
-      <div className="flex items-start space-x-2">
-        <div className="flex-shrink-0 mt-0.5">
-          {isCompleted ? (
-            <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-              <svg
-                className="w-2.5 h-2.5 text-white"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-          ) : (
-            <div className="w-4 h-4 border-2 border-gray-500 rounded-full"></div>
-          )}
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h3
-                className={`text-xs font-medium ${isCompleted ? 'text-green-400' : 'text-gray-300'}`}
-              >
-                {task.subagent}
-              </h3>
-              <p
-                className={`text-xs mt-0.5 ${isCompleted ? 'text-gray-400 line-through' : 'text-gray-200'}`}
-              >
-                {task.task}
-              </p>
-            </div>
-
-            {isCompleted && (
-              <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="ml-2 text-xs text-blue-400 hover:text-blue-300 transition-colors"
-              >
-                {isExpanded ? 'Hide details' : 'See details'}
-              </button>
-            )}
-          </div>
-
-          {isCompleted && isExpanded && (
-            <div className="mt-2 p-2 bg-gray-700 rounded border-l-4 border-green-500">
-              <h4 className="text-xs font-medium text-green-400 mb-1">
-                Output:
-              </h4>
-              <div className="text-xs text-gray-300 prose prose-invert prose-xs max-w-none">
-                <ReactMarkdown>{task.output}</ReactMarkdown>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export const ChatInput = ({
   input,
