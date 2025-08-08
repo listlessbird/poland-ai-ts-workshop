@@ -145,6 +145,10 @@ export const POST = async (req: Request): Promise<Response> => {
           break;
         }
 
+        // TODO: console.log the tasks so we can see them
+        // in the terminal.
+        TODO;
+
         // NOTE: For now, we'll just break after the first step
         // so we can see the output
         break;
