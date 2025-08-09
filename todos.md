@@ -31,3 +31,7 @@ Look at the `body` of the `useChat` hook issue in `10.1`.
 ---
 
 Add a link checker that checks all links that start with `/` in the material.
+
+---
+
+Make `pnpm dev` run the exercise CLI.

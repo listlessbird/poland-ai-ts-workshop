@@ -1,10 +1,10 @@
 One way that you can provide tool sets to your agent is via MCP.
 
-MCP, or the Model Context Protocol, is a protocol you can use to connect your client (which in our case is the application that we're building) to an MCP server.
+MCP, or the [Model Context Protocol](https://modelcontextprotocol.io/docs/getting-started/intro), is a protocol you can use to connect your client (which in our case is the application that we're building) to an MCP server.
 
 MCP servers can expose tool sets, in other words, functions that you can call as the client, to do things in the real world.
 
-For instance, the GitHub MCP server, which is what we're going to be using, lets you create repositories, find text files, close issues, open pull requests, and all sorts of other useful GitHub actions.
+For instance, the [GitHub MCP server](https://github.com/github/github-mcp-server), which is what we're going to be using, lets you create repositories, find text files, close issues, open pull requests, and all sorts of other useful GitHub actions.
 
 By taking these pre-built tools and plugging them into our system, we're going to be on the fast track to making something really useful.
 
@@ -47,7 +47,7 @@ const myTransport = new StdioMCPTransport({
 });
 ```
 
-For those who don't have Docker yet, you'll need to download Docker Desktop if you don't already have it installed. You'll also need to acquire a GitHub personal access token.
+For those who don't have Docker yet, you'll need to download [Docker Desktop](https://www.docker.com/products/docker-desktop/) if you don't already have it installed. You'll also need to acquire a GitHub [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
 
 Give your token some basic access and put that in your `.env` file in the root of the repository:
 
@@ -71,11 +71,11 @@ Why not get it to list some issues on a repository that you know, or even ask it
 
 ## Steps To Complete
 
-- Get a GitHub personal access token and add it to your `.env` file
+- Get a [GitHub personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) and add it to your `.env` file
 
-- Install Docker Desktop if you don't have it already
+- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) if you don't have it already
 
-- Create an MCP client using the `createMCPClient` function and the `StdioMCPTransport` class to connect to the GitHub MCP server. As a reminder, here's how to set up the transport:
+- Create an MCP client using the `createMCPClient` function and the `StdioMCPTransport` class to connect to the GitHub MCP server. As a reminder, here's how to set up the transport. Check [these docs](https://ai-sdk.dev/docs/reference/ai-sdk-core/create-mcp-client) for more information.
 
 ```ts
 const myTransport = new StdioMCPTransport({

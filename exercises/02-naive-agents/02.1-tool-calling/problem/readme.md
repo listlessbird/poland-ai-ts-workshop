@@ -136,6 +136,6 @@ import * as fsTools from './file-system-functionality.ts';
 
 - Create a `tools` object containing all the tool definitions
 
-- Add a `stopWhen` condition to limit the number of steps the agent can take
+- Add a `stopWhen` condition to limit the number of steps the agent can take. Check out the [docs](https://ai-sdk.dev/docs/ai-sdk-core/tools-and-tool-calling#multi-step-calls-using-stopwhen) for more information.
 
 - Run the local dev server and test if the LLM can create and manage files through the UI by asking it to create a todo list or other file-related tasks.

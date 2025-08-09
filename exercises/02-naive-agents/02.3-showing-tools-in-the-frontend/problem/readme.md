@@ -71,8 +71,13 @@ Good luck, and I'll see you in the solution!
 ## Steps To Complete
 
 - Move the tool definitions from inside the `streamText` function to the module scope variable `tools`
-- Create the `MyUIMessage` type using `InferUITools<typeof tools>` as the third type parameter
+
+- Create the `MyUIMessage` type using `InferUITools<typeof tools>` as the third type parameter. Check [these docs](https://ai-sdk.dev/docs/reference/ai-sdk-core/ui-message#creating-your-own-uimessage-type) for more information
+
 - Update the `useChat` call in `root.tsx` to pass `MyUIMessage` as a type argument
+
 - Update the `parts` prop type in the `Message` component to use `MyUIMessage['parts']` instead of `UIMessage['parts']`
+
 - Implement the JSX for the `writeFile` tool in the `Message` component, following the pattern of the other tool displays
+
 - Run the dev server and test that tool calls are displayed correctly in the UI

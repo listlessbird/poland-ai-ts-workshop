@@ -22,7 +22,10 @@ I would suggest that you run this code, see if you can get it working. I think i
 
 ## Steps To Complete
 
-- Make sure you have a GitHub Personal Access Token set in your environment variables
+- Make sure you have a GitHub [Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) set in your environment variables
+
 - Try running the code as-is to see if the SSE transport works on your system
+
 - Test the implementation by running your local dev server and seeing if GitHub API interactions work properly
+
 - Check for any error messages in your terminal that might indicate connection issues with the SSE transport
