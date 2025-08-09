@@ -1,0 +1,27 @@
+{ type: 'start' }
+{ type: 'start-step' }
+{
+  type: 'tool-input-start',
+  toolCallId: 'B1iGVK2Sa3b0JRzJ',
+  toolName: 'logToConsole',
+  dynamic: false
+}
+{
+  type: 'tool-input-delta',
+  toolCallId: 'B1iGVK2Sa3b0JRzJ',
+  inputTextDelta: '{"message":"Hello, world!"}'
+}
+Hello, world!
+{
+  type: 'tool-input-available',
+  toolCallId: 'B1iGVK2Sa3b0JRzJ',
+  toolName: 'logToConsole',
+  input: { message: 'Hello, world!' }
+}
+{
+  type: 'tool-output-available',
+  toolCallId: 'B1iGVK2Sa3b0JRzJ',
+  output: 'Message logged to console'
+}
+{ type: 'finish-step' }
+{ type: 'finish' }
