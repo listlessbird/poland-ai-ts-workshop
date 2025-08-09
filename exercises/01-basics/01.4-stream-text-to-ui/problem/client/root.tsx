@@ -25,6 +25,7 @@ const App = () => {
         onChange={(e) => setInput(e.target.value)}
         onSubmit={(e) => {
           e.preventDefault();
+          // TODO: send the message
         }}
       />
     </Wrapper>

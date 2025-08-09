@@ -1,6 +1,8 @@
-It's all very well talking to an LLM. That's useful enough. You can use it for rubber ducking, for talking things through, but your system can't do anything in the world. One easy way to connect LLMs with the real world is to provide them with a set of tools that they can call. That's what we're gonna do in this exercise.
+It's all very well talking to an LLM. That's useful enough. You can use it for rubber ducking, for talking things through, but your system can't do anything in the world.
 
-All the work we're gonna do is inside our POST request. We have here a `streamText` call, which tells the LLM that it is a helpful assistant that can use a sandboxed file system to create, edit, and delete files.
+One easy way to connect LLMs with the real world is to provide them with a set of tools that they can call. That's what we're going to do in this exercise.
+
+All the work we're going to do is inside our POST request. We have here a `streamText` call, which tells the LLM that it is a helpful assistant that can use a sandboxed file system to create, edit, and delete files.
 
 ```ts
 export const POST = async (req: Request): Promise<Response> => {
@@ -130,7 +132,7 @@ import { z } from 'zod';
 import * as fsTools from './file-system-functionality.ts';
 ```
 
-- Create tool definitions for each file system function using the `tool()` function. Look at the parameters and return types of each function in the `file-system-functionality.ts` file to determine the correct input schema.
+- Create tool definitions for each file system function using the `tool()` function. Look at the parameters and return types of each function in the `file-system-functionality.ts` file to determine the correct input schema. Check the [reference](/exercises/99-reference/99.7-defining-tools/explainer/readme.md) for more information on how to use the `tool()` function.
 
 - Create a `tools` object containing all the tool definitions
 

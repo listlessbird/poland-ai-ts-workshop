@@ -43,8 +43,7 @@ Try messing about with this prompt here, see if you can get some different outpu
 
 ## Steps To Complete
 
-- Understand the concept of a `UIMessageStream` as a way to represent complex LLM responses beyond just text
-- Examine the code that uses `toUIMessageStream()` instead of directly working with text
+- Examine the code that uses `toUIMessageStream()` instead of directly working with `textStream`
 - Run the exercise to see the different object types in the `UIMessageStream` output
 - Try changing the prompt in the `streamText` function to see how different inputs affect the output format
 - Look at the structure of the response objects with their various types: 'start', 'start-step', 'text-start', 'text-delta', etc.

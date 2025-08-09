@@ -5,6 +5,8 @@ We have a small Vite app with a root component in `client/root.tsx`. Our first t
 We need to implement the `TODO` in our App component in `client/root.tsx`:
 
 ```tsx
+import { useChat } from '@ai-sdk/react';
+
 const App = () => {
   // TODO: use the useChat hook to get the messages and sendMessage function
   const { messages, sendMessage } = TODO;
@@ -27,6 +29,7 @@ const App = () => {
         onChange={(e) => setInput(e.target.value)}
         onSubmit={(e) => {
           e.preventDefault();
+          // TODO: send the message
         }}
       />
     </Wrapper>
@@ -69,11 +72,19 @@ Once all these steps are complete, you'll be able to have a full conversation wi
 ## Steps To Complete
 
 - Import the `useChat` hook from `@ai-sdk/react` in `client/root.tsx`
+
 - Replace the `TODO` in the App component with the appropriate `useChat({})` call
+
 - Complete the `onSubmit` handler in `ChatInput` to use `sendMessage` with the input text
+
 - In `api/chat.ts`, extract the `UIMessage`s from the request body (replace the first `TODO`)
+
 - Import and use a function to convert `UIMessage`s to `ModelMessage`s (replace the second `TODO`)
+
 - Pass the `ModelMessage`s to the `streamText` function by adding them to the existing configuration
+
 - Create a `UIMessageStream` from the `streamText` result (replace the fourth `TODO`)
+
 - Test your implementation by running the dev server and having a conversation with the AI
+
 - Check the network tab to ensure messages are being sent and streamed correctly. Notice how the `UIMessageStream` is being sent to the frontend.
