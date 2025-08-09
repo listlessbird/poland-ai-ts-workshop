@@ -1,3 +1,7 @@
+Review all exercise texts to see what reference material I need to add. Last exercise done: 04.2
+
+---
+
 Add an ESLint config which errors with unused imports.
 
 ---
@@ -15,14 +19,6 @@ Check that the CLI, when you're selecting which directory to run the exercise in
 ---
 
 Make the CLI listen for `n` to go to the next exercise, `p` to go to the previous exercise, and `enter` to ask for a list of exercises.
-
----
-
-Review all exercise texts to see what reference material I need to add. Last complete section: 01
-
----
-
-Reorder all reference material and link it to the exercises.
 
 ---
 
