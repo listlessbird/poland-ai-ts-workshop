@@ -35,7 +35,7 @@ We'll need to maintain state between iterations by tracking:
 - The most recent draft
 - The most recent feedback
 
-Once the loop is done, we'll use the final draft as our response, streaming it as a text part rather than a custom data part. Check out the reference material to see how to do this.
+Once the loop is done, we'll use the final draft as our response, streaming it as a text part rather than a custom data part. Check out the [reference material](/exercises/99-reference/99.5-streaming-text-parts-by-hand/explainer/readme.md) to see how to do this.
 
 Make sure you lock down the stop condition of your while loop - paid systems with potential infinite loops can be scary! Always ensure your loop has a clear exit condition.
 
@@ -45,7 +45,7 @@ Good luck, and I'll see you in the solution.
 
 - Initialize variables at the beginning of the `execute` function: `step` (starting at 0), `mostRecentDraft` (empty string), and `mostRecentFeedback` (empty string)
 
-- Create a while loop that continues until `step < 2` (or another number of your choosing)
+- Create a `while` loop that continues until `step < 2` (or another number of your choosing)
 
 - Increment the `step` variable at the end of each loop iteration
 
