@@ -47,13 +47,9 @@ const exercisePath = path.join(EXERCISE_DIR, section, exercise);
 
 const isProblem = existsSync(path.join(exercisePath, 'problem'));
 
-c.log.info(`isProblem: ${isProblem}`);
-
 const isExplainer = existsSync(
   path.join(exercisePath, 'explainer'),
 );
-
-c.log.info(`isExplainer: ${isExplainer}`);
 
 if (!isProblem && !isExplainer) {
   c.outro('No problem or explainer found');
