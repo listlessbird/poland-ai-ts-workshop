@@ -26,7 +26,7 @@ for (const { action, decision } of hitlResult) {
 Once the message is sent, we need to add the `data-action-end` part and do two things with it:
 
 1. Use `writer.write` to actually write it to the front end, so the frontend stays in sync with the backend state
-2. Add it to an array of `messagesAfterHitl` that we'll need to create, in the code above:
+2. Add it to an array of `messagesAfterHitl` that we'll need to create, in the code below:
 
 ```ts
 // TODO: when we process the decisions, we'll
@@ -37,7 +37,7 @@ Once the message is sent, we need to add the `data-action-end` part and do two t
 const messagesAfterHitl = TODO;
 ```
 
-We need this `messagesAfterHitl` array because after processing the decisions, we'll call the LLM again using the `getDiary` function:
+We need this `messagesAfterHitl` array because after processing the decisions, we'll call the LLM again using the `getDiary` function.
 
 ```ts
 // TODO: instead of referring to the 'messages' (the ones
@@ -56,12 +56,16 @@ To give you a hand with creating the `data-action-end` message parts, I've given
 type MyMessagePart = MyMessage['parts'][number];
 ```
 
+This represents an individual part of a message - `data-action-start`, `data-action-decision`, or `data-action-end` - as well as the native parts like `text` and `reasoning`.
+
 ### The `reject` Branch
 
-For the reject branch, we'll do something similar - we won't send the email, but we still need to update the message history with the user's feedback. This will be noted in the `getDiary` function, which records that the user rejected the action and their reason:
+For the reject branch, we'll do something similar - we won't send the email, but we still need to update the message history with the user's feedback.
+
+This will be noted in the `getDiary` function, which records that the user rejected the action and their reason:
 
 ```ts
-// from the getDiary function
+// inside the getDiary function
 if (part.type === 'data-action-end') {
   if (part.data.output.type === 'send-email') {
     return `The user rejected the action: ${part.data.output.reason}`;
@@ -86,20 +90,24 @@ Good luck, and I'll see you in the solution!
 
 ## Steps To Complete
 
-- Make `messagesAfterHitl` a copy of the `messages` we get from the frontend
-- In the `approve` branch of the check for `decision.type === 'approve'`:
-  - Call `sendEmail()` with the action's `to`, `subject`, and `content`
-  - Create a message part with type 'data-action-end' showing the action succeeded
-  - Use `writer.write()` to update the frontend
-  - Add the message part to the most recent message in `messagesAfterHitl`
-- In the rejection branch:
-  - Create a message part with type 'data-action-end' showing the action was rejected
-  - Use `writer.write()` to update the frontend
-  - Add the message part to the most recent message in `messagesAfterHitl`
-- Change `prompt: getDiary(messages)` to reference the `messagesAfterHitl` array
-- Test by:
-  - Running the local dev server
-  - Asking the assistant to send an email
-  - Approving or rejecting the email
-  - Checking console logs to see if the email was sent (if approved)
-  - Continuing the conversation to see if the LLM acknowledges what happened
+- [ ] Make `messagesAfterHitl` a copy of the `messages` we get from the frontend.
+
+- [ ] In the `approve` branch of the check for `decision.type === 'approve'`:
+  - [ ] Call `sendEmail()` with the action's `to`, `subject`, and `content`
+  - [ ] Create a message part with type `data-action-end` showing the action succeeded. Use the `MyMessagePart` type to type it.
+  - [ ] Use `writer.write()` to update the frontend
+  - [ ] Add the message part to the most recent message in `messagesAfterHitl`
+
+- [ ] In the rejection branch:
+  - [ ] Create a message part with type `data-action-end` showing the action was rejected. Use the `MyMessagePart` type to type it.
+  - [ ] Use `writer.write()` to update the frontend
+  - [ ] Add the message part to the most recent message in `messagesAfterHitl`
+
+- [ ] Change `prompt: getDiary(messages)` to reference the `messagesAfterHitl` array
+
+- [ ] Test by:
+  - [ ] Running the local dev server
+  - [ ] Asking the assistant to send an email
+  - [ ] Approving or rejecting the email
+  - [ ] Checking console logs to see if the email was sent (if approved)
+  - [ ] Continuing the conversation to see if the LLM acknowledges what happened

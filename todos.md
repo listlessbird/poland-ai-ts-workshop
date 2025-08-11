@@ -31,3 +31,7 @@ Add a link checker that checks all links that start with `/` in the material.
 ---
 
 Make `pnpm dev` run the exercise CLI.
+
+---
+
+Go through all the readmes and make the todo's into checkboxes.
