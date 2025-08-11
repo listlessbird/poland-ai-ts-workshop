@@ -1,12 +1,14 @@
 Now that we've got our architecture all put together, it's time to start optimizing a little.
 
-The first thing I can see to optimize is improving the way the orchestration agent reasons. LLMs in general do better when you take a moment to plan ahead before you go to executing.
+The first thing I can see to optimize is improving the way the orchestration agent reasons.
 
-So, that's exactly what we're going to do. We'll generate a plan to feed into our orchestrator agent.
+LLMs in general do better when you take a moment to plan ahead before you go to executing. I find this when editing code - taking the time to create a plan for the LLM to follow ends up with better results than just improvisation.
+
+So, that's exactly what we're going to do. Before we figure out which tasks to run, we'll first generate a plan.
 
 ## Creating the Plan
 
-Inside our POST route, before we get to the loop, we're going to call `streamText` to generate a plan:
+Inside our POST route, before we get to the loop, we're going to call `streamText` to generate a plan.
 
 ```ts
 // TODO: Before the loop, call streamText to generate a plan.
@@ -31,11 +33,11 @@ We'll need to monitor the plan's text stream and write it to the client. We'll w
 TODO;
 ```
 
-The reasoning parts work exactly the same as `text-start`, `text-delta`, and `text-end` parts.
+The reasoning parts work exactly the same as `text-start`, `text-delta`, and `text-end` parts. Check out the [reference](/exercises/99-reference/99.5-streaming-text-parts-by-hand/explainer/readme.md) for more details on streaming text parts.
 
 ## Displaying the Plan
 
-Now, we need to modify our `Message` component in `client/components.tsx` to handle reasoning parts. Looking at the TODO comment in the component:
+Now, we need to modify our `Message` component in [`client/components.tsx`](./client/components.tsx) to handle reasoning parts. Looking at the TODO comment in the component:
 
 ```tsx
 {
@@ -76,11 +78,15 @@ Good luck, and I'll see you in the solution!
 
 ## Steps To Complete
 
-- Implement the plan generation in `api/chat.ts`
-- Stream the plan to the client using reasoning parts
-- Update the diary with the final plan
-- Modify the `Message` component in `client/components.tsx` to handle reasoning parts
-- Test your changes by running the exercise
-  - Make a request and observe if you can see the plan being streamed as reasoning
-  - Check if the plan appears before the execution starts
-  - Verify that multiple agents are being used effectively based on the plan
+- [ ] Implement the plan generation in [`api/chat.ts`](./api/chat.ts)
+
+- [ ] Stream the plan to the client using reasoning parts
+
+- [ ] Update the diary with the final plan
+
+- [ ] Modify the `Message` component in `client/components.tsx` to handle reasoning parts
+
+- [ ] Test your changes by running the exercise
+  - [ ] Make a request and observe if you can see the plan being streamed as reasoning
+  - [ ] Check if the plan appears before the execution starts
+  - [ ] Verify that multiple agents are being used effectively based on the plan

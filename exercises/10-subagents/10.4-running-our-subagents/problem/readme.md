@@ -5,7 +5,7 @@ The way it's going to work is:
 1. The orchestrator decides which tasks to run
 2. The orchestrator executes the tasks
 3. The tasks report their output to a shared 'diary'
-4. The orchestrator begins the loop again until there are no more tasks to run
+4. The orchestrator begins the loop again, reading the diary, until there are no more tasks to run
 
 We'll use a diary data structure to track the work performed, which will be crucial for the orchestrator to make informed decisions about what to do next.
 
@@ -37,7 +37,7 @@ This string will store a record of all tasks executed and their results, which w
 
 ## The `while` loop
 
-Our main loop is a simple while loop that runs until we've taken 10 steps (to prevent infinite loops). It's very similar to the loop we had in the previous exercise.
+Our main loop is a simple while loop that runs until we've taken 10 steps (to prevent infinite loops). It's very similar to the loop we had in [previous exercises](/exercises/04-agents-and-workflows/04.3-creating-your-own-loop/problem/readme.md).
 
 ```ts
 // NOTE: We'll be using this to track the number of steps
@@ -169,12 +169,20 @@ Good luck, and I'll see you in the solution!
 
 ## Steps To Complete
 
-- Create a diary data structure (a simple string will work) to track work performed
-- Implement the task execution by calling the subagent with the task's prompt
-- Update the UI with the task result using `writer.write`
-- Update the diary with the task result
-- In the `catch` block, update the diary and UI with the error
-- Pass the diary into the orchestrator's prompt so it can track work performed
-- Update the message history to include task parts so they're preserved between conversations
-- Test your implementation by making a request in the UI and watching tasks being executed and checked off
-- Verify that the orchestrator correctly uses the data parts in the me to plan subsequent steps
+- [ ] Create a diary data structure (a simple string will work) to track work performed
+
+- [ ] Implement the task execution by calling the subagent with the task's prompt
+
+- [ ] Update the UI with the task result using `writer.write`
+
+- [ ] Update the diary with the task result
+
+- [ ] In the `catch` block, update the diary and UI with the error
+
+- [ ] Pass the diary into the orchestrator's prompt so it can track work performed
+
+- [ ] Update the message history to include task parts so they're preserved between conversations
+
+- [ ] Test your implementation by making a request in the UI and watching tasks being executed and checked off
+
+- [ ] Verify that the orchestrator correctly uses the data parts in the me to plan subsequent steps

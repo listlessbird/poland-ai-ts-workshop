@@ -1,4 +1,4 @@
-Now we're generating a list of tasks, and we need to stream those to the front end.
+Now we're generating a list of tasks, and we need to stream those to the frontend.
 
 ## The `streamObject` call
 
@@ -11,11 +11,11 @@ const tasksResult = await generateObject({
 });
 ```
 
-## Streaming the tasks to the front end
+## Streaming the tasks to the frontend
 
-The main focus is on taking the tasks as they come down and streaming them into the UI. We need to monitor the `tasksResult.partialObjectStream`. Tasks will be streamed down index by index - first the zero-indexed one, then the first-indexed one, and so on.
+The main focus is on taking the tasks as they come down and streaming them into the UI. We need to monitor the `tasksResult.partialObjectStream`. Tasks will be streamed down index by index - first the zero-indexed one, then the first-indexed one, and so on. As a reminder for how this works, check out the [reference](/exercises/99-reference/99.1-stream-object-partial-object-stream/explainer/readme.md).
 
-To update the UI properly, we need IDs to reference the parts in the UI. The provided code maps indexes to IDs. As tasks are generated, we iterate over each one, take the index, and if we haven't discovered that index already, we set it to a random UUID. This gives us a static ID we can rely on.
+To update the UI properly, we need IDs to reference the parts in the UI. The provided code maps indexes to IDs. As tasks are generated, we iterate over each one, take the index, and if we haven't discovered that index already, we set it to a random UUID. This gives us a static ID we can rely on. As a reminder for how this works, check out the [reference](/exercises/99-reference/99.4-custom-data-parts-id-reconciliation/explainer/readme.md).
 
 ```ts
 const indexToIdMap = new Map<number, string>();
@@ -59,7 +59,7 @@ type MyMessage = UIMessage<
 
 Once we've defined this shape, we can use `writer.write` to send the task to the front end.
 
-## Rendering the tasks in the front end
+## Rendering the tasks in the frontend
 
 The final step is to go into the `Message` component in the front end and render the `TaskItem`:
 
@@ -89,8 +89,12 @@ Good luck, and I'll see you in the solution!
 
 ## Steps To Complete
 
-- Define the `data-task` type in the `MyMessage` type in `problem/api/chat.ts`
-- Replace `generateObject` with `streamObject` in the POST route
-- Implement the `writer.write` call to send the task to the frontend
-- Add task rendering to the `Message` component in `problem/client/components.tsx`
-- Test the implementation by prompting the UI and observing the tasks in the frontend
+- [ ] Define the `data-task` type in the `MyMessage` type in `problem/api/chat.ts`
+
+- [ ] Replace `generateObject` with `streamObject` in the POST route
+
+- [ ] Implement the `writer.write` call to send the task to the frontend
+
+- [ ] Add task rendering to the `Message` component in `problem/client/components.tsx`
+
+- [ ] Test the implementation by prompting the UI and observing the tasks in the frontend
