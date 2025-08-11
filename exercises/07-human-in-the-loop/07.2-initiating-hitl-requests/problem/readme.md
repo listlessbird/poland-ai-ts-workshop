@@ -1,10 +1,8 @@
 Now we understand the vague setup for how our human in the loop is going to work. So let's start diving into some code to get it working.
 
-## Current Implementation in problem/api/chat.ts
+## Current Implementation in `api/chat.ts`
 
-Our current setup uses `streamText` and it has a tool call in here saying `sendEmail` where the description is "send an email". It has an input schema of `to` and `subject` and `content`, all the stuff that you need to be able to send an email.
-
-In the `execute` function of the tool, it actually calls `sendEmail`. This is not what we want. We don't want the LLM to be able to send emails without our say-so.
+Our current setup uses `streamText`, with a tool call of `sendEmail` where the description is "send an email". It has an input schema of `to`, `subject`, and `content`, all the stuff that you need to be able to send an email. In the `execute` function of the tool, it actually calls `sendEmail`:
 
 ```ts
 tools: {
@@ -25,11 +23,13 @@ tools: {
 },
 ```
 
+This implementation delegates too much power to the LLM. It can send an email any time it wants to. We want the power to say no to certain emails or to review them before they get sent out.
+
 (And by the way, `sendEmail` just logs to the console that an email has been sent. So don't worry, we're not going to send any real emails).
 
-## MyMessage Type in problem/api/chat.ts
+## `MyMessage` in `api/chat.ts`
 
-As always, I've given you a set of to-dos that you can follow. And the first one is in the `MyMessage` type.
+As always, I've given you a set of TODOs that you can follow. And the first one is in the `MyMessage` type.
 
 In this exercise, we're going to focus on the `action-start` part we discussed in the intro. This custom data part is going to have all the information we need to preview what we're going to be sending on the front end.
 
@@ -57,11 +57,11 @@ inputSchema: z.object({
 
 So that's your first job. Declare a custom data part that has all of those attributes.
 
-NOTE: I also recommend you give this an ID. That will be very, very useful in future exercises.
+NOTE: I also recommend you give the `action-start` part an ID. That will be very, very useful in future exercises, since other custom data parts will need to reference it.
 
 ## Fixing the Tool Call
 
-Next, you're going to go inside the `streamText` function inside the execute call of the `sendEmail` tool. And you will change this so that it writes a data action-start part to the message stream writer instead of sending the email:
+Next, you're going to go inside the `streamText` function inside the execute call of the `sendEmail` tool. And you will change this so that it writes a `data-action-start` part to the message stream writer instead of sending the email:
 
 ```ts
 // from the sendEmail tool
@@ -73,20 +73,22 @@ execute: ({ to, subject, content }) => {
 
 ## The Stop Condition
 
-We need to change the stop condition for `streamText`. Ideally we want it to run normally, but stop immediately after it calls the tool. Once it stops, we're then going to ask the front end whether we should execute the tool.
+We need to change the stop condition for `streamText`. Currently, it will run the tool and process the result immediately.
 
-Our current stop condition stops when the step count reaches `10`, which is a backstop against the LLM running wild.
+However, in our new setup, we want it to stop immediately after it calls the tool. Once it stops, we're then going to ask the frontend whether we should execute the tool.
+
+Our current stop condition stops when the step count reaches `10`, which is a backstop against the LLM running wild. We'll keep this in place - but we'll need to add a new stop condition.
 
 ```ts
-// Current implementation in problem/api/chat.ts
+// Current implementation in `api/chat.ts`
 stopWhen: stepCountIs(10),
 ```
 
-Instead, we want to stop either when the step count is `10` or when the agent has sent the `sendEmail` tool call. The `hasToolCall` function from `ai` is going to be very useful here.
+Instead, we want to stop either when the step count is `10` or when the agent has sent the `sendEmail` tool call. The [`hasToolCall` function from `ai`](https://ai-sdk.dev/docs/migration-guides/migration-guide-5-0#step-control-maxsteps--stopwhen) is going to be very useful here.
 
 ## The Message Component
 
-So once that's done, our agent should have the ability to send these custom data parts to the front end. Fittingly then, our last to-do is in the front end. We're inside the message components here and if the part is a `data-action-start`, we want to render a preview of the email that will be sent.
+So once that's done, our agent should have the ability to send these custom data parts to the front end. Fittingly then, our last TODO is in the front end. We're inside the message components here and if the part is a `data-action-start`, we want to render a preview of the email that will be sent.
 
 ```tsx
 export const Message = ({
@@ -111,7 +113,7 @@ export const Message = ({
 );
 ```
 
-Once all of these to-do's are resolved, you should be able to say, "send an email to this person" and if the LLM has enough information to call the tool, then once it's called the tool, it will show you a nice preview of the email in the front end. At that point, you can call the exercise done and move on to the next one.
+Once all of these TODOs are resolved, you should be able to say, "send an email to this person" and if the LLM has enough information to call the tool, then once it's called the tool, it will show you a nice preview of the email in the front end. At that point, you can call the exercise done and move on to the next one.
 
 Good luck, and I'll see you in the solution!
 

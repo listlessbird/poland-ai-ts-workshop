@@ -20,7 +20,7 @@ streamText({
 });
 ```
 
-This is a problem because the model messages don't know anything about our custom data parts - they're for `UIMessage`'s only.
+This is a problem because the model messages don't know anything about our custom data parts - they're for `UIMessage`'s only. Check the [reference](/exercises/99-reference/99.6-ui-messages-vs-model-messages/explainer/readme.md) for a playground to see the differences between model and UI messages.
 
 ## `getDiary`
 
@@ -106,17 +106,20 @@ This gives us full control so we can do prompt engineering from inside the messa
 
 ## The Fix
 
-All I want you to do in this exercise is just take out this `convertToModelMessages` and use the `prompt` property instead, calling `getDiary` function on the messages and test it before and after to see if it makes a difference.
+All I want you to do in this exercise is just take out `convertToModelMessages` and use the `prompt` property instead, calling `getDiary` on the messages and test it before and after to see if it makes a difference.
 
-I also recommend console logging the `getDiary` output so that you can see everything that comes from it. What you should see is that the LLM starts reacting better to rejections.
+I also recommend `console.log`-ing the `getDiary` output so that you can see everything that comes from it. What you should see is that the LLM starts reacting better to this flow:
+
+- Send an email
+- Reject it with a negative feedback message
 
 Good luck, and I'll see you in the solution!
 
 ## Steps To Complete
 
-- In `problem/api/chat.ts`, locate where `convertToModelMessages` is being used
+- In `api/chat.ts`, locate where `convertToModelMessages` is being used
 - Replace `messages: convertToModelMessages(messages)` with `prompt: getDiary(messages)`
-- Add `console.log(getDiary(messages))` before the stream creation to see the formatted output
+- Add `console.log(getDiary(messages))` before the `streamText` call to see the formatted output
 - Test the application by sending an email and then rejecting it with feedback
 - Observe if the LLM now responds appropriately to your rejection feedback
 - Look at the console output to see how the conversation history is formatted for the LLM

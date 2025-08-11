@@ -1,4 +1,4 @@
-In this exercise, we're going to focus on the approval flow for our human-in-the-loop setup. We'll spend most of our time in the front end, with the exception of the first to-do.
+In this exercise, we're going to focus on the approval flow for our human-in-the-loop setup. We'll spend most of our time in the front end, with the exception of the first TODO.
 
 ## The `action-decision` Part
 
@@ -25,7 +25,7 @@ We will definitely need an `actionId` field in this decision so that we know whi
 
 ### An `ActionDecision` Type
 
-There's a type called `ActionDecision` provided, which is in the form of a discriminated union. In one branch of the union, we have a type of approve, and in the other branch, we have a type of reject with the reason for the rejection.
+There's a type called `ActionDecision` provided, which is in the form of a discriminated union. In one branch of the union, we have a type of `approve`, and in the other branch, we have a type of `reject` with the reason for the rejection.
 
 ```ts
 export type ActionDecision =
@@ -38,7 +38,7 @@ export type ActionDecision =
     };
 ```
 
-This is the most type-safe way of expressing this because we can't have a reason if we're approving it.
+This is the most type-safe way of expressing this: we should only have a `reason` if we're rejecting the action.
 
 ## The Frontend
 
@@ -48,7 +48,7 @@ Now, with that done, we have quite a complicated flow to work out on the front e
 
 Our first port of call is going to be inside the `Message` function. We need to add some approve or reject buttons, and those buttons will need to call some sort of callback so that it can report up to the parent component.
 
-I've scaffolded that callback as `onActionRequest` in the `Message` component:
+I've scaffolded that callback as `onActionRequest` in the `Message` component. It's a function that will be called when the user clicks the approve or reject button.
 
 ```tsx
 export const Message = (props: {
@@ -80,7 +80,7 @@ We'll then need to pass that into some buttons, which we only render if a `hasDe
 
 The ideal setup here is that we press the button and the buttons disappear.
 
-In order to get that working, we can look at the `hasDecisionBeenMade` `const` where we need to check if the action ID has had a decision made. If a decision has been made, we don't want to show the buttons.
+In order to get that working, we can look at the `hasDecisionBeenMade` variable where we need to check if the action ID has had a decision made. If a decision has been made, we don't want to show the buttons.
 
 ```tsx
 // TODO: check if the action ID has had a decision
@@ -88,7 +88,7 @@ In order to get that working, we can look at the `hasDecisionBeenMade` `const` w
 const hasDecisionBeenMade = TODO;
 ```
 
-However, we only have enough information to know this from a prop being passed down into the `Message` component: `actionIdsWithDecisionsMade`:
+To figure this out, you'll need to look at the `actionIdsWithDecisionsMade` set that's passed down into the `Message` component.
 
 ```tsx
 // from the Message component
@@ -126,9 +126,10 @@ const actionIdsWithDecisionsMade = useMemo(() => {
 
 ### Handling Approvals and Rejections
 
-Next, we need to implement the `onActionRequest` function. We're going to have two cases here:
+Next, we need to implement the `onActionRequest` function. We're going to have two cases here.
 
-If the user has approved the action, we need to send a `data-action-decision` part with the action ID and the decision.
+- If the user has approved the action, we need to send a `data-action-decision` part with the action ID and the decision.
+- If the user has rejected the action, we need to save the action in the state so that we can show the feedback input.
 
 ```tsx
 <Message
@@ -144,7 +145,7 @@ If the user has approved the action, we need to send a `data-action-decision` pa
 />
 ```
 
-But if the user has rejected the action, we need to save the action in the state so that we can show the feedback input. I've scaffolded this for you below.
+I've scaffolded the `actionGivingFeedbackOn` state variable below:
 
 ```tsx
 // From the App component
@@ -152,7 +153,9 @@ const [actionGivingFeedbackOn, setActionGivingFeedbackOn] =
   useState<Action | null>(null);
 ```
 
-I've decided that a good idea here is to reuse the `ChatInput` component for providing feedback. So we'll pass down an `isGivingFeedback` prop to the `ChatInput` component.
+I've decided that a good idea here is to reuse the `ChatInput` component for providing feedback. The user will press 'reject', and we'll change the placeholder text to ask the user for feedback.
+
+So we'll pass down an `isGivingFeedback` prop to the `ChatInput` component.
 
 ```tsx
 <ChatInput
@@ -163,10 +166,12 @@ I've decided that a good idea here is to reuse the `ChatInput` component for pro
 
 ### Handling The Chat Input Submission
 
-Finally, we need to update the `onSubmit` handler to handle feedback submission. Our `ChatInput` is now doing double duty:
+Our `ChatInput` is now doing double duty:
 
 - If we're giving feedback on an action, we need to send a `data-action-decision` part with the action ID and the reason for the action
 - If not, we need to send a normal text message
+
+This means we need to update the `onSubmit` handler being passed down to the `ChatInput` component.
 
 ```tsx
 onSubmit={(e) => {
@@ -201,19 +206,19 @@ Good luck, and I'll see you in the solution!
 ## Steps To Complete
 
 - Declare the `action-decision` data type in the `MyMessage` type with the correct fields (in `chat.ts`)
-  - Add an `actionId` field (string)
+  - Add an `actionId` field, which references the action that the decision is for
   - Include the `decision` field of type `ActionDecision`
 
 - Define the `onActionRequest` function parameter type in the `Message` component
-  - It should accept an `action` parameter of type `Action` and a `decision` parameter of type `'approve' | 'reject'`
+  - It should accept an `action` parameter of type `Action` and a `decision` parameter of type `ActionDecision`
 
-- Define the `actionIdsWithDecisionsMade` parameter type in the `Message` component
-  - It should be a `Set<string>` containing action IDs that have decisions
+- Define the `actionIdsWithDecisionsMade` prop type in the `Message` component
+  - It should be a `Set<string>` containing action IDs that have had decisions made
 
 - Implement the `actionIdsWithDecisionsMade` calculation in the `useMemo` hook in the `App` component
   - Filter all message parts to find ones with type `'data-action-decision'`
   - Extract the `actionId` from each decision part
-  - Create a Set with these IDs
+  - Create a `Set` with these IDs
 
 - Implement the `hasDecisionBeenMade` check in the `Message` component
   - Check if the current action ID is in the `actionIdsWithDecisionsMade` set
@@ -231,6 +236,6 @@ Good luck, and I'll see you in the solution!
   - If so, send a message with a `data-action-decision` part containing the rejection reason
   - If not, send a normal text message
 
-- Test your implementation by running the local dev server and trying to send an email
+- Test your implementation by running the local dev server and trying to send an email. You should see the buttons appear.
 
-- Verify that the approval and rejection flows work correctly, including the feedback submission
+- Verify that the approval and rejection flows work correctly, including the feedback submission.
