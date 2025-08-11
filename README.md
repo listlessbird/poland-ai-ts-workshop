@@ -60,7 +60,7 @@ This will:
 
 1. Find the exercise with the specified number across all sections
 2. Present you with options to run either the `problem` or `solution` version
-3. Execute the TypeScript file using `tsx` with proper environment variables
+3. Run the right `main.ts` file for the exercise. This might start a local dev server, or simply run some exercise code in that file.
 
 ## 📁 Repository Structure
 
