@@ -39,3 +39,7 @@ Or if an eval in the regression set starts failing frequently, you might move it
 This is how you should think about datasets when working with evals: dev, CI, and regression.
 
 Thank you for watching, and I will see you in the next one.
+
+## Steps To Complete
+
+- Nothing to do here! For further reading, check out [this article](https://www.aihero.dev/what-are-evals) on AI Hero.

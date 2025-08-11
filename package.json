@@ -6,6 +6,7 @@
   "scripts": {
     "exercise": "tsx internal/cli.ts",
     "prepare": "husky",
+    "lint": "tsx internal/lint.ts",
     "update-cms": "tsx internal/update-cms.ts"
   },
   "keywords": [],

@@ -7,13 +7,17 @@ Do we want the answer to be:
 - Factual?
 - Well-attributed?
 
-For these kind of questions, you'll often be thinking, "I wish I just had an assistant I could use to go through all these responses and grade them." When you have that desire, it might be time to reach for an LLM as a judge eval.
+For these kind of questions, you'll often be thinking, "I wish I just had an assistant I could use to go through all these responses and grade them."
+
+When you have that desire, it might be time to reach for an LLM-as-a-judge eval.
 
 Turns out that LLMs are really good at evaluating the output of other LLMs. Instead of having to rely on a hypothetical assistant to evaluate everything, you can pass that job to an LLM itself.
 
 ## The Setup
 
-We're inside the question-answerer eval function. We've created a task here that takes in a PDF. I've picked the chain of thought prompting PDF that defined this idea of chain of thought prompting.
+We're inside the question-answerer eval function. We've created a task here that takes in a PDF.
+
+The PDF I've picked is the chain of thought prompting paper. It's the first paper that defined the idea of chain of thought prompting.
 
 ```ts
 evalite('Chain Of Thought Paper', {
@@ -79,7 +83,7 @@ We have two evaluators at the bottom of our `evalite` configuration:
 ```
 
 1. A simple evaluator that checks whether the output includes quotes - this is a deterministic eval
-2. Another scorer - `attributionToChainOfThoughtPaper`
+2. Another scorer - `attributionToChainOfThoughtPaper`. This is where we'll be doing most of our work.
 
 ## The Attribution Scorer
 
@@ -170,5 +174,7 @@ Good luck, and I'll see you in the solution.
 - Optional: Add more test cases to the `data` function in `question-answerer.eval.ts` to further test the system
 
 - Run the exercise to see if your implementation correctly evaluates the LLM's responses about the Chain of Thought paper
+
+- Look at the metadata returned by the LLM judge evaluator (by clicking on the test case and looking in the right-hand panel)
 
 - Debug any issues by checking the metadata (feedback) returned by the LLM judge evaluator

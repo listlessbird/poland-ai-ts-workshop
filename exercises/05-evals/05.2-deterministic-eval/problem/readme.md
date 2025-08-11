@@ -1,6 +1,8 @@
 There are two main ways that you can write scorers for your evaluations. We're gonna examine the first one here, which are deterministic scorers. These are scorers that you write in code to check something deterministically about the output that the LLM contains.
 
-For context, the other kind of scorers are LLM as a judge scorers. In other words, probabilistic scorers that might return one score or another. Those are useful for other kind of metrics that deterministic scorers can't handle. And don't worry, we'll look at those in a minute.
+These act kind of like unit tests - they're deterministic, they're fast, and they're easy to write.
+
+The other kind of scorers are LLM as a judge scorers. In other words, probabilistic scorers that might return one score or another. Those are useful for other kind of metrics that deterministic scorers can't handle. We'll look at those in a minute - for now, we'll focus on what you can do in code.
 
 ## The Data
 
@@ -30,32 +32,35 @@ evalite('Capitals', {
 
 ## The Scorers
 
-Now we want to check this on two separate metrics here. We want to check whether the output includes some kind of markdown link. This is a really good metric to check because it makes sure that the LLM is using up-to-date sources and sources which kind of back up its point.
-
-And also it's really helpful for the user just to be able to see something they can click out to in the output. We also want the output to be extremely concise too. So we want to check if the output is less than 500 characters.
-
-Your job here is to do a little bit of TDD or EDD, I suppose, eval-driven development. You are going to write the scorers here based on the example that I've shown you before:
+Now we want to check this on two separate metrics. We want to check whether the output includes some kind of markdown link:
 
 ```ts
-scorers: [
-  {
+{
     name: 'Includes Markdown Links',
     scorer: ({ input, output, expected }) => {
       // TODO: check if the output includes markdown links
     },
   },
-  {
+```
+
+This is a really good metric to check because it makes sure that the LLM is using up-to-date sources and sources which kind of back up its point.
+
+We also want the output to be extremely concise too. So we want to check if the output is less than 500 characters.
+
+```ts
+{
     name: 'Output length',
     scorer: ({ input, output, expected }) => {
       // TODO: check if the output is less than 500 characters
     },
   },
-],
 ```
 
 ## The Task
 
-And then you're going to update the system prompt above to first of all pass the links in here:
+Your job here is to do a little bit of eval-driven development. You are going to write the scorers here based on the example in the previous exercise.
+
+Then, you're going to update the system prompt above to pass the links in here:
 
 ```ts
 prompt: `
@@ -76,11 +81,11 @@ Good luck, and I'll see you in the solution.
 
 - Complete the "Includes Markdown Links" scorer
   - Implement logic to check if the output contains markdown links using a regular expression (your LLM will be able to help you with this)
-  - Return 1 if links are found, 0 if not
+  - Return `1` if links are found, `0` if not
 
 - Complete the "Output length" scorer
   - Implement logic to check if the output is less than 500 characters
-  - Return 1 if it's concise enough, 0 if not
+  - Return `1` if it's concise enough, `0` if not
 
 - Run the exercise to see the evaluation results
 

@@ -1,4 +1,6 @@
-So far, we've seen what evals are, but we haven't really seen them connected to production code. Just like in a production system, you need to think about making that system testable. In an AI-powered application, you need to think about making your system evaluatable.
+So far, we've seen what evals are, but we haven't really seen them connected to production code.
+
+In a traditional production system, you need to think about making that system testable. In an AI-powered application, you need to think about making your system evaluatable.
 
 In other words, you need to extract out the parts of your system that are going to be evaluated.
 
@@ -72,7 +74,7 @@ evalite('Example', {
 });
 ```
 
-## Explaining `for await`
+## Streaming The Result
 
 Now, we have a bunch of choices for how we're going to consume this stream, because we need to consume it and then pass the result of that to Evalite.
 
@@ -101,3 +103,13 @@ This is the cleanest way to separate your production application from the thing 
 It works really nicely, and hopefully that makes sense as an approach.
 
 Good luck, and I'll see you in the next one.
+
+## Steps To Complete
+
+- Review the `api/chat.ts` file to understand how the `createChatStream` function works
+- Examine the eval file structure in `evals/example.eval.ts`
+- Understand how the input gets converted to messages and passed to `createChatStream`
+- Learn how to consume the stream by iterating through it with `for await` and collecting text deltas
+- Verify that your Evalite setup is correctly receiving the final text output
+- Run the exercise to see the evaluation results
+- Check the terminal output to confirm that the eval is working as expected

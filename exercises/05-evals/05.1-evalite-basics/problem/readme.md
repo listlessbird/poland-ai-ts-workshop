@@ -105,3 +105,5 @@ Good luck, and I'll see you in the solution.
 - Run the exercise to see the evaluation results
 
 - Check that your implementation scores well on the test cases (France/Paris, Germany/Berlin, Italy/Rome)
+
+- Read the [Evalite docs](https://evalite.dev) to get an overview of Evalite's features
