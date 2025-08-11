@@ -114,8 +114,13 @@ Have a bit of a play, and I will see you in the next one.
 ## Steps To Complete
 
 - [ ] Explore the reciprocal rank fusion (RRF) algorithm in the codebase, particularly in the `utils.ts` file
+
 - [ ] Understand how RRF combines results from different ranking systems (BM25 and embeddings)
+
 - [ ] Try different queries to see how the combined ranking system performs
+
 - [ ] Compare the results with previous setups that only used BM25 or only used embeddings
+
 - [ ] Look for test cases where this combined approach works better than either individual approach
+
 - [ ] Check the console logs to see which documents are being retrieved for different queries

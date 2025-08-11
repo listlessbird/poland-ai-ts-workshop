@@ -117,9 +117,14 @@ Good luck, and I'll see you in the solution!
 
 ## Steps To Complete
 
-- In `api/chat.ts`, locate where `convertToModelMessages` is being used
-- Replace `messages: convertToModelMessages(messages)` with `prompt: getDiary(messages)`
-- Add `console.log(getDiary(messages))` before the `streamText` call to see the formatted output
-- Test the application by sending an email and then rejecting it with feedback
-- Observe if the LLM now responds appropriately to your rejection feedback
-- Look at the console output to see how the conversation history is formatted for the LLM
+- [ ] In `api/chat.ts`, locate where `convertToModelMessages` is being used
+
+- [ ] Replace `messages: convertToModelMessages(messages)` with `prompt: getDiary(messages)`
+
+- [ ] Add `console.log(getDiary(messages))` before the `streamText` call to see the formatted output
+
+- [ ] Test the application by sending an email and then rejecting it with feedback
+
+- [ ] Observe if the LLM now responds appropriately to your rejection feedback
+
+- [ ] Look at the console output to see how the conversation history is formatted for the LLM

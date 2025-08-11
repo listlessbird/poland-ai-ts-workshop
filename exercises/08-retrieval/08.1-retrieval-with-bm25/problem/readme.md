@@ -144,20 +144,20 @@ So all you need to do is write the queries to the stream writer.
 
 ## Steps To Complete
 
-- Implement the keyword generator using `streamObject` with the Google Gemini model
+- [ ] Implement the keyword generator using `streamObject` with the Google Gemini model
   - Use the provided `KEYWORD_GENERATOR_SYSTEM_PROMPT`
   - Define a schema using Zod that specifies an array of strings for keywords
   - Pass the formatted message history to the prompt
 
-- Write the queries to the stream writer using `writer.write`
+- [ ] Write the queries to the stream writer using `writer.write`
   - Since we only need one `queries` data part, make sure you upsert it using a stable `id`. Check the [reference](/exercises/99-reference/99.4-custom-data-parts-id-reconciliation/explainer/readme.md) for an example of how to do this.
 
-- Use the `searchTypeScriptDocs` function with the generated keywords
+- [ ] Use the `searchTypeScriptDocs` function with the generated keywords
   - Wait for the complete keywords object to be available
   - Select the top most relevant search results (decide how many - 5 to 10 is typical)
   - Use array slicing to get the top results
 
-- Test your implementation by running the local dev server
+- [ ] Test your implementation by running the local dev server
   - Try asking different TypeScript questions to see if the assistant returns relevant documentation
   - Check if the keyword queries are displayed correctly in the UI
   - Verify that the responses include citations from TypeScript documentation files

@@ -32,10 +32,10 @@ Try asking for some financial advice, and see what it says - see if you can brea
 
 ## Steps To Complete
 
-- Modify the `SYSTEM_PROMPT` constant in the `api/chat.ts` file to create your own custom behavior
+- [ ] Modify the `SYSTEM_PROMPT` constant in the `api/chat.ts` file to create your own custom behavior
 
-- Try creating a system prompt that makes the AI speak in a different persona or style
+- [ ] Try creating a system prompt that makes the AI speak in a different persona or style
 
-- Test your changes by running the local dev server and interacting with the chat interface
+- [ ] Test your changes by running the local dev server and interacting with the chat interface
 
-- Try asking the AI to break character and see if your system prompt successfully prevents it from doing so
+- [ ] Try asking the AI to break character and see if your system prompt successfully prevents it from doing so

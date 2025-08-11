@@ -83,14 +83,14 @@ Good luck, and I'll see you in the solution.
 
 ## Steps To Complete
 
-- Import the necessary AI SDK components at the top of your file
+- [ ] Import the necessary AI SDK components at the top of your file
 
   ```ts
   import { google } from '@ai-sdk/google';
   import { generateText } from 'ai';
   ```
 
-- Implement the `task` function to use the AI SDK to generate a response about capitals
+- [ ] Implement the `task` function to use the AI SDK to generate a response about capitals
 
   ```ts
   task: async (input) => {
@@ -100,10 +100,10 @@ Good luck, and I'll see you in the solution.
   },
   ```
 
-- Your prompt should instruct the model to answer questions about capitals of countries
+- [ ] Your prompt should instruct the model to answer questions about capitals of countries
 
-- Run the exercise to see the evaluation results
+- [ ] Run the exercise to see the evaluation results
 
-- Check that your implementation scores well on the test cases (France/Paris, Germany/Berlin, Italy/Rome)
+- [ ] Check that your implementation scores well on the test cases (France/Paris, Germany/Berlin, Italy/Rome)
 
-- Read the [Evalite docs](https://evalite.dev) to get an overview of Evalite's features
+- [ ] Read the [Evalite docs](https://evalite.dev) to get an overview of Evalite's features

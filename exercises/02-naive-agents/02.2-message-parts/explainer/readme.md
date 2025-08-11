@@ -151,12 +151,12 @@ You can experiment with changing the prompt and observing how it affects both th
 
 ## Steps To Complete
 
-- Open the `main.ts` file and review the existing implementation of the `streamText` function and how it's converted to a `UIMessageStream`.
+- [ ] Open the `main.ts` file and review the existing implementation of the `streamText` function and how it's converted to a `UIMessageStream`.
 
-- Try modifying the prompt to request a different type of content, perhaps a different poem theme or a different file format.
+- [ ] Try modifying the prompt to request a different type of content, perhaps a different poem theme or a different file format.
 
-- Run the exercise and observe the console output.
+- [ ] Run the exercise and observe the console output.
 
-- Compare the streamed events with the final `UIMessage` structure in the `onFinish` callback.
+- [ ] Compare the streamed events with the final `UIMessage` structure in the `onFinish` callback.
 
-- Experiment with different prompts to see how they affect the tool usage and final `UIMessage` structure.
+- [ ] Experiment with different prompts to see how they affect the tool usage and final `UIMessage` structure.

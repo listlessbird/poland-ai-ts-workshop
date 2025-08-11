@@ -103,11 +103,18 @@ Good luck with the implementation!
 
 ## Steps To Complete
 
-- Implement the `embedLotsOfText` function in `create-embeddings.ts` using the `embedMany` function from the AI SDK
-- Implement the `embedOnePieceOfText` function using the `embed` function from the AI SDK
-- Implement the `calculateScore` function using the `cosineSimilarity` function from `ai`
-- In `chat.ts`, call the `searchTypeScriptDocs` function with the conversation history
-- Slice the results to get the top 5 (or another number of your choosing) search results
-- Add a `console.log` to see which files are being fetched
-- Test your implementation by running the local dev server and asking questions about TypeScript in the chat interface.
-- Observe the console logs to see which files are being retrieved for your queries - and notice whether the results are better or worse than the BM25 results.
+- [ ] Implement the `embedLotsOfText` function in `create-embeddings.ts` using the `embedMany` function from the AI SDK
+
+- [ ] Implement the `embedOnePieceOfText` function using the `embed` function from the AI SDK
+
+- [ ] Implement the `calculateScore` function using the `cosineSimilarity` function from `ai`
+
+- [ ] In `chat.ts`, call the `searchTypeScriptDocs` function with the conversation history
+
+- [ ] Slice the results to get the top 5 (or another number of your choosing) search results
+
+- [ ] Add a `console.log` to see which files are being fetched
+
+- [ ] Test your implementation by running the local dev server and asking questions about TypeScript in the chat interface.
+
+- [ ] Observe the console logs to see which files are being retrieved for your queries - and notice whether the results are better or worse than the BM25 results.

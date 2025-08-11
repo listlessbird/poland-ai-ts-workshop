@@ -106,16 +106,16 @@ Good luck, and I'll see you in the solution.
 
 ## Steps To Complete
 
-- Complete the first TODO by slicing the search results to the top `30` and adding an ID to each result using the array index
+- [ ] Complete the first TODO by slicing the search results to the top `30` and adding an ID to each result using the array index
 
-- Implement the second TODO by creating a `generateObject` call that uses the `RERANKER_SYSTEM_PROMPT`
+- [ ] Implement the second TODO by creating a `generateObject` call that uses the `RERANKER_SYSTEM_PROMPT`
   - Configure the `generateObject` call to only return the IDs of the most relevant documents (not the full content)
   - Pass the search query and formatted search results text to the `generateObject` call
 
-- Run the exercise locally and test it by asking TypeScript questions
+- [ ] Run the exercise locally and test it by asking TypeScript questions
 
-- Observe which documents are being selected by the re-ranker in the console logs
+- [ ] Observe which documents are being selected by the re-ranker in the console logs
 
-- Monitor the impact on response time/latency
+- [ ] Monitor the impact on response time/latency
 
-- Evaluate whether the quality of answers improves with the re-ranking step
+- [ ] Evaluate whether the quality of answers improves with the re-ranking step

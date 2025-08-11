@@ -67,6 +67,8 @@ To summarize:
 
 ## Steps To Complete
 
-- Review the code and understand the difference between the three different message formats available in the callbacks
-- Test your implementation by running the local dev server and checking that messages are properly logged
-- Try having a longer conversation to see how the different message formats change with multiple exchanges
+- [ ] Review the code and understand the difference between the three different message formats available in the callbacks
+
+- [ ] Test your implementation by running the local dev server and checking that messages are properly logged
+
+- [ ] Try having a longer conversation to see how the different message formats change with multiple exchanges

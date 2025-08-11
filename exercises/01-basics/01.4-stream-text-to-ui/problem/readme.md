@@ -71,20 +71,20 @@ Once all these steps are complete, you'll be able to have a full conversation wi
 
 ## Steps To Complete
 
-- Import the `useChat` hook from `@ai-sdk/react` in `client/root.tsx`
+- [ ] Import the `useChat` hook from `@ai-sdk/react` in `client/root.tsx`
 
-- Replace the `TODO` in the App component with the appropriate `useChat({})` call
+- [ ] Replace the `TODO` in the App component with the appropriate `useChat({})` call
 
-- Complete the `onSubmit` handler in `ChatInput` to use `sendMessage` with the input text
+- [ ] Complete the `onSubmit` handler in `ChatInput` to use `sendMessage` with the input text
 
-- In `api/chat.ts`, extract the `UIMessage`s from the request body (replace the first `TODO`)
+- [ ] In `api/chat.ts`, extract the `UIMessage`s from the request body (replace the first `TODO`)
 
-- Import and use a function to convert `UIMessage`s to `ModelMessage`s (replace the second `TODO`)
+- [ ] Import and use a function to convert `UIMessage`s to `ModelMessage`s (replace the second `TODO`)
 
-- Pass the `ModelMessage`s to the `streamText` function by adding them to the existing configuration
+- [ ] Pass the `ModelMessage`s to the `streamText` function by adding them to the existing configuration
 
-- Create a `UIMessageStream` from the `streamText` result (replace the fourth `TODO`)
+- [ ] Create a `UIMessageStream` from the `streamText` result (replace the fourth `TODO`)
 
-- Test your implementation by running the dev server and having a conversation with the AI
+- [ ] Test your implementation by running the dev server and having a conversation with the AI
 
-- Check the network tab to ensure messages are being sent and streamed correctly. Notice how the `UIMessageStream` is being sent to the frontend.
+- [ ] Check the network tab to ensure messages are being sent and streamed correctly. Notice how the `UIMessageStream` is being sent to the frontend.

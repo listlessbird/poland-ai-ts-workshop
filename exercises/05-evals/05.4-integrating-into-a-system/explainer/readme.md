@@ -106,10 +106,16 @@ Good luck, and I'll see you in the next one.
 
 ## Steps To Complete
 
-- Review the `api/chat.ts` file to understand how the `createChatStream` function works
-- Examine the eval file structure in `evals/example.eval.ts`
-- Understand how the input gets converted to messages and passed to `createChatStream`
-- Learn how to consume the stream by iterating through it with `for await` and collecting text deltas
-- Verify that your Evalite setup is correctly receiving the final text output
-- Run the exercise to see the evaluation results
-- Check the terminal output to confirm that the eval is working as expected
+- [ ] Review the `api/chat.ts` file to understand how the `createChatStream` function works
+
+- [ ] Examine the eval file structure in `evals/example.eval.ts`
+
+- [ ] Understand how the input gets converted to messages and passed to `createChatStream`
+
+- [ ] Learn how to consume the stream by iterating through it with `for await` and collecting text deltas
+
+- [ ] Verify that your Evalite setup is correctly receiving the final text output
+
+- [ ] Run the exercise to see the evaluation results
+
+- [ ] Check the terminal output to confirm that the eval is working as expected

@@ -138,13 +138,17 @@ Good luck, and I'll see you in the solution!
 
 ## Steps To Complete
 
-- Complete the `'action-end'` type definition in `chat.ts` to include the action ID and output information
-- Update the `getDiary` function to handle `data-action-end` parts by returning a string that describes the action output
-- Add validation in the POST handler to return a 400 response if there's no most recent user message
-- Implement the `findDecisionsToProcess` function to:
+- [ ] Complete the `'action-end'` type definition in `chat.ts` to include the action ID and output information
+
+- [ ] Update the `getDiary` function to handle `data-action-end` parts by returning a string that describes the action output
+
+- [ ] Add validation in the POST handler to return a 400 response if there's no most recent user message
+
+- [ ] Implement the `findDecisionsToProcess` function to:
   - Get actions from the assistant message
   - Get decisions from the user message
   - Match them up and return action-decision pairs to process
   - Return a `HITLError` if the user hasn't made a decision for an action
-- Test your implementation by running the local dev server and checking if the console logs show the correct action-decision pairs
-- Note that `sendEmail` still won't be executed yet - we'll do that in the next exercise
+- [ ] Test your implementation by running the local dev server and checking if the console logs show the correct action-decision pairs
+
+- [ ] Note that `sendEmail` still won't be executed yet - we'll do that in the next exercise

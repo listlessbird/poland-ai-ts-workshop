@@ -47,9 +47,14 @@ Good luck, and I'll see you in the solution!
 
 ## Steps To Complete
 
-- Extract the `chatId` from search parameters using `searchParams.get('chatId')`
-- Pass the `chatId` to the `useChat` hook's options object (check the [docs](https://ai-sdk.dev/docs/ai-sdk-ui/chatbot-message-persistence#loading-an-existing-chat) for more information)
-- Consider adding a fallback in case there's no `chatId` in the URL (using `crypto.randomUUID()`)
-- Test your solution by navigating to `localhost:3000?chatId=123`
-- Check the server console logs to verify that your specified `chatId` is being received
-- Try refreshing the page to confirm the chat maintains continuity with the same ID
+- [ ] Extract the `chatId` from search parameters using `searchParams.get('chatId')`
+
+- [ ] Pass the `chatId` to the `useChat` hook's options object (check the [docs](https://ai-sdk.dev/docs/ai-sdk-ui/chatbot-message-persistence#loading-an-existing-chat) for more information)
+
+- [ ] Consider adding a fallback in case there's no `chatId` in the URL (using `crypto.randomUUID()`)
+
+- [ ] Test your solution by navigating to `localhost:3000?chatId=123`
+
+- [ ] Check the server console logs to verify that your specified `chatId` is being received
+
+- [ ] Try refreshing the page to confirm the chat maintains continuity with the same ID

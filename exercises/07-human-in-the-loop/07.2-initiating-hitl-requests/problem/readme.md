@@ -119,12 +119,12 @@ Good luck, and I'll see you in the solution!
 
 ## Steps To Complete
 
-- Define the `action-start` part type in the `MyMessage` type in `api/chat.ts`. Include fields for `action` which should contain: `id`, `type` ("send-email"), `to`, `subject`, and `content` fields.
+- [ ] Define the `action-start` part type in the `MyMessage` type in `api/chat.ts`. Include fields for `action` which should contain: `id`, `type` ("send-email"), `to`, `subject`, and `content` fields.
 
-- Modify the `execute` function inside the `sendEmail` tool to write a data action-start part to the writer instead of calling the `sendEmail` function directly. You'll need to use `writer.write()` with the appropriate data structure.
+- [ ] Modify the `execute` function inside the `sendEmail` tool to write a data action-start part to the writer instead of calling the `sendEmail` function directly. You'll need to use `writer.write()` with the appropriate data structure.
 
-- Add a second stop condition to the `stopWhen` array. Currently it has `stepCountIs(10)`, but you'll need to add `hasToolCall('sendEmail')` so it stops when the model wants to send an email. Remember - we need both!
+- [ ] Add a second stop condition to the `stopWhen` array. Currently it has `stepCountIs(10)`, but you'll need to add `hasToolCall('sendEmail')` so it stops when the model wants to send an email. Remember - we need both!
 
-- Update the `Message` component in `client/components.tsx` to render a preview of the email when it encounters a part with `type === 'data-action-start'`. Create a UI that shows the to, subject, and content fields.
+- [ ] Update the `Message` component in `client/components.tsx` to render a preview of the email when it encounters a part with `type === 'data-action-start'`. Create a UI that shows the to, subject, and content fields.
 
-- Test your implementation by running the exercise and asking the AI to send an email. Verify that instead of sending the email directly, it shows a preview of the email that would be sent.
+- [ ] Test your implementation by running the exercise and asking the AI to send an email. Verify that instead of sending the email directly, it shows a preview of the email that would be sent.

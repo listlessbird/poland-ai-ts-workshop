@@ -42,4 +42,4 @@ Thank you for watching, and I will see you in the next one.
 
 ## Steps To Complete
 
-- Nothing to do here! For further reading, check out [this article](https://www.aihero.dev/what-are-evals) on AI Hero.
+Nothing to do here! For further reading, check out [this article](https://www.aihero.dev/what-are-evals) on AI Hero.

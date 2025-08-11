@@ -32,14 +32,14 @@ This approach allows us to see the text appearing incrementally as the AI genera
 
 ## Steps To Complete
 
-- Replace the `TODO` with a call to the `streamText` function.
+- [ ] Replace the `TODO` with a call to the `streamText` function.
 
-- Make sure to pass an object containing the `model` and `prompt` variables to `streamText`.
+- [ ] Make sure to pass an object containing the `model` and `prompt` variables to `streamText`.
 
-- Run the code in your terminal to see the text streaming in real-time.
+- [ ] Run the code in your terminal to see the text streaming in real-time.
 
-- Observe how the text appears incrementally rather than all at once.
+- [ ] Observe how the text appears incrementally rather than all at once.
 
-- If everything is working correctly, you should see a paragraph about an imaginary planet appear gradually in your terminal.
+- [ ] If everything is working correctly, you should see a paragraph about an imaginary planet appear gradually in your terminal.
 
-- If you get stuck, check the solution.
+- [ ] If you get stuck, check the solution.

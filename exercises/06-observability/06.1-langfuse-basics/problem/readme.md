@@ -162,8 +162,9 @@ Good luck, and I'll see you in the solution.
 
 ## Steps To Complete
 
-- Sign up for a free [LangFuse](https://langfuse.com) account to get your API keys
-- Add three environment variables to your `.env` file:
+- [ ] Sign up for a free [LangFuse](https://langfuse.com) account to get your API keys
+
+- [ ] Add three environment variables to your `.env` file:
 
   ```
   LANGFUSE_PUBLIC_KEY=your_public_key
@@ -171,12 +172,20 @@ Good luck, and I'll see you in the solution.
   LANGFUSE_BASE_URL=https://cloud.langfuse.com
   ```
 
-- Implement the `otelSDK` in `langfuse.ts`
-- Implement the `langfuse` instance in `langfuse.ts`
-- In `chat.ts`, implement the trace variable:
-- Add `experimental_telemetry` to the first `streamText` call and the `streamObject` call
-- Implement `trace.update` at the end of the stream
-- Implement the `langfuse.flushAsync()` call in the `onFinish` handler
-- Test your application by running the local dev server
-- Check the LangFuse dashboard to see if traces are being recorded
-- Try different prompts to see how they appear in the traces view
+- [ ] Implement the `otelSDK` in `langfuse.ts`
+
+- [ ] Implement the `langfuse` instance in `langfuse.ts`
+
+- [ ] In `chat.ts`, implement the trace variable:
+
+- [ ] Add `experimental_telemetry` to the first `streamText` call and the `streamObject` call
+
+- [ ] Implement `trace.update` at the end of the stream
+
+- [ ] Implement the `langfuse.flushAsync()` call in the `onFinish` handler
+
+- [ ] Test your application by running the local dev server
+
+- [ ] Check the LangFuse dashboard to see if traces are being recorded
+
+- [ ] Try different prompts to see how they appear in the traces view

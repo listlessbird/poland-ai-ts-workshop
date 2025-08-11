@@ -205,37 +205,37 @@ Good luck, and I'll see you in the solution!
 
 ## Steps To Complete
 
-- Declare the `action-decision` data type in the `MyMessage` type with the correct fields (in `chat.ts`)
+- [ ] Declare the `action-decision` data type in the `MyMessage` type with the correct fields (in `chat.ts`)
   - Add an `actionId` field, which references the action that the decision is for
   - Include the `decision` field of type `ActionDecision`
 
-- Define the `onActionRequest` function parameter type in the `Message` component
+- [ ] Define the `onActionRequest` function parameter type in the `Message` component
   - It should accept an `action` parameter of type `Action` and a `decision` parameter of type `ActionDecision`
 
-- Define the `actionIdsWithDecisionsMade` prop type in the `Message` component
+- [ ] Define the `actionIdsWithDecisionsMade` prop type in the `Message` component
   - It should be a `Set<string>` containing action IDs that have had decisions made
 
-- Implement the `actionIdsWithDecisionsMade` calculation in the `useMemo` hook in the `App` component
+- [ ] Implement the `actionIdsWithDecisionsMade` calculation in the `useMemo` hook in the `App` component
   - Filter all message parts to find ones with type `'data-action-decision'`
   - Extract the `actionId` from each decision part
   - Create a `Set` with these IDs
 
-- Implement the `hasDecisionBeenMade` check in the `Message` component
+- [ ] Implement the `hasDecisionBeenMade` check in the `Message` component
   - Check if the current action ID is in the `actionIdsWithDecisionsMade` set
 
-- Add the approve and reject buttons with `onActionRequest` handlers
+- [ ] Add the approve and reject buttons with `onActionRequest` handlers
   - Only show buttons if `hasDecisionBeenMade` is false
   - Call `onActionRequest` with the action and appropriate decision
 
-- Implement the `onActionRequest` function in the `App` component to handle both approve and reject cases
+- [ ] Implement the `onActionRequest` function in the `App` component to handle both approve and reject cases
   - For approval: send a message with a `data-action-decision` part
   - For rejection: save the action in state and clear the input
 
-- Modify the `onSubmit` handler in the `App` component to handle feedback submission for rejected actions
+- [ ] Modify the `onSubmit` handler in the `App` component to handle feedback submission for rejected actions
   - Check if there's an action we're giving feedback on
   - If so, send a message with a `data-action-decision` part containing the rejection reason
   - If not, send a normal text message
 
-- Test your implementation by running the local dev server and trying to send an email. You should see the buttons appear.
+- [ ] Test your implementation by running the local dev server and trying to send an email. You should see the buttons appear.
 
-- Verify that the approval and rejection flows work correctly, including the feedback submission.
+- [ ] Verify that the approval and rejection flows work correctly, including the feedback submission.

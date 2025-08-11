@@ -167,14 +167,14 @@ Good luck, and I'll see you in the solution.
 
 ## Steps To Complete
 
-- Pass the chain of thought paper, the question, and the answer to the `messages` object in the `attributionToChainOfThoughtPaper` scorer
+- [ ] Pass the chain of thought paper, the question, and the answer to the `messages` object in the `attributionToChainOfThoughtPaper` scorer
 
-- Define the schema for the LLM response using zod, which should include a feedback string and a score enum ('A', 'B', 'C', 'D')
+- [ ] Define the schema for the LLM response using zod, which should include a feedback string and a score enum ('A', 'B', 'C', 'D')
 
-- Optional: Add more test cases to the `data` function in `question-answerer.eval.ts` to further test the system
+- [ ] Optional: Add more test cases to the `data` function in `question-answerer.eval.ts` to further test the system
 
-- Run the exercise to see if your implementation correctly evaluates the LLM's responses about the Chain of Thought paper
+- [ ] Run the exercise to see if your implementation correctly evaluates the LLM's responses about the Chain of Thought paper
 
-- Look at the metadata returned by the LLM judge evaluator (by clicking on the test case and looking in the right-hand panel)
+- [ ] Look at the metadata returned by the LLM judge evaluator (by clicking on the test case and looking in the right-hand panel)
 
-- Debug any issues by checking the metadata (feedback) returned by the LLM judge evaluator
+- [ ] Debug any issues by checking the metadata (feedback) returned by the LLM judge evaluator

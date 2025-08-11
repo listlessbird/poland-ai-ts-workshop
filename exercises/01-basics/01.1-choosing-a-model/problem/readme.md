@@ -41,10 +41,10 @@ Good luck and I will see you in the solution.
 
 ## Steps To Complete
 
-- Choose a model by replacing the `TODO` in the model declaration with the Google Gemini model.
+- [ ] Choose a model by replacing the `TODO` in the model declaration with the Google Gemini model.
 
-- Use the `generateText` function to get the result by replacing the `TODO` in the result declaration.
+- [ ] Use the `generateText` function to get the result by replacing the `TODO` in the result declaration.
 
-- Run the code and check the terminal output to verify that you get a response about the capital of France.
+- [ ] Run the code and check the terminal output to verify that you get a response about the capital of France.
 
-- If you get stuck, check the solution.
+- [ ] If you get stuck, check the solution.

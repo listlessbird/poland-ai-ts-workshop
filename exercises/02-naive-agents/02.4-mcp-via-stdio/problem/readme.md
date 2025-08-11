@@ -71,11 +71,11 @@ Why not get it to list some issues on a repository that you know, or even ask it
 
 ## Steps To Complete
 
-- Get a [GitHub personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) and add it to your `.env` file
+- [ ] Get a [GitHub personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) and add it to your `.env` file
 
-- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) if you don't have it already
+- [ ] Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) if you don't have it already
 
-- Create an MCP client using the `createMCPClient` function and the `StdioMCPTransport` class to connect to the GitHub MCP server. As a reminder, here's how to set up the transport. Check [these docs](https://ai-sdk.dev/docs/reference/ai-sdk-core/create-mcp-client) for more information.
+- [ ] Create an MCP client using the `createMCPClient` function and the `StdioMCPTransport` class to connect to the GitHub MCP server. As a reminder, here's how to set up the transport. Check [these docs](https://ai-sdk.dev/docs/reference/ai-sdk-core/create-mcp-client) for more information.
 
 ```ts
 const myTransport = new StdioMCPTransport({
@@ -95,9 +95,9 @@ const myTransport = new StdioMCPTransport({
 });
 ```
 
-- Use the `mcpClient.tools()` method to get the tools and pass them to the `streamText` function.
+- [ ] Use the `mcpClient.tools()` method to get the tools and pass them to the `streamText` function.
 
-- Implement the `onFinish` callback to close the MCP client when the stream is finished
+- [ ] Implement the `onFinish` callback to close the MCP client when the stream is finished
 
 ```ts
 onFinish: async () => {
@@ -105,4 +105,4 @@ onFinish: async () => {
 },
 ```
 
-- Test your implementation by running the local dev server and asking the agent to interact with GitHub, such as fetching issues from a repository
+- [ ] Test your implementation by running the local dev server and asking the agent to interact with GitHub, such as fetching issues from a repository

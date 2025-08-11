@@ -124,7 +124,7 @@ Good luck, and I'll see you in the solution.
 
 ## Steps To Complete
 
-- Import the required dependencies in `chat.ts`:
+- [ ] Import the required dependencies in `chat.ts`:
 
 ```ts
 import { tool, stepCountIs } from 'ai';
@@ -132,10 +132,10 @@ import { z } from 'zod';
 import * as fsTools from './file-system-functionality.ts';
 ```
 
-- Create tool definitions for each file system function using the `tool()` function. Look at the parameters and return types of each function in the `file-system-functionality.ts` file to determine the correct input schema. Check the [reference](/exercises/99-reference/99.7-defining-tools/explainer/readme.md) for more information on how to use the `tool()` function.
+- [ ] Create tool definitions for each file system function using the `tool()` function. Look at the parameters and return types of each function in the `file-system-functionality.ts` file to determine the correct input schema. Check the [reference](/exercises/99-reference/99.7-defining-tools/explainer/readme.md) for more information on how to use the `tool()` function.
 
-- Create a `tools` object containing all the tool definitions
+- [ ] Create a `tools` object containing all the tool definitions
 
-- Add a `stopWhen` condition to limit the number of steps the agent can take. Check out the [docs](https://ai-sdk.dev/docs/ai-sdk-core/tools-and-tool-calling#multi-step-calls-using-stopwhen) for more information.
+- [ ] Add a `stopWhen` condition to limit the number of steps the agent can take. Check out the [docs](https://ai-sdk.dev/docs/ai-sdk-core/tools-and-tool-calling#multi-step-calls-using-stopwhen) for more information.
 
-- Run the local dev server and test if the LLM can create and manage files through the UI by asking it to create a todo list or other file-related tasks.
+- [ ] Run the local dev server and test if the LLM can create and manage files through the UI by asking it to create a todo list or other file-related tasks.

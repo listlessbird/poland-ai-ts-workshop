@@ -60,18 +60,18 @@ Good luck, and I'll see you in the solution.
 
 ## Steps To Complete
 
-- Replace the `streamText` call in the evaluation section with a [`streamObject`](https://ai-sdk.dev/docs/ai-sdk-core/generating-structured-data#stream-object) call
+- [ ] Replace the `streamText` call in the evaluation section with a [`streamObject`](https://ai-sdk.dev/docs/ai-sdk-core/generating-structured-data#stream-object) call
 
-- Import the `streamObject` function from the 'ai' package
+- [ ] Import the `streamObject` function from the 'ai' package
 
-- Import the [`zod`](https://zod.dev/) package for schema definition
+- [ ] Import the [`zod`](https://zod.dev/) package for schema definition
 
-- Define a schema for the output that includes:
+- [ ] Define a schema for the output that includes:
   - A feedback string
   - A boolean indicating if the draft is good enough
 
-- Update the code to stream the feedback to the frontend as it appears in the `partialObjectStream`. Check out the [reference material](/exercises/99-reference/99.1-stream-object-partial-object-stream/explainer/readme.md) for more information on partial object streams.
+- [ ] Update the code to stream the feedback to the frontend as it appears in the `partialObjectStream`. Check out the [reference material](/exercises/99-reference/99.1-stream-object-partial-object-stream/explainer/readme.md) for more information on partial object streams.
 
-- Modify the loop to break early if the LLM indicates the draft is good enough
+- [ ] Modify the loop to break early if the LLM indicates the draft is good enough
 
-- Test your implementation by running the local dev server and observing if the loop breaks early when appropriate
+- [ ] Test your implementation by running the local dev server and observing if the loop breaks early when appropriate
