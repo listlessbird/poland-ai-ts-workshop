@@ -1,4 +1,4 @@
-# AI TypeScript Toolkit Workshop
+# Poland AI/TypeScript Workshop
 
 This repository contains the material for a live workshop on building AI applications with TypeScript. The workshop covers various aspects of AI development, from basic text generation to advanced patterns like memory systems, multi-agent workflows, and human-in-the-loop interactions.
 
