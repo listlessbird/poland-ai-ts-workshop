@@ -21,9 +21,10 @@ By the end of this workshop, you'll be able to:
 
 - [Node.js](https://nodejs.org/en/download) (version 22 or higher)
 - [pnpm](https://pnpm.io/) (optional, you can use `npm`, `yarn` or `bun` instead)
-- A [Gemini API Key](https://aistudio.google.com/apikey), or an API key from your AI provider of choice
+- A free (or paid) [Gemini API Key](https://aistudio.google.com/apikey), or an API key from your AI provider of choice
+- A free [Tavily](https://tavily.com/) API key (optional, for a couple of exercises)
 - A [Docker Desktop](https://www.docker.com/products/docker-desktop/) installation (optional, only for ONE exercise)
-- A [Langfuse](https://langfuse.com/) account (optional, only for ONE exercise)
+- A free [Langfuse](https://langfuse.com/) account (optional, only for ONE exercise)
 
 ### Installation
 
@@ -40,7 +41,13 @@ cd poland-ai-ts-workshop
 pnpm install
 ```
 
-3. Edit the `.env` file with your API keys for the AI services you'll be using.
+3. Copy the `.env.example` file to `.env`:
+
+```bash
+cp .env.example .env
+```
+
+4. Sign up to the required services and edit the `.env` file with your API keys.
 
 ## 📚 Running Exercises
 
