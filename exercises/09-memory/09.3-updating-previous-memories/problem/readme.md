@@ -1,14 +1,14 @@
-Our memory setup is working nicely, but it has a big problem - we can only add memories. We can't update memories or delete memories. This means it's only good for truly permanent information, which isn't realistic.
+Our memory setup is working nicely, but it has a big problem - we can only _add_ memories. We can't update or delete them. This means it's only good for truly permanent information, which isn't realistic.
 
-Even "permanent" facts about people can change over time. You think you like window seats on planes, but as you get older and your bladder gets worse, you might prefer aisle seats.
+That ends up being quite limiting. Even "permanent" facts about people can change over time. You think you like window seats on planes, but as you get older (and perhaps your bladder gets worse), you might prefer aisle seats.
 
-The LLM needs to be able to not only add memories about you but also update its database of information.
+So our system needs to be able to not only add memories about you but also update its database of information.
 
 This capability also gives us access to more interesting patterns where the AI can retain working memory about you, such as what you're currently focusing on. We don't have to restrict ourselves to permanent facts - we can include temporary information too, making the memory system more useful.
 
 ## The Schemas & System Prompt
 
-We'll implement this inside the `/api/chat` file. Our first set of to-dos are in the `generateObject` call inside the `onFinish` function of `createUIMessageStream`. Here's what it currently looks like:
+We'll implement this inside the [`/api/chat.ts`](./api/chat.ts) file. Our first set of to-dos are in the `generateObject` call inside the `onFinish` function of `createUIMessageStream`. Here's what it currently looks like:
 
 ```ts
 const memoriesResult = await generateObject({
@@ -124,16 +124,16 @@ Good luck, and I'll see you in the solution.
 
 ## Steps To Complete
 
-- Define the schema for updates, deletions, and additions in the `generateObject` call
-  - Replace the TODOs with proper Zod schema definitions, including descriptions of the fields
+- [ ] Define the schema for updates, deletions, and additions in the `generateObject` call
+  - [ ] Replace the TODOs with proper Zod schema definitions, including descriptions of the fields
 
-- Update the system prompt to instruct the AI to manage memories
-  - Modify the existing system prompt to include instructions for handling updates and deletions
+- [ ] Update the system prompt to instruct the AI to manage memories
+  - [ ] Modify the existing system prompt to include instructions for handling updates and deletions
 
-- Implement the memory operations in the three TODO sections
-  - Write code to call the appropriate memory functions for updates, deletions, and additions
+- [ ] Implement the memory operations in the three TODO sections inside `onFinish`
+  - [ ] Write code to call the appropriate memory functions for updates, deletions, and additions
 
-- Test your implementation
-  - Run the local dev server
-  - Have a conversation with the AI and check console logs
-  - Try contradicting yourself to see memory updates and deletions
+- [ ] Test your implementation
+  - [ ] Run the local dev server
+  - [ ] Have a conversation with the AI and check console logs
+  - [ ] Try creating a memory, then saying something contradictory, to see memory updates and deletions

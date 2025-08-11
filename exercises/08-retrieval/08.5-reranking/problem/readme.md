@@ -7,7 +7,7 @@ There are yet more optimizations that we can make to our flow, specifically in i
 
 But what if we then take those results and pass those to another LLM?
 
-- We'll take the most relevant results from, for example, the top 30.
+- We'll take the most relevant results from, for example, the top `30`.
 - Pass them to an LLM that will filter out the irrelevant results.
 - Only those top results will be passed to the next step that generates the answer.
 
@@ -17,7 +17,7 @@ We are going to implement it in this exercise.
 
 ## Slicing the search results
 
-Our first to-dos are just under the `searchTypeScriptDocs` function, inside the `/api/chat.ts` POST route:
+Our first TODOs are just under the `searchTypeScriptDocs` function, inside the `/api/chat.ts` POST route:
 
 ```ts
 const searchResults = await searchTypeScriptDocs({
@@ -50,7 +50,7 @@ const topSearchResultsAsText = topSearchResultsWithId
 
 ## Building the re-ranker
 
-Now here's the big to-do. We need a `generateObject` call that filters down to only the most relevant search results. This `generateObject` call is going to receive:
+Now here's the big TODO. We need a `generateObject` call that filters down to only the most relevant search results. This `generateObject` call is going to receive:
 
 - The search results (including their IDs)
 - The query that we asked it
@@ -83,7 +83,7 @@ You should be selective and only include pages that are genuinely helpful for an
 Return the IDs as a simple array of numbers.`;
 ```
 
-We're then going to map over them, grabbing the references to the actual documents from the ID that we get back from the LLM:
+We're then going to map over them, grabbing the references to the actual documents from the ID that we get back from the LLM.
 
 ```ts
 // Make an object out of the top search results
@@ -106,11 +106,16 @@ Good luck, and I'll see you in the solution.
 
 ## Steps To Complete
 
-- Complete the first TODO by slicing the search results to the top 30 and adding an ID to each result using the array index
+- Complete the first TODO by slicing the search results to the top `30` and adding an ID to each result using the array index
+
 - Implement the second TODO by creating a `generateObject` call that uses the `RERANKER_SYSTEM_PROMPT`
   - Configure the `generateObject` call to only return the IDs of the most relevant documents (not the full content)
   - Pass the search query and formatted search results text to the `generateObject` call
+
 - Run the exercise locally and test it by asking TypeScript questions
+
 - Observe which documents are being selected by the re-ranker in the console logs
+
 - Monitor the impact on response time/latency
+
 - Evaluate whether the quality of answers improves with the re-ranking step

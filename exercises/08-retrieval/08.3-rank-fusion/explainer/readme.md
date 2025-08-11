@@ -1,6 +1,8 @@
-So far, we've seen two algorithms that you can use to retrieve relevant documents from a corpus. Now it turns out that both of these have different strengths.
+So far, we've seen two algorithms that you can use to retrieve relevant documents from a corpus.
 
-These algorithms have different strengths:
+It turns out that both of these have different strengths.
+
+These strengths are:
 
 - **BM25**: Really useful when you want to do keyword matching, when you want to say "I want to find this keyword in this document".
 - **Semantic search**: Better for broader semantic and meaningful connections between a document and a query.
@@ -9,24 +11,28 @@ It turns out that actually taking the results of these and combining them togeth
 
 ## The Problem
 
-Now, a lot of research has gone into this problem, and I want to show you one really nice algorithm you can use to combine two different ranking systems together.
+Now, a lot of research has gone into this problem, and I want to show you one really nice algorithm you can use to combine two different ranking systems together. It's called Reciprocal Rank Fusion.
 
-You might think, well, both of them have a score, right? Why don't we just sort of like sort based on the score? But different ranking systems score things differently:
+You might think, well, both of them have a score, right? Why don't we just sort of like sort based on the score?
 
-You might end up with one ranking system that really just ranks between one and 0.9, and the other one does it mostly between 0.2 and 0.3, let's say.
+But different ranking systems score things differently.
 
-| Document | BM25 Score | Embedding Score |
-| -------- | ---------- | --------------- |
-| Doc A    | 0.95       | 0.21            |
-| Doc B    | 0.87       | 0.35            |
-| Doc C    | 0.91       | 0.18            |
-| Doc D    | 0.78       | 0.42            |
+You might end up with one ranking system that ranks between one and 0.9, and the other one does it mostly between 0.2 and 0.3:
+
+| Document | Ranking System 1 | Ranking System 2 |
+| -------- | ---------------- | ---------------- |
+| Doc A    | 0.95             | 0.21             |
+| Doc B    | 0.87             | 0.35             |
+| Doc C    | 0.91             | 0.18             |
+| Doc D    | 0.78             | 0.42             |
+
+If we just sort based on the score, we'll end up with a list that's dominated by the first ranking system.
 
 ## Reciprocal Rank Fusion
 
 The algorithm that I've chosen to show you is the reciprocal rank fusion algorithm. The way it works is it takes each element and checks its relative position in its own ranking system.
 
-It then adds those contributions up together, and you end up with a list of documents where the best ones are sort of floated to the top.
+It then adds those contributions up together, and you end up with a list of documents where the best ones are floated to the top.
 
 You can look at the code here in `utils.ts`:
 
@@ -66,7 +72,7 @@ export function reciprocalRankFusion(
 
 ## Usage
 
-In terms of usage, we can call this reciprocal rank fusion passing in the BM25 search results and the embedding search results:
+In terms of usage, we can call this reciprocal rank fusion passing in the BM25 search results and the embedding search results.
 
 ```ts
 // search.ts
@@ -92,7 +98,7 @@ export const searchTypeScriptDocs = async (opts: {
 };
 ```
 
-This will give us back a list of documents. We can then take these search results and just clip off the top five or top 10 or however many we fancy, and then just pass those into our LLM:
+This will give us back a list of documents. We can then take these search results and just clip off the top five or top 10 or however many we fancy, and then just pass those into our LLM.
 
 ```ts
 // In chat.ts
@@ -107,9 +113,9 @@ Have a bit of a play, and I will see you in the next one.
 
 ## Steps To Complete
 
-- Explore the reciprocal rank fusion (RRF) algorithm in the codebase, particularly in the `utils.ts` file
-- Understand how RRF combines results from different ranking systems (BM25 and embeddings)
-- Try different queries to see how the combined ranking system performs
-- Compare the results with previous setups that only used BM25 or only used embeddings
-- Look for test cases where this combined approach works better than either individual approach
-- Check the console logs to see which documents are being retrieved for different queries
+- [ ] Explore the reciprocal rank fusion (RRF) algorithm in the codebase, particularly in the `utils.ts` file
+- [ ] Understand how RRF combines results from different ranking systems (BM25 and embeddings)
+- [ ] Try different queries to see how the combined ranking system performs
+- [ ] Compare the results with previous setups that only used BM25 or only used embeddings
+- [ ] Look for test cases where this combined approach works better than either individual approach
+- [ ] Check the console logs to see which documents are being retrieved for different queries

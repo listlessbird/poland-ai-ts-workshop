@@ -35,3 +35,7 @@ Make `pnpm dev` run the exercise CLI.
 ---
 
 Go through all the readmes and make the todo's into checkboxes.
+
+---
+
+Link mentions of files to the actual files in the repo.

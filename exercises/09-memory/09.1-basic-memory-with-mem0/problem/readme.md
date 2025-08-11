@@ -8,7 +8,7 @@ Well, that's what we're going to look at in this exercise. I'm going to show you
 
 ## Our Memory Setup
 
-The main file to look at is this `memory.ts` file where we are creating a new memory from `mem0ai/oss`. This is an open source version of Mem0.
+The main file to look at is this [`memory.ts`](./api/memory.ts) file where we are creating a new memory from [`mem0ai/oss`](https://github.com/mem0ai/mem0). This is an open source version of Mem0.
 
 ```ts
 import { Memory } from 'mem0ai/oss';
@@ -45,7 +45,7 @@ We do the same with a text embedder here too, again, passing in the same Google 
 
 ## The `POST` Endpoint
 
-We're then importing this memory into our API chat endpoint where we have a few helper methods and our normal post API endpoint.
+We're then importing this memory into our [`api/chat.ts`](./api/chat.ts) endpoint where we have a few helper methods and our normal post API endpoint.
 
 ```ts
 // From problem/api/chat.ts
@@ -83,7 +83,7 @@ const formatMemory = (memory: MemoryItem) => {
 
 ## Searching for Memories
 
-The first `TODO` in our list is to search for memories using Mem0. The memory from Mem0 that we've imported has several methods that you can use. One of them is `memory.search`.
+The first `TODO` in our list is to search for memories using Mem0. The memory from Mem0 that we've imported has several methods that you can use. One of them is [`memory.search`](https://docs.mem0.ai/open-source/node-quickstart#search-memories).
 
 ```ts
 const stream = createUIMessageStream<MyMessage>({
@@ -98,15 +98,21 @@ const stream = createUIMessageStream<MyMessage>({
 
 The query that we pass into `memory.search` is kind of interesting because in this setup here, we are searching for relevant memories based on the entire message history. So you actually want to take the messages on the body and format them into a string so that you can pass them into the `memory.search`. For that, you can use the `formatMessageHistory` function that we have up the top of the file.
 
-### Passing in the User ID
+### Passing in the `userId`
 
-`memory.search` also takes a second parameter called `config`, which is where you'll need to pass in the user ID. In Mem0, there are no global memories. Memories are always associated with either an agent ID or a user ID or something else. And in our case, we have a user ID of `me` here that we're just going to use as a demo.
+`memory.search` also takes a second parameter called `config`, which is where you'll need to pass in the `userId`.
 
-But of course, in a real application, you would use an authentication provider to grab a user ID for you.
+In Mem0, there are no global memories. Memories are always associated with either an `agentId` or a `userId` or something else. And in our case, we have a `userId` of `me` that we're just going to use as a demo.
+
+```ts
+const USER_ID = 'me';
+```
+
+But of course, in a real application, you would use an authentication provider to grab a `userId` for you.
 
 ### Adding Memories to the System Prompt
 
-Our next `TODO` is to add these memories and format them into the system prompt. We have a handy function up the top here called `formatMemory`, which allows us to format a memory that we get from Mem0.
+Our next `TODO` is to add these memories and format them into the system prompt.
 
 ```ts
 // TODO: Add memories to the system prompt
@@ -122,11 +128,23 @@ const result = streamText({
 });
 ```
 
-As a little aside here, we'll also need to make sure that we pass in the current date to the system prompt so it can contextualize the memories that it has.
+We have a handy function up the top here called `formatMemory`, which allows us to format a memory that we get from Mem0:
+
+```ts
+const formatMemory = (memory: MemoryItem) => {
+  return [
+    `Memory: ${memory.memory}`,
+    `Updated At: ${memory.updatedAt}`,
+    `Created At: ${memory.createdAt}`,
+  ].join('\n');
+};
+```
+
+As a little aside, we'll also need to make sure that we pass in the current date to the system prompt so it can contextualize the memories that it has. Since memories come with a `createdAt` and `updatedAt` property, LLM's won't be able to understand that without knowing the current date.
 
 ## Adding Memories to Mem0
 
-And finally, we go down to `onFinish` here where we need to add the new memories to Mem0, making sure to pass the user ID.
+And finally, we go down to `onFinish` here where we need to add the new memories to Mem0, making sure to pass the `userId`.
 
 ```ts
 onFinish: async (response) => {
@@ -140,7 +158,9 @@ onFinish: async (response) => {
 };
 ```
 
-We also want to make sure we pass the entire message history to Mem0, not just the stuff that we're getting from the initial JSON payload. But also, since we're inside `onFinish` here, we have access to `response.messages`, which is very, very handy. That's all of the messages that were generated from the UI message stream.
+We also want to make sure we pass the _entire_ message history to Mem0. We have a very tempting variable called `messages` in scope - but that only contains the initial JSON payload. By the time we want to extract memories, we'll want to read the new messages that have been created too.
+
+`response.messages` inside `onFinish` will come in very handy here. Check out this [previous explainer](/exercises/03-persistence/03.1-on-finish/explainer/readme.md) to learn more.
 
 Once this is done, we should be able to tell our LLM some preferences, for instance, that you prefer aisle seats on planes.
 
@@ -150,16 +170,16 @@ It's pretty exciting and pretty powerful. Good luck, and I will see you in the s
 
 ## Steps To Complete
 
-- Implement the memory search functionality in the `execute` function using `memory.search()`, passing in the formatted message history and user ID
+- [ ] Implement the memory search functionality in the `execute` function using `memory.search()`, passing in the formatted message history and `userId`
 
-- Add the retrieved memories to the system prompt using the `formatMemory` function to format each memory item
+- [ ] Add the retrieved memories to the system prompt using the `formatMemory` function to format each memory item
 
-- Implement the memory storage in the `onFinish` function, combining the original messages with the response messages
+- [ ] Implement the memory storage in the `onFinish` function, combining the original messages with the response messages
 
-- Run the local dev server and test if your implementation works by:
+- [ ] Run the local dev server and test if your implementation works by:
   - Entering a message about a preference (e.g., "Remember that I prefer aisle seats on planes")
   - Refreshing the page or starting a new chat
   - Asking something like "What are my seating preferences on planes?"
   - Checking if the LLM correctly recalls your preference
 
-- Look at the console logs to verify that the memory search and add operations are working properly
+- [ ] Look at the console logs to verify that the memory search and add operations are working properly

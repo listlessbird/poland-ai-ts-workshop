@@ -31,7 +31,9 @@ The problem in our current setup is that we're embedding the entire conversation
 
 The reason that's an issue is that as the conversation gets longer, the embedding gets bigger and bigger, and the stuff towards the end (the most relevant part to the actual user's question) will start to have less impact on what gets returned from the corpus.
 
-We need to take that massive conversation history, pass it to an LLM, and then get it to make a really refined search query that we can use to fetch the most relevant documents. That's what the query rewriter does - it rewrites this big query into something very small and focused.
+This will be especially dramatic if there's a sudden turn in conversation. Let's say we have a conversation history that's 9 messages long, all about TypeScript generics. Then the user asks a single question about comparisons to JSDoc. The embedding we create will be 9/10 about generics, and 1/10 about JSDoc.
+
+We need to take that massive conversation history, pass it to an LLM, and then get it to make a refined search query that we can use to fetch the most relevant documents. That's what query rewriters do - they rewrite big queries into smaller, more focused ones.
 
 ## Our BM25 Keyword Search
 
@@ -59,7 +61,7 @@ const keywords = await generateObject({
 
 ## The Solution
 
-All we need to do is tag on an extra bit of code into this `generateObject` call, which will also return a search query. We'll need to do a little bit of prompt engineering to describe what the use case is - basically just say this thing's going to be used for semantic search.
+All we need to do is add an extra bit of code into this `generateObject` call, which will also return a search query. We'll need to do a little bit of prompt engineering to describe what the use case is - basically just say this thing's going to be used for semantic search.
 
 ```ts
 // In chat.ts
