@@ -30,8 +30,8 @@ By the end of this workshop, you'll be able to:
 1. Clone this repository:
 
 ```bash
-git clone <repository-url>
-cd ai-typescript-toolkit
+git clone https://github.com/ai-hero-dev/poland-ai-ts-workshop.git
+cd poland-ai-ts-workshop
 ```
 
 2. Install dependencies:
