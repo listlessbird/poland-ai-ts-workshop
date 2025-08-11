@@ -2,7 +2,7 @@ It's all very well talking to an LLM. That's useful enough. You can use it for r
 
 One easy way to connect LLMs with the real world is to provide them with a set of tools that they can call. That's what we're going to do in this exercise.
 
-All the work we're going to do is inside our POST request. We have here a `streamText` call, which tells the LLM that it is a helpful assistant that can use a sandboxed file system to create, edit, and delete files.
+All the work we're going to do is inside our POST request. We have here a [`streamText`](./api/chat.ts) call, which tells the LLM that it is a helpful assistant that can use a sandboxed file system to create, edit, and delete files.
 
 ```ts
 export const POST = async (req: Request): Promise<Response> => {
@@ -41,9 +41,9 @@ export const POST = async (req: Request): Promise<Response> => {
 
 It's telling the LLM that it has access to the following tools: write file, read file, delete path, list directory, create directory, etc. It's going to use these to record notes, create to-do lists, and edit documents for the user.
 
-Here's the thing though, we haven't actually provided the tools to the agent. So we need to add the tools to this `streamText` call.
+Here's the thing though, we haven't actually provided the tools to the agent. So we need to add the tools to this [`streamText`](./api/chat.ts) call.
 
-As a generous teacher, I've provided you the `file-system-functionality.ts` file, which contains a bunch of functions that you can use to create, read, and delete files.
+As a generous teacher, I've provided you the [`file-system-functionality.ts`](./api/file-system-functionality.ts) file, which contains a bunch of functions that you can use to create, read, and delete files.
 
 ```ts
 export function writeFile(
@@ -82,7 +82,7 @@ export function readFile(filePath: string): {
 }
 ```
 
-Your job is to investigate this file system functionality file and hook up all of those functions into tools that the LLM can call. To create a tool, you'll need to use the `tool` function from the AI SDK.
+Your job is to investigate this file system functionality file and hook up all of those functions into tools that the LLM can call. To create a tool, you'll need to use the [`tool`](./api/chat.ts) function from the AI SDK.
 
 ```ts
 // Example of creating a tool
@@ -110,7 +110,7 @@ But your job doesn't end there. When an LLM calls a tool, it has to call the too
 
 The AI SDK is already set up to do that. You just need to provide it a custom stop condition via `stopWhen`. There's a bunch of custom stop conditions you can use, but I reckon you should force the agent to stop after about 10 steps have been taken.
 
-You'll find the `stepCountIs` function in the `ai` package quite useful for this:
+You'll find the [`stepCountIs`](./api/chat.ts) function in the `ai` package quite useful for this:
 
 ```ts
 import { stepCountIs } from 'ai';

@@ -4,9 +4,9 @@ They can return reasoning tokens, they can return sources, they can return tool 
 
 The stream is the thing that connects your front end to your back end. And all of these different parts can't just be represented by a single text stream. We need something a bit more complex.
 
-In the AI SDK, this is a `UIMessageStream`. A `UIMessage` is a really important type in the AI SDK. It represents the messages as they appear in your UI. And so a `UIMessageStream` is your back end constructing one of these `UIMessage`s in real time.
+In the AI SDK, this is a `UIMessageStream`. A `UIMessage` is a really important type in the AI SDK. It represents the messages as they appear in your UI. And so a [`UIMessageStream`](./main.ts) is your back end constructing one of these `UIMessage`s in real time.
 
-In this example, we're passing a Google model into `streamText` with a prompt saying, "Give me a sonnet about a cat called Steven." And instead of referring to `textStream` here, we are calling `toUIMessageStream` and streaming down the chunks.
+In this example, we're passing a Google model into [`streamText`](./main.ts) with a prompt saying, "Give me a sonnet about a cat called Steven." And instead of referring to `textStream` here, we are calling `toUIMessageStream` and streaming down the chunks.
 
 ```ts
 const stream = streamText({
@@ -35,7 +35,7 @@ The output looks like this:
 { type: 'finish' }
 ```
 
-These objects represent the `UIMessageStream` and all their various parts. Streaming to a terminal, which we saw before is relatively simple, but streaming to a UI means you need a little bit more complexity. And that's what the `UIMessageStream` gives you.
+These objects represent the [`UIMessageStream`](./main.ts) and all their various parts. Streaming to a terminal, which we saw before is relatively simple, but streaming to a UI means you need a little bit more complexity. And that's what the `UIMessageStream` gives you.
 
 We're going to see it more and more in the next few exercises, especially when we look in the network tab to see what streaming from our back end to our front end. And so I hope this little intro gives you an idea for what it looks like.
 

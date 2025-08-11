@@ -3,7 +3,7 @@ Let's look at the most basic functionality of the AI SDK, generating some text. 
 - a model that you're going to use
 - a prompt that you're going to pass to that model
 
-I've given you a couple of to-dos inside the `main.ts` file. The first to-do is to choose a model and then instantiate it. This means going up to the `@ai-sdk/google` import here, grabbing the `google` function and then calling it with the model that you want to choose.
+I've given you a couple of to-dos inside the [`main.ts`](./main.ts) file. The first to-do is to choose a model and then instantiate it. This means going up to the `@ai-sdk/google` import here, grabbing the `google` function and then calling it with the model that you want to choose.
 
 ```ts
 // Import the necessary functions
@@ -21,7 +21,7 @@ We've got a prompt here asking what is the capital of France:
 const prompt = 'What is the capital of France?';
 ```
 
-And then this `result` is going to be the result of this `generateText` call that we get from the `ai` package here. You're going to call `generateText`, passing in the model that you chose and passing in the prompt and then you're going to await it and get the result back.
+And then this `result` is going to be the result of this [`generateText`](./main.ts) call that we get from the `ai` package here. You're going to call `generateText`, passing in the model that you chose and passing in the prompt and then you're going to await it and get the result back.
 
 ```ts
 const result = TODO; // TODO: Use generateText to get the result

@@ -20,11 +20,11 @@ for await (const chunk of stream.textStream) {
 }
 ```
 
-We need to replace the `TODO` with code that creates a text stream using the `streamText` function from the AI SDK.
+We need to replace the `TODO` with code that creates a text stream using the [`streamText`](./main.ts) function from the AI SDK.
 
 The `streamText` function requires a `model` and a `prompt`. We already have both of these defined in our code.
 
-We need to pass these values to `streamText` to create our `stream` object, which will then allow us to access the `textStream` property.
+We need to pass these values to [`streamText`](./main.ts) to create our `stream` object, which will then allow us to access the `textStream` property.
 
 The `for await` loop will iterate through each chunk of text as it's generated, and `process.stdout.write()` will display it in the terminal without adding new lines (unlike `console.log`).
 

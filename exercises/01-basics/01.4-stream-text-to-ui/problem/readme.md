@@ -1,8 +1,8 @@
 Now, we understand the importance of streaming text and how to convert that text stream from the LLM into a `UIMessageStream` for the frontend. Let's look at how to implement this in our app.
 
-We have a small Vite app with a root component in `client/root.tsx`. Our first task is to use the `useChat` hook to get the messages and sendMessage function, which will connect to pre-built components for message rendering and chat input.
+We have a small Vite app with a root component in [`client/root.tsx`](./client/root.tsx). Our first task is to use the `useChat` hook to get the messages and sendMessage function, which will connect to pre-built components for message rendering and chat input.
 
-We need to implement the `TODO` in our App component in `client/root.tsx`:
+We need to implement the `TODO` in our App component in [`client/root.tsx`](./client/root.tsx):
 
 ```tsx
 import { useChat } from '@ai-sdk/react';
@@ -37,7 +37,7 @@ const App = () => {
 };
 ```
 
-After setting up the frontend, we need to work on the API route in `api/chat.ts`. This `POST` route will be called when the user sends a message, sending the entire history of all messages collected so far.
+After setting up the frontend, we need to work on the API route in [`api/chat.ts`](./api/chat.ts). This `POST` route will be called when the user sends a message, sending the entire history of all messages collected so far.
 
 The API route has several TODOs to complete:
 

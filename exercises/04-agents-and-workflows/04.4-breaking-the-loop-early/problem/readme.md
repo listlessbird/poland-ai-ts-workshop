@@ -2,7 +2,7 @@ Okay, now we've got our loop set up, it's time to reveal my trump card. The whol
 
 ## The Problem
 
-Our current flow _always_ goes through the loop. We're going to give the LLM the ability to break out of the loop early. Here's the current loop:
+Our [current flow](./api/chat.ts) _always_ goes through the loop. We're going to give the LLM the ability to break out of the loop early. Here's the current loop:
 
 ```ts
 while (step < 2) {
@@ -49,7 +49,7 @@ Instead we should use [`streamObject`](https://ai-sdk.dev/docs/ai-sdk-core/gener
 
 We need to:
 
-- Replace the `streamText` call with a `streamObject` call
+- Replace the [`streamText`](./api/chat.ts) call with a `streamObject` call
 - Define a schema for the output
 - If the `streamObject` call says we should break out of the loop, we should do so
 - Stream the feedback to the frontend as it appears

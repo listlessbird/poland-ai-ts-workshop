@@ -2,9 +2,9 @@ In this exercise, we're going to learn how to work with tools in the AI SDK to c
 
 ## Moving Tool Definitions
 
-Our first task is to extract the tool definitions from inside the `streamText` call in `api/chat.ts` and move them to the module scope. This allows us to both use the tools at runtime and infer types from them.
+Our first task is to extract the tool definitions from inside the [`streamText`](./api/chat.ts) call in [`api/chat.ts`](./api/chat.ts) and move them to the module scope. This allows us to both use the tools at runtime and infer types from them.
 
-The tools are currently defined within the `streamText` function call:
+The tools are currently defined within the [`streamText`](./api/chat.ts) function call:
 
 ```ts
 const result = streamText({
@@ -42,8 +42,8 @@ We'll use the `InferUITools` utility type from `ai`to infer the correct tool typ
 
 Once we have our custom `MyUIMessage` type, we need to use it in our front-end components:
 
-1. In `root.tsx`, we need to pass `MyUIMessage` as a type argument to `useChat`
-2. In `components.tsx`, we need to update the `parts` prop type to use `MyUIMessage['parts']` instead of `UIMessage['parts']`
+1. In [`root.tsx`](./client/root.tsx), we need to pass `MyUIMessage` as a type argument to `useChat`
+2. In [`components.tsx`](./client/components.tsx), we need to update the `parts` prop type to use `MyUIMessage['parts']` instead of `UIMessage['parts']`
 
 ## Implementing the `writeFile` Tool Display
 

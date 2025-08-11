@@ -1,6 +1,6 @@
 I wanted to provide you an example of using SSE as a transport for an MCP client. In fact, this is my preferred way of teaching this because it means less setup for you. However, I simply could not get it working on my machine. So I've provided this example for you. Hopefully you can get it working, but I couldn't.
 
-The important difference is inside this `createMCPClient` function, we no longer need to instantiate a `StdioMCPTransport`. We're now just passing in the information needed to contact the GitHub API via SSE.
+The important difference is inside this [`createMCPClient`](./api/chat.ts) function, we no longer need to instantiate a `StdioMCPTransport`. We're now just passing in the information needed to contact the GitHub API via SSE.
 
 Let's look at the code:
 

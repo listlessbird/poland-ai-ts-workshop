@@ -14,7 +14,7 @@ This is unexpected behavior! The AI SDK generates a UUID on the frontend, which 
 
 For our purposes, this automatic ID generation is problematic because we want to control the ID ourselves. Let's say we're on a URL where we're looking at a specific chat - we want that chat ID from the URL to flow into our API chat call.
 
-I've set up React Router in our code to help with this:
+I've set up [React Router](./client/root.tsx) in our code to help with this:
 
 ```tsx
 // Inside client/root.tsx

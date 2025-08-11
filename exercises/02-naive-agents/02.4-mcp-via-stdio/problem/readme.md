@@ -12,11 +12,11 @@ Luckily, the AI SDK has a few functions that help you do that.
 
 ## The Exercise
 
-In this exercise, we'll be working in the `POST` route only.
+In this exercise, we'll be working in the [`POST`](./api/chat.ts) route only.
 
-We're first going to look at a couple of imported functions from `ai` and `ai/mcp-stdio`. These are experimental, of course, because everything in MCP is experimental, and we're going to use them just below in our code.
+We're first going to look at a couple of imported functions from [`ai`](./api/chat.ts) and `ai/mcp-stdio`. These are experimental, of course, because everything in MCP is experimental, and we're going to use them just below in our code.
 
-Before we start streaming, we need to initiate an MCP client. This will use the `StdioMCPTransport` from `ai/mcp-stdio`.
+Before we start streaming, we need to initiate an MCP client. This will use the [`StdioMCPTransport`](./api/chat.ts) from `ai/mcp-stdio`.
 
 ```ts
 import { experimental_createMCPClient as createMCPClient } from 'ai';
@@ -55,13 +55,13 @@ Give your token some basic access and put that in your `.env` file in the root o
 GITHUB_PERSONAL_ACCESS_TOKEN=your_token_here
 ```
 
-Once the MCP client has been set up, you then need to acquire its tools and pass those tools into `streamText`. The MCP client will have a `tools` method that you can call to get them.
+Once the MCP client has been set up, you then need to acquire its tools and pass those tools into [`streamText`](./api/chat.ts). The MCP client will have a `tools` method that you can call to get them.
 
 ## Closing the MCP Client
 
 Finally, because we're running the MCP server ourselves (that's what the `StdioMCPTransport` does - it kicks off the MCP server), we will need to manually close it when we're done.
 
-So in the `onFinish` callback, we're going to close the stream by calling `mcpClient.close()`.
+So in the [`onFinish`](./api/chat.ts) callback, we're going to close the stream by calling `mcpClient.close()`.
 
 For us, this means we're going to kick off the GitHub MCP server when our request is made. And when our request finishes, we're going to close it down. This might not be the most desirable approach, but for now it's going to work.
 

@@ -2,7 +2,7 @@ In this section, we're going to investigate how to persist messages to a databas
 
 However, waiting for messages to finish is slightly non-trivial in the AI SDK. There are several properties that look similar but do subtly different things. Let's demystify them.
 
-Our setup is that inside our POST route, we're doing some `streamText` processing:
+Our setup is that inside our POST route, we're doing some [`streamText`](./api/chat.ts) processing:
 
 ```ts
 export const POST = async (req: Request): Promise<Response> => {
@@ -25,10 +25,10 @@ export const POST = async (req: Request): Promise<Response> => {
 
 We're taking the UI messages from the request body and passing them to the `streamText` function by converting them to model messages.
 
-Then we have multiple `onFinish` callbacks:
+Then we have multiple [`onFinish`](./api/chat.ts) callbacks:
 
-1. One inside `streamText`, which logs the `response.messages`
-2. Another inside `toUIMessageStreamResponse`, which logs both `messages` and `responseMessage`
+1. One inside [`streamText`](./api/chat.ts), which logs the `response.messages`
+2. Another inside [`toUIMessageStreamResponse`](./api/chat.ts), which logs both `messages` and `responseMessage`
 
 ```ts
 return result.toUIMessageStreamResponse({

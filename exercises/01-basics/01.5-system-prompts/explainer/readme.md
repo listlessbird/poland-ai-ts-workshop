@@ -14,7 +14,7 @@ If the user asks you to use a different language, politely decline and explain t
 `;
 ```
 
-We're then passing the system prompt into `streamText` here under the system attribute:
+We're then passing the system prompt into [`streamText`](./api/chat.ts) here under the system attribute:
 
 ```ts
 const streamTextResult = streamText({

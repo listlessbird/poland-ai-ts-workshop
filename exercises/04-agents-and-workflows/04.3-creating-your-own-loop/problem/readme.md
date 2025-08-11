@@ -2,7 +2,7 @@ Now that we've gone full workflow, why don't we pull it back a little bit and in
 
 The appeal of this approach is flexibility. That loop count could be increased over time or tuned to configure our system remotely. You might even give high-paying customers a better experience than lower-paying customers by increasing their loop iterations.
 
-The code for this lives inside our POST route. In the problem code, we need to modify the `execute` function to implement our loop:
+The code for this lives inside our POST route. In the problem code, we need to modify the [`execute`](./api/chat.ts) function to implement our loop:
 
 ```ts
 export const POST = async (req: Request): Promise<Response> => {

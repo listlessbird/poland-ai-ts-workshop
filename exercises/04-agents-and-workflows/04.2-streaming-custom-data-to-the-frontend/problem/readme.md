@@ -1,7 +1,7 @@
 Our workflow is working pretty nicely. We're getting some decent output, but our user is not seeing anything on their screen for a significant amount of time. That's because we are using `generateText` here.
 
 ```ts
-// Current code using generateText
+// Current code using [`generateText`](./api/chat.ts)
 const writeSlackResult = await generateText({
   model: google('gemini-2.0-flash-001'),
   system: WRITE_SLACK_MESSAGE_FIRST_DRAFT_SYSTEM,
@@ -12,7 +12,7 @@ const writeSlackResult = await generateText({
 });
 ```
 
-In other words, this `await` is waiting for this entire piece of text to be generated before we can continue with the evaluation. And then only finally, when we get to the final Slack attempt, do we then start streaming the text to the user via `toUIMessageStreamResponse`.
+In other words, this `await` is waiting for this entire piece of text to be generated before we can continue with the evaluation. And then only finally, when we get to the final Slack attempt, do we then start streaming the text to the user via [`toUIMessageStreamResponse`](./api/chat.ts).
 
 It would be much better if the user could see tokens on the screen faster, if we could improve our TTFT, time to first token. The way we're going to do that is via streaming some custom data parts.
 
@@ -39,7 +39,7 @@ You probably won't need to change much of this code here. As extra prep for this
 
 ## Passing The Custom Message Type To The Frontend
 
-Inside our frontend here, we definitely want to pass `MyMessage` to the `useChat` hook:
+Inside our frontend here, we definitely want to pass `MyMessage` to the [`useChat`](./client/root.tsx) hook:
 
 ```tsx
 // Change this:
@@ -51,7 +51,7 @@ const { messages, sendMessage } = useChat<MyMessage>({});
 
 ## Rendering The Custom Data Parts
 
-And we'll also want to go into the components and render the messages inside the message component. You'll need to update the `Message` component to handle the custom data parts:
+And we'll also want to go into the components and render the messages inside the message component. You'll need to update the [`Message`](./client/components.tsx) component to handle the custom data parts:
 
 ```tsx
 // Message component will need to handle custom data parts

@@ -2,9 +2,9 @@ In this exercise, we're exploring how the `UIMessage` objects are structured whe
 
 ## The Setup
 
-We're using a simplified example from a previous exercise, putting it into its own `main.ts` file. The code is set up to run a `streamText` call with all the previously defined tools, but now we're converting the stream into a `UIMessageStream` and logging it to the console.
+We're using a simplified example from a previous exercise, putting it into its own [`main.ts`](./main.ts) file. The code is set up to run a [`streamText`](./main.ts) call with all the previously defined tools, but now we're converting the stream into a `UIMessageStream` and logging it to the console.
 
-The stream follows a familiar pattern with events like `start`, `finish`, `text-delta`, `text-start`, and `text-end`. But we're also going to examine the final shape of the messages through an `onFinish` callback.
+The stream follows a familiar pattern with events like `start`, `finish`, `text-delta`, `text-start`, and `text-end`. But we're also going to examine the final shape of the messages through an [`onFinish`](./main.ts) callback.
 
 ```ts
 const result = streamText({
@@ -151,7 +151,7 @@ You can experiment with changing the prompt and observing how it affects both th
 
 ## Steps To Complete
 
-- [ ] Open the `main.ts` file and review the existing implementation of the `streamText` function and how it's converted to a `UIMessageStream`.
+- [ ] Open the [`main.ts`](./main.ts) file and review the existing implementation of the [`streamText`](./main.ts) function and how it's converted to a `UIMessageStream`.
 
 - [ ] Try modifying the prompt to request a different type of content, perhaps a different poem theme or a different file format.
 
