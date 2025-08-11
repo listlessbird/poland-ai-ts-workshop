@@ -18,7 +18,7 @@ export const Message = ({
   role: string;
   parts: MyMessage['parts'];
 }) => (
-  <div>
+  <div className="my-4">
     {parts.map((part) => {
       if (part.type === 'data-slack-message') {
         return (

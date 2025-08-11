@@ -20,7 +20,7 @@ export const Message = ({
   parts: MyMessage['parts'];
 }) => {
   return (
-    <div>
+    <div className="my-4">
       {parts.map((part) => {
         if (part.type === 'data-queries') {
           return (

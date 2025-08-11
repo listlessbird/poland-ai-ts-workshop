@@ -1,5 +1,5 @@
 import { useChat } from '@ai-sdk/react';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ChatInput, Message, Wrapper } from './components.tsx';
 import './tailwind.css';
@@ -16,13 +16,22 @@ const App = () => {
   const [subagent, setSubagent] =
     useState<Subagent>('todos-agent');
 
-  console.log(subagent);
+  // This gross code is due to this issue:
+  // https://github.com/vercel/ai/issues/7819
+  //
+  // Hopefully I can remove it once it's fixed
+  const bodyRef = useRef<{ subagent: Subagent }>({
+    subagent,
+  });
+  useEffect(() => {
+    bodyRef.current.subagent = subagent;
+  }, [subagent]);
 
   const { messages, sendMessage } = useChat<MyMessage>({
     transport: new DefaultChatTransport({
-      body: {
-        subagent,
-      },
+      body: () => ({
+        subagent: bodyRef.current.subagent,
+      }),
     }),
   });
 

@@ -1,12 +1,8 @@
-import { google } from '@ai-sdk/google';
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
-  streamObject,
-  streamText,
   type UIMessage,
 } from 'ai';
-import z from 'zod';
 import { schedulerAgent } from './agents/scheduler-agent.ts';
 import { songFinderAgent } from './agents/song-finder-agent.ts';
 import { studentNotesManagerAgent } from './agents/student-notes-manager.ts';
