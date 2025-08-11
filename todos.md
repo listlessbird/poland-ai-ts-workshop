@@ -3,11 +3,3 @@ Make the CLI listen for `n` to go to the next exercise, `p` to go to the previou
 ---
 
 Make `pnpm dev` run the exercise CLI.
-
----
-
-Link mentions of files to the actual files in the repo.
-
----
-
-Do final check of main readme
