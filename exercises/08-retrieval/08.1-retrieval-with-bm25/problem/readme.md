@@ -1,6 +1,10 @@
-How do we get an LLM to answer questions based on data that isn't in its training set? This is a really common problem when building anything with LLMs. You might want to create a question-answering bot that searches internal company docs and provides accurate answers.
+How do we get an LLM to answer questions based on data that isn't in its training set?
 
-For public information, it's easy - just call an API like Brave's or Tavily's that performs a Google search, scrape some websites, and you have what you need. But what about private information?
+This is a really common problem when building anything with LLMs. You might want to create a question-answering bot that searches internal company docs and provides accurate answers.
+
+For public information, it's easy - just call an API like Brave's or Tavily's that performs a Google search, scrape some websites, and you have what you need.
+
+But what about private information?
 
 In this exercise, we'll implement a simple and cost-effective approach to this problem. Then in later exercises, we'll refine and improve it.
 
@@ -40,7 +44,7 @@ export const POST = async (req: Request): Promise<Response> => {
 
 Our first task is implementing a keyword generator. We need to extract relevant search terms from the conversation history. This is where we'll use `streamObject` from the AI SDK.
 
-For search functionality, we'll use the BM25 algorithm (Best Match 25), which ranks documents based on keyword relevance. The system loads TypeScript documentation from the repo's root at `datasets/ts-docs` using the `loadTsDocs` function:
+For search functionality, we'll use the [BM25 algorithm](https://en.wikipedia.org/wiki/Okapi_BM25) (Best Match 25), which ranks documents based on keyword relevance. The system loads TypeScript documentation from the repo's root at `datasets/ts-docs` using the `loadTsDocs` function:
 
 ```ts
 export const loadTsDocs = async () => {
@@ -98,6 +102,46 @@ Finally, we'll use these selected documents as context for the LLM to generate a
 
 BM25 is a simple starting point for this task - not perfect, but effective for getting started. In future exercises, we'll explore more sophisticated approaches.
 
+## The Frontend
+
+I've been quite generous this lesson and given you a pre-built custom data part you can hook up to.
+
+It's called `data-queries` and it's an array of strings.
+
+```ts
+export type MyMessage = UIMessage<
+  unknown,
+  {
+    queries: string[];
+  }
+>;
+```
+
+These will be displayed in the `Message` component:
+
+```tsx
+{
+  parts.map((part) => {
+    if (part.type === 'data-queries') {
+      return (
+        <div key={part.id} className="...">
+          <h2 className="...">Queries</h2>
+          <ul className="...">
+            {Object.values(part.data).map((query) => (
+              <li key={query}>{query}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    return null;
+  });
+}
+```
+
+So all you need to do is write the queries to the stream writer.
+
 ## Steps To Complete
 
 - Implement the keyword generator using `streamObject` with the Google Gemini model
@@ -105,14 +149,12 @@ BM25 is a simple starting point for this task - not perfect, but effective for g
   - Define a schema using Zod that specifies an array of strings for keywords
   - Pass the formatted message history to the prompt
 
-- Create a way to display generated keywords to the user during the search
-  - Generate a unique ID for this part
-  - Write the keywords to the stream writer
+- Write the queries to the stream writer using `writer.write`
+  - Since we only need one `queries` data part, make sure you upsert it using a stable `id`. Check the [reference](/exercises/99-reference/99.4-custom-data-parts-id-reconciliation/explainer/readme.md) for an example of how to do this.
 
 - Use the `searchTypeScriptDocs` function with the generated keywords
   - Wait for the complete keywords object to be available
-
-- Select the top most relevant search results (decide how many - 5 to 10 is typical)
+  - Select the top most relevant search results (decide how many - 5 to 10 is typical)
   - Use array slicing to get the top results
 
 - Test your implementation by running the local dev server
