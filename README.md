@@ -49,25 +49,17 @@ cp .env.example .env
 
 4. Sign up to the required services and edit the `.env` file with your API keys.
 
-## 📚 Running Exercises
+## 📚 Running the Exercises
 
-Each exercise is designed to teach a specific concept in AI development. To run an exercise, use the following command:
-
-```bash
-pnpm run exercise <exercise-number>
-```
-
-For example:
+Start by running `pnpm dev`:
 
 ```bash
-pnpm run exercise 01.1
+pnpm dev
 ```
 
-This will:
+This will allow you to choose between the different exercises.
 
-1. Find the exercise with the specified number across all sections
-2. Present you with options to run either the `problem` or `solution` version
-3. Run the right `main.ts` file for the exercise. This might start a local dev server, or simply run some exercise code in that file.
+You can also run `pnpm exercise <exercise-number>` to run a specific exercise.
 
 ## 📁 Repository Structure
 
