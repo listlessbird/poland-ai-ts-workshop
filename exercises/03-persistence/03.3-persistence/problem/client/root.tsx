@@ -1,82 +1,80 @@
-import { useChat } from '@ai-sdk/react';
+import { useChat } from "@ai-sdk/react";
 import {
-  QueryClient,
-  QueryClientProvider,
-  useSuspenseQuery,
-} from '@tanstack/react-query';
-import React, { useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter, useSearchParams } from 'react-router';
-import type { DB } from '../api/persistence-layer.ts';
-import { ChatInput, Message, Wrapper } from './components.tsx';
-import './tailwind.css';
+	QueryClient,
+	QueryClientProvider,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
+import React, { useState } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter, useSearchParams } from "react-router";
+import type { DB } from "../api/persistence-layer.ts";
+import { ChatInput, Message, Wrapper } from "./components.tsx";
+import "./tailwind.css";
 
 const App = () => {
-  // This provides a stable chatId for when we're
-  // creating a new chat
-  const [backupChatId, setBackupChatId] = useState(
-    crypto.randomUUID(),
-  );
-  const [searchParams, setSearchParams] = useSearchParams();
+	// This provides a stable chatId for when we're
+	// creating a new chat
+	const [backupChatId, setBackupChatId] = useState(crypto.randomUUID());
+	const [searchParams, setSearchParams] = useSearchParams();
 
-  const chatIdFromSearchParams = searchParams.get('chatId');
+	const chatIdFromSearchParams = searchParams.get("chatId");
 
-  const { data } = useSuspenseQuery({
-    queryKey: ['chat', chatIdFromSearchParams],
-    queryFn: () => {
-      if (!chatIdFromSearchParams) {
-        return null;
-      }
+	const { data } = useSuspenseQuery({
+		queryKey: ["chat", chatIdFromSearchParams],
+		queryFn: () => {
+			if (!chatIdFromSearchParams) {
+				return null;
+			}
 
-      return fetch(
-        `/api/chat?chatId=${chatIdFromSearchParams}`,
-      ).then((res): Promise<DB.Chat> => res.json());
-    },
-  });
+			return fetch(`/api/chat?chatId=${chatIdFromSearchParams}`).then(
+				(res): Promise<DB.Chat> => res.json(),
+			);
+		},
+	});
 
-  // TODO: pass the chatId to the useChat hook,
-  // as well as any existing messages from the backend
-  const { messages, sendMessage } = useChat({});
+	// TODO: pass the chatId to the useChat hook,
+	// as well as any existing messages from the backend
+	const { messages, sendMessage } = useChat({
+		id: chatIdFromSearchParams ?? backupChatId,
+		messages: data?.messages ?? [],
+	});
 
-  const [input, setInput] = useState(
-    `Who's the best football player in the world?`,
-  );
+	const [input, setInput] = useState(
+		`Who's the best football player in the world?`,
+	);
 
-  return (
-    <Wrapper>
-      {messages.map((message) => (
-        <Message
-          key={message.id}
-          role={message.role}
-          parts={message.parts}
-        />
-      ))}
-      <ChatInput
-        input={input}
-        onChange={(e) => setInput(e.target.value)}
-        onSubmit={(e) => {
-          e.preventDefault();
-          sendMessage({
-            text: input,
-          });
-          setInput('');
+	return (
+		<Wrapper>
+			{messages.map((message) => (
+				<Message key={message.id} role={message.role} parts={message.parts} />
+			))}
+			<ChatInput
+				input={input}
+				onChange={(e) => setInput(e.target.value)}
+				onSubmit={(e) => {
+					e.preventDefault();
+					sendMessage({
+						text: input,
+					});
+					setInput("");
 
-          // TODO: set the search params to the new chatId
-          // if the chatId is not already set
+					if (chatIdFromSearchParams) {
+						return;
+					}
 
-          // TODO: refresh the backup chatId
-          // if the chatId is not already set
-        }}
-      />
-    </Wrapper>
-  );
+					setBackupChatId(crypto.randomUUID());
+					setSearchParams({ chatId: backupChatId });
+				}}
+			/>
+		</Wrapper>
+	);
 };
 
-const root = createRoot(document.getElementById('root')!);
+const root = createRoot(document.getElementById("root")!);
 root.render(
-  <QueryClientProvider client={new QueryClient()}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </QueryClientProvider>,
+	<QueryClientProvider client={new QueryClient()}>
+		<BrowserRouter>
+			<App />
+		</BrowserRouter>
+	</QueryClientProvider>,
 );
