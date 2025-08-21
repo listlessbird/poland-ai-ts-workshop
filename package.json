@@ -64,5 +64,9 @@
     "singleQuote": true,
     "printWidth": 65,
     "tabWidth": 2
-  }
+  },
+  "trustedDependencies": [
+    "@tailwindcss/oxide",
+    "protobufjs"
+  ]
 }
